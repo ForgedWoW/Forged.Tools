@@ -1,0 +1,250 @@
+﻿/*
+ * Copyright (C) 2012-2020 CypherCore <http://github.com/CypherCore>
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+using Framework.Constants;
+using Framework.Database;
+using Framework.IO;
+using Game.Entities;
+using Game.Mails;
+using System.Collections.Generic;
+
+namespace Game.Chat.Commands
+{
+    [CommandGroup("send")]
+    class SendCommands
+    {
+        [Command("mail", RBACPermissions.CommandSendMail, true)]
+        static bool HandleSendMailCommand(CommandHandler handler, StringArguments args)
+        {
+            // format: name "subject text" "mail text"
+            Player target;
+            ObjectGuid targetGuid;
+            string targetName;
+            if (!handler.ExtractPlayerTarget(args, out target, out targetGuid, out targetName))
+                return false;
+
+            string tail1 = args.NextString("");
+            if (string.IsNullOrEmpty(tail1))
+                return false;
+
+            string subject = handler.ExtractQuotedArg(tail1);
+            if (string.IsNullOrEmpty(subject))
+                return false;
+
+            string tail2 = args.NextString("");
+            if (string.IsNullOrEmpty(tail2))
+                return false;
+
+            string text = handler.ExtractQuotedArg(tail2);
+            if (string.IsNullOrEmpty(text))
+                return false;
+
+            // from console show not existed sender
+            MailSender sender = new(MailMessageType.Normal, handler.GetSession() ? handler.GetSession().GetPlayer().GetGUID().GetCounter() : 0, MailStationery.Gm);
+
+            // @todo Fix poor design
+            SQLTransaction trans = new();
+            new MailDraft(subject, text)
+                .SendMailTo(trans, new MailReceiver(target, targetGuid.GetCounter()), sender);
+
+            DB.Characters.CommitTransaction(trans);
+
+            string nameLink = handler.PlayerLink(targetName);
+            handler.SendSysMessage(CypherStrings.MailSent, nameLink);
+            return true;
+        }
+
+        [Command("items", RBACPermissions.CommandSendItems, true)]
+        static bool HandleSendItemsCommand(CommandHandler handler, StringArguments args)
+        {
+            // format: name "subject text" "mail text" item1[:count1] item2[:count2] ... item12[:count12]
+            Player receiver;
+            ObjectGuid receiverGuid;
+            string receiverName;
+            if (!handler.ExtractPlayerTarget(args, out receiver, out receiverGuid, out receiverName))
+                return false;
+
+            string tail1 = args.NextString("");
+            if (string.IsNullOrEmpty(tail1))
+                return false;
+
+            string subject = handler.ExtractQuotedArg(tail1);
+            if (string.IsNullOrEmpty(subject))
+                return false;
+
+            string tail2 = args.NextString("");
+            if (string.IsNullOrEmpty(tail2))
+                return false;
+
+            string text = handler.ExtractQuotedArg(tail2);
+            if (string.IsNullOrEmpty(text))
+                return false;
+
+            // extract items
+            List<KeyValuePair<uint, uint>> items = new();
+
+            // get all tail string
+            StringArguments tail = new(args.NextString(""));
+
+            // get from tail next item str
+            StringArguments itemStr;
+            while (!(itemStr = new StringArguments(tail.NextString(" "))).Empty())
+            {
+                // parse item str
+                string itemIdStr = itemStr.NextString(":");
+                string itemCountStr = itemStr.NextString(" ");
+
+                if (!uint.TryParse(itemIdStr, out uint itemId) || itemId == 0)
+                    return false;
+
+                ItemTemplate item_proto = Global.ObjectMgr.GetItemTemplate(itemId);
+                if (item_proto == null)
+                {
+                    handler.SendSysMessage(CypherStrings.CommandItemidinvalid, itemId);
+                    return false;
+                }
+
+                if (string.IsNullOrEmpty(itemCountStr) || !uint.TryParse(itemCountStr, out uint itemCount))
+                    itemCount = 1;
+
+                if (itemCount < 1 || (item_proto.GetMaxCount() > 0 && itemCount > item_proto.GetMaxCount()))
+                {
+                    handler.SendSysMessage(CypherStrings.CommandInvalidItemCount, itemCount, itemId);
+                    return false;
+                }
+
+                while (itemCount > item_proto.GetMaxStackSize())
+                {
+                    items.Add(new KeyValuePair<uint, uint>(itemId, item_proto.GetMaxStackSize()));
+                    itemCount -= item_proto.GetMaxStackSize();
+                }
+
+                items.Add(new KeyValuePair<uint, uint>(itemId, itemCount));
+
+                if (items.Count > SharedConst.MaxMailItems)
+                {
+                    handler.SendSysMessage(CypherStrings.CommandMailItemsLimit, SharedConst.MaxMailItems);
+                    return false;
+                }
+            }
+
+            // from console show not existed sender
+            MailSender sender = new(MailMessageType.Normal, handler.GetSession() ? handler.GetSession().GetPlayer().GetGUID().GetCounter() : 0, MailStationery.Gm);
+
+            // fill mail
+            MailDraft draft = new(subject, text);
+
+            SQLTransaction trans = new();
+
+            foreach (var pair in items)
+            {
+                Item item = Item.CreateItem(pair.Key, pair.Value, ItemContext.None, handler.GetSession() ? handler.GetSession().GetPlayer() : null);
+                if (item)
+                {
+                    item.SaveToDB(trans);                               // save for prevent lost at next mail load, if send fail then item will deleted
+                    draft.AddItem(item);
+                }
+            }
+
+            draft.SendMailTo(trans, new MailReceiver(receiver, receiverGuid.GetCounter()), sender);
+            DB.Characters.CommitTransaction(trans);
+
+            string nameLink = handler.PlayerLink(receiverName);
+            handler.SendSysMessage(CypherStrings.MailSent, nameLink);
+            return true;
+        }
+
+        [Command("money", RBACPermissions.CommandSendMoney, true)]
+        static bool HandleSendMoneyCommand(CommandHandler handler, StringArguments args)
+        {
+            // format: name "subject text" "mail text" money
+
+            Player receiver;
+            ObjectGuid receiverGuid;
+            string receiverName;
+            if (!handler.ExtractPlayerTarget(args, out receiver, out receiverGuid, out receiverName))
+                return false;
+
+            string tail1 = args.NextString("");
+            if (string.IsNullOrEmpty(tail1))
+                return false;
+
+            string subject = handler.ExtractQuotedArg(tail1);
+            if (string.IsNullOrEmpty(subject))
+                return false;
+
+            string tail2 = args.NextString("");
+            if (string.IsNullOrEmpty(tail2))
+                return false;
+
+            string text = handler.ExtractQuotedArg(tail2);
+            if (string.IsNullOrEmpty(text))
+                return false;
+
+            if (!long.TryParse(args.NextString(""), out long money))
+                money = 0;
+
+            if (money <= 0)
+                return false;
+
+            // from console show not existed sender
+            MailSender sender = new(MailMessageType.Normal, handler.GetSession() ? handler.GetSession().GetPlayer().GetGUID().GetCounter() : 0, MailStationery.Gm);
+
+            SQLTransaction trans = new();
+
+            new MailDraft(subject, text)
+                .AddMoney((uint)money)
+                .SendMailTo(trans, new MailReceiver(receiver, receiverGuid.GetCounter()), sender);
+
+            DB.Characters.CommitTransaction(trans);
+
+            string nameLink = handler.PlayerLink(receiverName);
+            handler.SendSysMessage(CypherStrings.MailSent, nameLink);
+            return true;
+        }
+
+        [Command("message", RBACPermissions.CommandSendMessage, true)]
+        static bool HandleSendMessageCommand(CommandHandler handler, StringArguments args)
+        {
+            // - Find the player
+            Player player;
+            if (!handler.ExtractPlayerTarget(args, out player))
+                return false;
+
+            string msgStr = args.NextString("");
+            if (string.IsNullOrEmpty(msgStr))
+                return false;
+
+            // Check that he is not logging out.
+            if (player.GetSession().IsLogingOut())
+            {
+                handler.SendSysMessage(CypherStrings.PlayerNotFound);
+                return false;
+            }
+
+            // - Send the message
+            player.GetSession().SendNotification("{0}", msgStr);
+            player.GetSession().SendNotification("|cffff0000[Message from administrator]:|r");
+
+            // Confirmation message
+            string nameLink = handler.GetNameLink(player);
+            handler.SendSysMessage(CypherStrings.Sendmessage, nameLink, msgStr);
+
+            return true;
+        }
+    }
+}

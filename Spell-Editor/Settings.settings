@@ -1,0 +1,33 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="Spell_Editor" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="HotfixDatabaseName" Type="System.String" Scope="User">
+      <Value Profile="(Default)">hotfixes</Value>
+    </Setting>
+    <Setting Name="HotfixDatabaseHost" Type="System.String" Scope="User">
+      <Value Profile="(Default)">127.0.0.1</Value>
+    </Setting>
+    <Setting Name="HotfixDatabasePort" Type="System.String" Scope="User">
+      <Value Profile="(Default)">3306</Value>
+    </Setting>
+    <Setting Name="HotfixDatabaseUser" Type="System.String" Scope="User">
+      <Value Profile="(Default)">root</Value>
+    </Setting>
+    <Setting Name="HotfixDatabasePassword" Type="System.String" Scope="User">
+      <Value Profile="(Default)">root</Value>
+    </Setting>
+    <Setting Name="DB2ParentDir" Type="System.String" Scope="User">
+      <Value Profile="(Default)">{FullSpellEditorPath}</Value>
+    </Setting>
+    <Setting Name="IconDir" Type="System.String" Scope="User">
+      <Value Profile="(Default)">{FullSpellEditorPath}Icons\</Value>
+    </Setting>
+    <Setting Name="IconPageLength" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">200</Value>
+    </Setting>
+    <Setting Name="BuildNumber" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">2147483647</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>
