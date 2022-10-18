@@ -64,7 +64,7 @@ namespace Spell_Editor.Utils
             {
                 var value = Convert.ToInt32((T)Enum.Parse(typeof(T), listValues[i].ToString()));
 
-                if (retVal.ShiftContains(value))
+                if (!retVal.ShiftContains(value))
                     retVal |= (1 << value);
             }
 
