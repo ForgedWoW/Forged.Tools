@@ -31,15 +31,6 @@ namespace Spell_Editor
         public MainForm()
         {
             InitializeComponent();
-
-            var thing1 = 0x1;
-            var thing2 = 0x2;
-            var thing3 = 0x3;
-            var thing4 = 0x4;
-            var thing5 = 0x8;
-            var thing6 = 0x10;
-            var thing7 = thing6 | thing6;
-
             cmbIndexing.SelectedIndex = 0;
 
             numCurentMin.KeyDown += numCurentMinMax_KeyDown;
@@ -450,7 +441,7 @@ namespace Spell_Editor
             btnVisualDelete.Enabled = false;
 
             listSpellSchool.SelectedItems.Clear();
-            listSpellSchool.SelectedItems.AddSelectedEnum(CurrentSpell.SpellInfo.SchoolMask);
+            listSpellSchool.SelectedItems.AddSelectedBitEnum(CurrentSpell.SpellInfo.SchoolMask);
             numFacingCasterFlags.Value = CurrentSpell.SpellInfo.FacingCasterFlags;
             numRequiredAreaId.Value = CurrentSpell.SpellInfo.RequiredAreasID;
 
@@ -470,12 +461,12 @@ namespace Spell_Editor
                 int flags2 = CurrentSpell.SpellInfo.ProcFlags.GetProcFlags2();
 
                 if (flags > 0)
-                    listProcFlags.SelectedItems.AddSelectedEnum(flags, typeof(ProcFlags));
+                    listProcFlags.SelectedItems.AddSelectedBitEnum(flags, typeof(ProcFlags));
                 else
                     listProcFlags.SelectedItems.Add("None");
 
                 if (flags2 > 0)
-                    listProcFlags2.SelectedItems.AddSelectedEnum(flags, typeof(ProcFlags2));
+                    listProcFlags2.SelectedItems.AddSelectedBitEnum(flags, typeof(ProcFlags2));
                 else
                     listProcFlags2.SelectedItems.Add("None");
             }
@@ -491,7 +482,7 @@ namespace Spell_Editor
             mlcmbPPM.SetSelectedById(0);
 
             listProcTargets.SelectedItems.Clear();
-            listProcTargets.SelectedItems.AddSelectedEnum(CurrentSpell.SpellInfo.Targets);
+            listProcTargets.SelectedItems.AddSelectedBitEnum(CurrentSpell.SpellInfo.Targets);
 
             // spell effects
             tabsSpellEffects.TabPages.Clear();
@@ -638,21 +629,21 @@ namespace Spell_Editor
             listAttr13.SelectedItems.Clear();
             listAttr14.SelectedItems.Clear();
 
-            listAttr0.SelectedItems.AddSelectedEnum(CurrentSpell.SpellInfo.Attributes);
-            listAttr1.SelectedItems.AddSelectedEnum(CurrentSpell.SpellInfo.AttributesEx);
-            listAttr2.SelectedItems.AddSelectedEnum(CurrentSpell.SpellInfo.AttributesEx2);
-            listAttr3.SelectedItems.AddSelectedEnum(CurrentSpell.SpellInfo.AttributesEx3);
-            listAttr4.SelectedItems.AddSelectedEnum(CurrentSpell.SpellInfo.AttributesEx4);
-            listAttr5.SelectedItems.AddSelectedEnum(CurrentSpell.SpellInfo.AttributesEx5);
-            listAttr6.SelectedItems.AddSelectedEnum(CurrentSpell.SpellInfo.AttributesEx6);
-            listAttr7.SelectedItems.AddSelectedEnum(CurrentSpell.SpellInfo.AttributesEx7);
-            listAttr8.SelectedItems.AddSelectedEnum(CurrentSpell.SpellInfo.AttributesEx8);
-            listAttr9.SelectedItems.AddSelectedEnum(CurrentSpell.SpellInfo.AttributesEx9);
-            listAttr10.SelectedItems.AddSelectedEnum(CurrentSpell.SpellInfo.AttributesEx10);
-            listAttr11.SelectedItems.AddSelectedEnum(CurrentSpell.SpellInfo.AttributesEx11);
-            listAttr12.SelectedItems.AddSelectedEnum(CurrentSpell.SpellInfo.AttributesEx12);
-            listAttr13.SelectedItems.AddSelectedEnum(CurrentSpell.SpellInfo.AttributesEx13);
-            listAttr14.SelectedItems.AddSelectedEnum(CurrentSpell.SpellInfo.AttributesEx14);
+            listAttr0.SelectedItems.AddSelectedBitEnum(CurrentSpell.SpellInfo.Attributes);
+            listAttr1.SelectedItems.AddSelectedBitEnum(CurrentSpell.SpellInfo.AttributesEx);
+            listAttr2.SelectedItems.AddSelectedBitEnum(CurrentSpell.SpellInfo.AttributesEx2);
+            listAttr3.SelectedItems.AddSelectedBitEnum(CurrentSpell.SpellInfo.AttributesEx3);
+            listAttr4.SelectedItems.AddSelectedBitEnum(CurrentSpell.SpellInfo.AttributesEx4);
+            listAttr5.SelectedItems.AddSelectedBitEnum(CurrentSpell.SpellInfo.AttributesEx5);
+            listAttr6.SelectedItems.AddSelectedBitEnum(CurrentSpell.SpellInfo.AttributesEx6);
+            listAttr7.SelectedItems.AddSelectedBitEnum(CurrentSpell.SpellInfo.AttributesEx7);
+            listAttr8.SelectedItems.AddSelectedBitEnum(CurrentSpell.SpellInfo.AttributesEx8);
+            listAttr9.SelectedItems.AddSelectedBitEnum(CurrentSpell.SpellInfo.AttributesEx9);
+            listAttr10.SelectedItems.AddSelectedBitEnum(CurrentSpell.SpellInfo.AttributesEx10);
+            listAttr11.SelectedItems.AddSelectedBitEnum(CurrentSpell.SpellInfo.AttributesEx11);
+            listAttr12.SelectedItems.AddSelectedBitEnum(CurrentSpell.SpellInfo.AttributesEx12);
+            listAttr13.SelectedItems.AddSelectedBitEnum(CurrentSpell.SpellInfo.AttributesEx13);
+            listAttr14.SelectedItems.AddSelectedBitEnum(CurrentSpell.SpellInfo.AttributesEx14);
             
             // update flags
             listInterruptFlags.SelectedItems.Clear();
@@ -662,18 +653,19 @@ namespace Spell_Editor
             listChannelInterruptFlags2.SelectedItems.Clear();
             listTargetCreatureType.SelectedItems.Clear();
             listStances.SelectedItems.Clear();
+            listExStances.SelectedItems.Clear();
             cmbTotemCategory1.SelectedIndex = 0;
             cmbTotemCategory2.SelectedIndex = 0;
             cmbCurrencyType.SelectedIndex = 0;
             
-            listInterruptFlags.SelectedItems.AddSelectedEnum(CurrentSpell.SpellInfo.InterruptFlags);
-            listAuraInterruptFlags.SelectedItems.AddSelectedEnum(CurrentSpell.SpellInfo.AuraInterruptFlags);
-            listAuraInterruptFlags2.SelectedItems.AddSelectedEnum(CurrentSpell.SpellInfo.AuraInterruptFlags2);
-            listChannelInterruptFlags.SelectedItems.AddSelectedEnum(CurrentSpell.SpellInfo.ChannelInterruptFlags);
-            listChannelInterruptFlags2.SelectedItems.AddSelectedEnum(CurrentSpell.SpellInfo.ChannelInterruptFlags2);
-            listTargetCreatureType.SelectedItems.AddSelectedEnum((CreatureType)CurrentSpell.SpellInfo.TargetCreatureType);
-            listStances.SelectedItems.AddSelectedEnum((ShapeShiftForm)CurrentSpell.SpellInfo.Stances);
-            listExStances.SelectedItems.AddSelectedEnum((ShapeShiftForm)CurrentSpell.SpellInfo.StancesNot);
+            listInterruptFlags.SelectedItems.AddSelectedBitEnum(CurrentSpell.SpellInfo.InterruptFlags);
+            listAuraInterruptFlags.SelectedItems.AddSelectedBitEnum(CurrentSpell.SpellInfo.AuraInterruptFlags);
+            listAuraInterruptFlags2.SelectedItems.AddSelectedBitEnum(CurrentSpell.SpellInfo.AuraInterruptFlags2);
+            listChannelInterruptFlags.SelectedItems.AddSelectedBitEnum(CurrentSpell.SpellInfo.ChannelInterruptFlags);
+            listChannelInterruptFlags2.SelectedItems.AddSelectedBitEnum(CurrentSpell.SpellInfo.ChannelInterruptFlags2);
+            listTargetCreatureType.SelectedItems.AddSelectedIntEnum((CreatureType)CurrentSpell.SpellInfo.TargetCreatureType);
+            listStances.SelectedItems.AddSelectedIntEnum((ShapeShiftForm)CurrentSpell.SpellInfo.Stances);
+            listExStances.SelectedItems.AddSelectedIntEnum((ShapeShiftForm)CurrentSpell.SpellInfo.StancesNot);
             numTotem1.Value = CurrentSpell.SpellInfo.Totem[0];
             numTotem2.Value = CurrentSpell.SpellInfo.Totem[1];
             cmbTotemCategory1.SelectedIndex = _totemCatMap[CurrentSpell.SpellInfo.TotemCategory[0]];
@@ -712,7 +704,7 @@ namespace Spell_Editor
 
             cmbEquippedItemClass.SelectedItem = CurrentSpell.SpellInfo.EquippedItemClass.ToString();
             listEquippedItemInvenType.SelectedItems.Clear();
-            listEquippedItemInvenType.SelectedItems.AddSelectedEnum(CurrentSpell.SpellInfo.EquippedItemInventoryTypeMask, typeof(InventoryType));
+            listEquippedItemInvenType.SelectedItems.AddSelectedIntEnum(CurrentSpell.SpellInfo.EquippedItemInventoryTypeMask, typeof(InventoryType));
             listEquippedItemSubClass.UpdateItemSubClass((ItemClass)Enum.Parse(typeof(ItemClass), (string)cmbEquippedItemClass.SelectedItem), CurrentSpell.SpellInfo.EquippedItemClass, CurrentSpell.SpellInfo.EquippedItemSubClassMask, true);
 
             btnCurIconUndo_Click(null, null);
@@ -943,7 +935,7 @@ namespace Spell_Editor
 
                 // category flags
                 listCatFlags.SelectedItems.Clear();
-                listCatFlags.SelectedItems.AddSelectedEnum(cat.Flags);
+                listCatFlags.SelectedItems.AddSelectedBitEnum(cat.Flags);
             }
             else
             {
@@ -1301,28 +1293,28 @@ namespace Spell_Editor
 
                 // spell_misc
                 ret.SpellInfo.SpellMiscId = CurrentSpell.SpellInfo.SpellMiscId;
-                ret.SpellInfo.Attributes = (SpellAttr0)listAttr0.SelectedItems.CalculateValue<SpellAttr0>();
-                ret.SpellInfo.AttributesEx = (SpellAttr1)listAttr1.SelectedItems.CalculateValue<SpellAttr1>();
-                ret.SpellInfo.AttributesEx2 = (SpellAttr2)listAttr2.SelectedItems.CalculateValue<SpellAttr2>();
-                ret.SpellInfo.AttributesEx3 = (SpellAttr3)listAttr3.SelectedItems.CalculateValue<SpellAttr3>();
-                ret.SpellInfo.AttributesEx4 = (SpellAttr4)listAttr4.SelectedItems.CalculateValue<SpellAttr4>();
-                ret.SpellInfo.AttributesEx5 = (SpellAttr5)listAttr5.SelectedItems.CalculateValue<SpellAttr5>();
-                ret.SpellInfo.AttributesEx6 = (SpellAttr6)listAttr6.SelectedItems.CalculateValue<SpellAttr6>();
-                ret.SpellInfo.AttributesEx7 = (SpellAttr7)listAttr7.SelectedItems.CalculateValue<SpellAttr7>();
-                ret.SpellInfo.AttributesEx8 = (SpellAttr8)listAttr8.SelectedItems.CalculateValue<SpellAttr8>();
-                ret.SpellInfo.AttributesEx9 = (SpellAttr9)listAttr9.SelectedItems.CalculateValue<SpellAttr9>();
-                ret.SpellInfo.AttributesEx10 = (SpellAttr10)listAttr10.SelectedItems.CalculateValue<SpellAttr10>();
-                ret.SpellInfo.AttributesEx11 = (SpellAttr11)listAttr11.SelectedItems.CalculateValue<SpellAttr11>();
-                ret.SpellInfo.AttributesEx12 = (SpellAttr12)listAttr12.SelectedItems.CalculateValue<SpellAttr12>();
-                ret.SpellInfo.AttributesEx13 = (SpellAttr13)listAttr13.SelectedItems.CalculateValue<SpellAttr13>();
-                ret.SpellInfo.AttributesEx14 = (SpellAttr14)listAttr14.SelectedItems.CalculateValue<SpellAttr14>();
+                ret.SpellInfo.Attributes = (SpellAttr0)listAttr0.SelectedItems.CalculateBitValue<SpellAttr0>();
+                ret.SpellInfo.AttributesEx = (SpellAttr1)listAttr1.SelectedItems.CalculateBitValue<SpellAttr1>();
+                ret.SpellInfo.AttributesEx2 = (SpellAttr2)listAttr2.SelectedItems.CalculateBitValue<SpellAttr2>();
+                ret.SpellInfo.AttributesEx3 = (SpellAttr3)listAttr3.SelectedItems.CalculateBitValue<SpellAttr3>();
+                ret.SpellInfo.AttributesEx4 = (SpellAttr4)listAttr4.SelectedItems.CalculateBitValue<SpellAttr4>();
+                ret.SpellInfo.AttributesEx5 = (SpellAttr5)listAttr5.SelectedItems.CalculateBitValue<SpellAttr5>();
+                ret.SpellInfo.AttributesEx6 = (SpellAttr6)listAttr6.SelectedItems.CalculateBitValue<SpellAttr6>();
+                ret.SpellInfo.AttributesEx7 = (SpellAttr7)listAttr7.SelectedItems.CalculateBitValue<SpellAttr7>();
+                ret.SpellInfo.AttributesEx8 = (SpellAttr8)listAttr8.SelectedItems.CalculateBitValue<SpellAttr8>();
+                ret.SpellInfo.AttributesEx9 = (SpellAttr9)listAttr9.SelectedItems.CalculateBitValue<SpellAttr9>();
+                ret.SpellInfo.AttributesEx10 = (SpellAttr10)listAttr10.SelectedItems.CalculateBitValue<SpellAttr10>();
+                ret.SpellInfo.AttributesEx11 = (SpellAttr11)listAttr11.SelectedItems.CalculateBitValue<SpellAttr11>();
+                ret.SpellInfo.AttributesEx12 = (SpellAttr12)listAttr12.SelectedItems.CalculateBitValue<SpellAttr12>();
+                ret.SpellInfo.AttributesEx13 = (SpellAttr13)listAttr13.SelectedItems.CalculateBitValue<SpellAttr13>();
+                ret.SpellInfo.AttributesEx14 = (SpellAttr14)listAttr14.SelectedItems.CalculateBitValue<SpellAttr14>();
 
                 ret.SpellInfo.CastTimeEntry = CliDB.SpellCastTimesStorage[_castTimeMap.ReverseLookup(cmbCastTime.SelectedIndex)];
                 ret.SpellInfo.DurationEntry = CliDB.SpellDurationStorage[mlcmbDuration.SelectedItemId];
                 ret.SpellInfo.RangeEntry = CliDB.SpellRangeStorage[mlcmbRange.SelectedItemId];
                 ret.SpellInfo.Speed = float.Parse(txtSpeed.Text);
                 ret.SpellInfo.LaunchDelay = float.Parse(txtLaunchDelay.Text);
-                ret.SpellInfo.SchoolMask = (SpellSchoolMask)listSpellSchool.SelectedItems.CalculateValue<SpellSchoolMask>();
+                ret.SpellInfo.SchoolMask = (SpellSchoolMask)listSpellSchool.SelectedItems.CalculateBitValue<SpellSchoolMask>();
                 ret.SpellInfo.IconFileDataId = lblCurIcon.Text != String.Empty ? uint.Parse(lblCurIcon.Text.Split('-')[1].Trim()) : 0;
                 ret.SpellInfo.ActiveIconFileDataId = lblActiveIcon.Text != String.Empty ? uint.Parse(lblActiveIcon.Text.Split('-')[1].Trim()) : 0;
 
@@ -1337,7 +1329,7 @@ namespace Spell_Editor
 
                 // SpellAuraOptionsEntry
                 ret.SpellInfo.AuraOptionsId = CurrentSpell.SpellInfo.AuraOptionsId;
-                ret.SpellInfo.ProcFlags = new ProcFlagsInit(new int[] { (int)listProcFlags.SelectedItems.CalculateValue<ProcFlags>(), (int)listProcFlags2.SelectedItems.CalculateValue<ProcFlags2>() });
+                ret.SpellInfo.ProcFlags = new ProcFlagsInit(new int[] { (int)listProcFlags.SelectedItems.CalculateBitValue<ProcFlags>(), (int)listProcFlags2.SelectedItems.CalculateBitValue<ProcFlags2>() });
                 ret.SpellInfo.ProcChance = (uint)numProcChance.Value;
                 ret.SpellInfo.ProcCharges = (uint)numProcCharges.Value;
                 ret.SpellInfo.ProcCooldown = (uint)numProcCooldown.Value;
@@ -1390,15 +1382,15 @@ namespace Spell_Editor
                 ret.SpellInfo.SpellEquippedItemsId = CurrentSpell.SpellInfo.SpellEquippedItemsId;
                 ret.SpellInfo.EquippedItemClass = (ItemClass)Enum.Parse(typeof(ItemClass), (string)cmbEquippedItemClass.SelectedItem);
                 ret.SpellInfo.EquippedItemSubClassMask = (int)Helpers.GetItemSubClassValue((ItemClass)Enum.Parse(typeof(ItemClass), (string)cmbEquippedItemClass.SelectedItem), listEquippedItemSubClass.SelectedItems);
-                ret.SpellInfo.EquippedItemInventoryTypeMask = (int)listEquippedItemInvenType.SelectedItems.CalculateValue<InventoryType>();
+                ret.SpellInfo.EquippedItemInventoryTypeMask = (int)listEquippedItemInvenType.SelectedItems.CalculateIntValue<InventoryType>();
 
                 // SpellInterruptsEntry
                 ret.SpellInfo.SpellInterruptsId = CurrentSpell.SpellInfo.SpellInterruptsId;
-                ret.SpellInfo.InterruptFlags = (SpellInterruptFlags)listInterruptFlags.SelectedItems.CalculateValue<SpellInterruptFlags>();
-                ret.SpellInfo.AuraInterruptFlags = (SpellAuraInterruptFlags)listAuraInterruptFlags.SelectedItems.CalculateValue<SpellAuraInterruptFlags>();
-                ret.SpellInfo.AuraInterruptFlags2 = (SpellAuraInterruptFlags2)listAuraInterruptFlags2.SelectedItems.CalculateValue<SpellAuraInterruptFlags2>();
-                ret.SpellInfo.ChannelInterruptFlags = (SpellAuraInterruptFlags)listChannelInterruptFlags.SelectedItems.CalculateValue<SpellAuraInterruptFlags>();
-                ret.SpellInfo.ChannelInterruptFlags2 = (SpellAuraInterruptFlags2)listChannelInterruptFlags2.SelectedItems.CalculateValue<SpellAuraInterruptFlags2>();
+                ret.SpellInfo.InterruptFlags = (SpellInterruptFlags)listInterruptFlags.SelectedItems.CalculateBitValue<SpellInterruptFlags>();
+                ret.SpellInfo.AuraInterruptFlags = (SpellAuraInterruptFlags)listAuraInterruptFlags.SelectedItems.CalculateBitValue<SpellAuraInterruptFlags>();
+                ret.SpellInfo.AuraInterruptFlags2 = (SpellAuraInterruptFlags2)listAuraInterruptFlags2.SelectedItems.CalculateBitValue<SpellAuraInterruptFlags2>();
+                ret.SpellInfo.ChannelInterruptFlags = (SpellAuraInterruptFlags)listChannelInterruptFlags.SelectedItems.CalculateBitValue<SpellAuraInterruptFlags>();
+                ret.SpellInfo.ChannelInterruptFlags2 = (SpellAuraInterruptFlags2)listChannelInterruptFlags2.SelectedItems.CalculateBitValue<SpellAuraInterruptFlags2>();
 
                 var split = txtLabels.Text.Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
                 ret.SpellInfo.Labels.Clear();
@@ -1448,16 +1440,16 @@ namespace Spell_Editor
 
                 // SpellShapeshiftEntry
                 ret.SpellInfo.ShapeshiftRecordId = CurrentSpell.SpellInfo.ShapeshiftRecordId;
-                ret.SpellInfo.Stances = (ulong)listStances.SelectedItems.CalculateValue<ShapeShiftForm>();
-                ret.SpellInfo.StancesNot = (ulong)listExStances.SelectedItems.CalculateValue<ShapeShiftForm>();
+                ret.SpellInfo.Stances = (ulong)listStances.SelectedItems.CalculateIntValue<ShapeShiftForm>();
+                ret.SpellInfo.StancesNot = (ulong)listExStances.SelectedItems.CalculateIntValue<ShapeShiftForm>();
                 ret.SpellInfo.StanceBarOrder = CurrentSpell.SpellInfo.StanceBarOrder;
 
                 // SpellTargetRestrictionsEntry
                 ret.SpellInfo.TargetRestrictionsId = CurrentSpell.SpellInfo.TargetRestrictionsId;
-                ret.SpellInfo.Targets = (SpellCastTargetFlags)listProcTargets.SelectedItems.CalculateValue<SpellCastTargetFlags>();
+                ret.SpellInfo.Targets = (SpellCastTargetFlags)listProcTargets.SelectedItems.CalculateBitValue<SpellCastTargetFlags>();
                 ret.SpellInfo.ConeAngle = float.Parse(txtConeAngle.Text);
                 ret.SpellInfo.Width = float.Parse(txtWidth.Text);
-                ret.SpellInfo.TargetCreatureType = (ushort)listTargetCreatureType.SelectedItems.CalculateValue<CreatureType>();
+                ret.SpellInfo.TargetCreatureType = (ushort)listTargetCreatureType.SelectedItems.CalculateIntValue<CreatureType>();
                 ret.SpellInfo.MaxAffectedTargets = (byte)numMaxTargets.Value;
                 ret.SpellInfo.MaxTargetLevel = (uint)numMaxTargetLevel.Value;
 

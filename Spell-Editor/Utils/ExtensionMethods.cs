@@ -27,14 +27,21 @@ namespace Spell_Editor.Utils
                 listValues.Add(name);
         }
 
-        public static void AddSelectedEnum<T>(this ListBox.SelectedObjectCollection listValues, T toMatch)
+        public static void AddSelectedBitEnum<T>(this ListBox.SelectedObjectCollection listValues, T toMatch)
         {
             foreach (string attr in Enum.GetNames(typeof(T)).AsSpan())
                 if ((Convert.ToInt64(toMatch) & Convert.ToInt64((T)Enum.Parse(typeof(T), attr))) != 0)
                     listValues.Add(attr);
         }
 
-        public static Int64 CalculateValue<T>(this ListBox.SelectedObjectCollection listValues)
+        public static void AddSelectedIntEnum<T>(this ListBox.SelectedObjectCollection listValues, T toMatch)
+        {
+            foreach (string attr in Enum.GetNames(typeof(T)).AsSpan())
+                if (Convert.ToInt32(toMatch).ShiftContains(Convert.ToInt32((T)Enum.Parse(typeof(T), attr))))
+                    listValues.Add(attr);
+        }
+
+        public static Int64 CalculateBitValue<T>(this ListBox.SelectedObjectCollection listValues)
         {
             Int64 retVal = 0;
 
@@ -49,10 +56,32 @@ namespace Spell_Editor.Utils
             return retVal;
         }
 
-        public static void AddSelectedEnum(this ListBox.SelectedObjectCollection listValues, int toMatch, Type enumType)
+        public static int CalculateIntValue<T>(this ListBox.SelectedObjectCollection listValues)
+        {
+            int retVal = 0;
+
+            for (var i = listValues.Count - 1; i >= 0; i--)
+            {
+                var value = Convert.ToInt32((T)Enum.Parse(typeof(T), listValues[i].ToString()));
+
+                if (retVal.ShiftContains(value))
+                    retVal |= (1 << value);
+            }
+
+            return retVal;
+        }
+
+        public static void AddSelectedBitEnum(this ListBox.SelectedObjectCollection listValues, long toMatch, Type enumType)
         {
             foreach (string attr in Enum.GetNames(enumType).AsSpan())
                 if ((toMatch & Convert.ToInt64(Enum.Parse(enumType, attr))) != 0)
+                    listValues.Add(attr);
+        }
+
+        public static void AddSelectedIntEnum(this ListBox.SelectedObjectCollection listValues, int toMatch, Type enumType)
+        {
+            foreach (string attr in Enum.GetNames(enumType).AsSpan())
+                if (toMatch.ShiftContains(Convert.ToInt32(Enum.Parse(enumType, attr))))
                     listValues.Add(attr);
         }
 
@@ -74,6 +103,16 @@ namespace Spell_Editor.Utils
 
             foreach (string attr in Enum.GetNames(typeof(T)).AsSpan())
                 ret |= Convert.ToInt64((T)Enum.Parse(typeof(T), attr));
+
+            return ret;
+        }
+        
+        public static Int64 EnumCollectionToInt<T>(this ListBox.SelectedObjectCollection listValues)
+        {
+            int ret = 0;
+
+            foreach (string attr in Enum.GetNames(typeof(T)).AsSpan())
+                ret |= (1 << Convert.ToInt32((T)Enum.Parse(typeof(T), attr)));
 
             return ret;
         }
@@ -170,7 +209,7 @@ namespace Spell_Editor.Utils
                     listboxToPopulate.SelectedItems.Clear();
 
                     if (initialLoad || equippedItemClass == itemClass)
-                        listboxToPopulate.SelectedItems.AddSelectedEnum(subClassMask, typeof(ItemSubClassConsumable));
+                        listboxToPopulate.SelectedItems.AddSelectedIntEnum(subClassMask, typeof(ItemSubClassConsumable));
                     break;
                 case ItemClass.Container:
                     listboxToPopulate.Items.AddEnumNames(typeof(ItemSubClassContainer));
@@ -178,7 +217,7 @@ namespace Spell_Editor.Utils
                     listboxToPopulate.SelectedItems.Clear();
 
                     if (initialLoad || equippedItemClass == itemClass)
-                        listboxToPopulate.SelectedItems.AddSelectedEnum(subClassMask, typeof(ItemSubClassContainer));
+                        listboxToPopulate.SelectedItems.AddSelectedIntEnum(subClassMask, typeof(ItemSubClassContainer));
                     break;
                 case ItemClass.Weapon:
                     listboxToPopulate.Items.AddEnumNames(typeof(ItemSubClassWeapon));
@@ -186,7 +225,7 @@ namespace Spell_Editor.Utils
                     listboxToPopulate.SelectedItems.Clear();
 
                     if (initialLoad || equippedItemClass == itemClass)
-                        listboxToPopulate.SelectedItems.AddSelectedEnum(subClassMask, typeof(ItemSubClassWeapon));
+                        listboxToPopulate.SelectedItems.AddSelectedIntEnum(subClassMask, typeof(ItemSubClassWeapon));
                     break;
                 case ItemClass.Gem:
                     listboxToPopulate.Items.AddEnumNames(typeof(ItemSubClassGem));
@@ -194,7 +233,7 @@ namespace Spell_Editor.Utils
                     listboxToPopulate.SelectedItems.Clear();
 
                     if (initialLoad || equippedItemClass == itemClass)
-                        listboxToPopulate.SelectedItems.AddSelectedEnum(subClassMask, typeof(ItemSubClassGem));
+                        listboxToPopulate.SelectedItems.AddSelectedIntEnum(subClassMask, typeof(ItemSubClassGem));
                     break;
                 case ItemClass.Armor:
                     listboxToPopulate.Items.AddEnumNames(typeof(ItemSubClassArmor));
@@ -202,7 +241,7 @@ namespace Spell_Editor.Utils
                     listboxToPopulate.SelectedItems.Clear();
 
                     if (initialLoad || equippedItemClass == itemClass)
-                        listboxToPopulate.SelectedItems.AddSelectedEnum(subClassMask, typeof(ItemSubClassArmor));
+                        listboxToPopulate.SelectedItems.AddSelectedIntEnum(subClassMask, typeof(ItemSubClassArmor));
                     break;
                 case ItemClass.Reagent:
                     listboxToPopulate.Items.AddEnumNames(typeof(ItemSubClassReagent));
@@ -210,7 +249,7 @@ namespace Spell_Editor.Utils
                     listboxToPopulate.SelectedItems.Clear();
 
                     if (initialLoad || equippedItemClass == itemClass)
-                        listboxToPopulate.SelectedItems.AddSelectedEnum(subClassMask, typeof(ItemSubClassReagent));
+                        listboxToPopulate.SelectedItems.AddSelectedIntEnum(subClassMask, typeof(ItemSubClassReagent));
                     break;
                 case ItemClass.Projectile:
                     listboxToPopulate.Items.AddEnumNames(typeof(ItemSubClassProjectile));
@@ -218,7 +257,7 @@ namespace Spell_Editor.Utils
                     listboxToPopulate.SelectedItems.Clear();
 
                     if (initialLoad || equippedItemClass == itemClass)
-                        listboxToPopulate.SelectedItems.AddSelectedEnum(subClassMask, typeof(ItemSubClassProjectile));
+                        listboxToPopulate.SelectedItems.AddSelectedIntEnum(subClassMask, typeof(ItemSubClassProjectile));
                     break;
                 case ItemClass.TradeGoods:
                     listboxToPopulate.Items.AddEnumNames(typeof(ItemSubClassTradeGoods));
@@ -226,7 +265,7 @@ namespace Spell_Editor.Utils
                     listboxToPopulate.SelectedItems.Clear();
 
                     if (initialLoad || equippedItemClass == itemClass)
-                        listboxToPopulate.SelectedItems.AddSelectedEnum(subClassMask, typeof(ItemSubClassTradeGoods));
+                        listboxToPopulate.SelectedItems.AddSelectedIntEnum(subClassMask, typeof(ItemSubClassTradeGoods));
                     break;
                 case ItemClass.ItemEnhancement:
                     listboxToPopulate.Items.AddEnumNames(typeof(ItemSubclassItemEnhancement));
@@ -234,7 +273,7 @@ namespace Spell_Editor.Utils
                     listboxToPopulate.SelectedItems.Clear();
 
                     if (initialLoad || equippedItemClass == itemClass)
-                        listboxToPopulate.SelectedItems.AddSelectedEnum(subClassMask, typeof(ItemSubclassItemEnhancement));
+                        listboxToPopulate.SelectedItems.AddSelectedIntEnum(subClassMask, typeof(ItemSubclassItemEnhancement));
                     break;
                 case ItemClass.Recipe:
                     listboxToPopulate.Items.AddEnumNames(typeof(ItemSubClassRecipe));
@@ -242,7 +281,7 @@ namespace Spell_Editor.Utils
                     listboxToPopulate.SelectedItems.Clear();
 
                     if (initialLoad || equippedItemClass == itemClass)
-                        listboxToPopulate.SelectedItems.AddSelectedEnum(subClassMask, typeof(ItemSubClassRecipe));
+                        listboxToPopulate.SelectedItems.AddSelectedIntEnum(subClassMask, typeof(ItemSubClassRecipe));
                     break;
                 case ItemClass.Money:
                     listboxToPopulate.Items.AddEnumNames(typeof(ItemSubClassMoney));
@@ -250,7 +289,7 @@ namespace Spell_Editor.Utils
                     listboxToPopulate.SelectedItems.Clear();
 
                     if (initialLoad || equippedItemClass == itemClass)
-                        listboxToPopulate.SelectedItems.AddSelectedEnum(subClassMask, typeof(ItemSubClassMoney));
+                        listboxToPopulate.SelectedItems.AddSelectedIntEnum(subClassMask, typeof(ItemSubClassMoney));
                     break;
                 case ItemClass.Quiver:
                     listboxToPopulate.Items.AddEnumNames(typeof(ItemSubClassQuiver));
@@ -258,7 +297,7 @@ namespace Spell_Editor.Utils
                     listboxToPopulate.SelectedItems.Clear();
 
                     if (initialLoad || equippedItemClass == itemClass)
-                        listboxToPopulate.SelectedItems.AddSelectedEnum(subClassMask, typeof(ItemSubClassQuiver));
+                        listboxToPopulate.SelectedItems.AddSelectedIntEnum(subClassMask, typeof(ItemSubClassQuiver));
                     break;
                 case ItemClass.Quest:
                     listboxToPopulate.Items.AddEnumNames(typeof(ItemSubClassQuest));
@@ -266,7 +305,7 @@ namespace Spell_Editor.Utils
                     listboxToPopulate.SelectedItems.Clear();
 
                     if (initialLoad || equippedItemClass == itemClass)
-                        listboxToPopulate.SelectedItems.AddSelectedEnum(subClassMask, typeof(ItemSubClassQuest));
+                        listboxToPopulate.SelectedItems.AddSelectedIntEnum(subClassMask, typeof(ItemSubClassQuest));
                     break;
                 case ItemClass.Key:
                     listboxToPopulate.Items.AddEnumNames(typeof(ItemSubClassKey));
@@ -274,7 +313,7 @@ namespace Spell_Editor.Utils
                     listboxToPopulate.SelectedItems.Clear();
 
                     if (initialLoad || equippedItemClass == itemClass)
-                        listboxToPopulate.SelectedItems.AddSelectedEnum(subClassMask, typeof(ItemSubClassKey));
+                        listboxToPopulate.SelectedItems.AddSelectedIntEnum(subClassMask, typeof(ItemSubClassKey));
                     break;
                 case ItemClass.Permanent:
                     listboxToPopulate.Items.AddEnumNames(typeof(ItemSubClassPermanent));
@@ -282,7 +321,7 @@ namespace Spell_Editor.Utils
                     listboxToPopulate.SelectedItems.Clear();
 
                     if (initialLoad || equippedItemClass == itemClass)
-                        listboxToPopulate.SelectedItems.AddSelectedEnum(subClassMask, typeof(ItemSubClassPermanent));
+                        listboxToPopulate.SelectedItems.AddSelectedIntEnum(subClassMask, typeof(ItemSubClassPermanent));
                     break;
                 case ItemClass.Glyph:
                     listboxToPopulate.Items.AddEnumNames(typeof(ItemSubClassGlyph));
@@ -290,7 +329,7 @@ namespace Spell_Editor.Utils
                     listboxToPopulate.SelectedItems.Clear();
 
                     if (initialLoad || equippedItemClass == itemClass)
-                        listboxToPopulate.SelectedItems.AddSelectedEnum(subClassMask, typeof(ItemSubClassGlyph));
+                        listboxToPopulate.SelectedItems.AddSelectedIntEnum(subClassMask, typeof(ItemSubClassGlyph));
                     break;
                 case ItemClass.BattlePets:
                     listboxToPopulate.Items.AddEnumNames(typeof(ItemSubclassBattlePet));
@@ -298,7 +337,7 @@ namespace Spell_Editor.Utils
                     listboxToPopulate.SelectedItems.Clear();
 
                     if (initialLoad || equippedItemClass == itemClass)
-                        listboxToPopulate.SelectedItems.AddSelectedEnum(subClassMask, typeof(ItemSubclassBattlePet));
+                        listboxToPopulate.SelectedItems.AddSelectedIntEnum(subClassMask, typeof(ItemSubclassBattlePet));
                     break;
                 case ItemClass.WowToken:
                     listboxToPopulate.Items.AddEnumNames(typeof(ItemSubclassWowToken));
@@ -306,7 +345,7 @@ namespace Spell_Editor.Utils
                     listboxToPopulate.SelectedItems.Clear();
 
                     if (initialLoad || equippedItemClass == itemClass)
-                        listboxToPopulate.SelectedItems.AddSelectedEnum(subClassMask, typeof(ItemSubclassWowToken));
+                        listboxToPopulate.SelectedItems.AddSelectedIntEnum(subClassMask, typeof(ItemSubclassWowToken));
                     break;
                 default:
                     break;
@@ -999,6 +1038,11 @@ namespace Spell_Editor.Utils
             }
 
             return tr;
+        }
+
+        public static bool ShiftContains(this int left, int right)
+        {
+            return (left & (1 << right)) != 0;
         }
     }
 }
