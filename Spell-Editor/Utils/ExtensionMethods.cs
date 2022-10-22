@@ -735,7 +735,7 @@ namespace Spell_Editor.Utils
 
             if (scale.Id == 0)
             {
-                scale.Id = CliDB.SpellScalingStorage.OrderByDescending(a => a.Key).First().Key + 1;
+                scale.Id = Helpers.SelectGreater(CliDB.SpellScalingStorage.OrderByDescending(a => a.Key).First().Key, DataAccess.GetLatestID("spell_scaling")) + 1;
                 spellInfo.Scaling.Id = scale.Id;
             }
 
@@ -758,7 +758,7 @@ namespace Spell_Editor.Utils
 
             if (aurOptions.Id == 0)
             {
-                aurOptions.Id = CliDB.SpellAuraOptionsStorage.OrderByDescending(a => a.Key).First().Key + 1;
+                aurOptions.Id = Helpers.SelectGreater(CliDB.SpellAuraOptionsStorage.OrderByDescending(a => a.Key).First().Key, DataAccess.GetLatestID("spell_aura_options")) + 1;
                 spellInfo.AuraOptionsId = aurOptions.Id;
             }
 
@@ -782,7 +782,7 @@ namespace Spell_Editor.Utils
 
             if (aura.Id == 0)
             {
-                aura.Id = CliDB.SpellAuraRestrictionsStorage.OrderByDescending(a => a.Key).First().Key + 1;
+                aura.Id = Helpers.SelectGreater(CliDB.SpellAuraRestrictionsStorage.OrderByDescending(a => a.Key).First().Key, DataAccess.GetLatestID("spell_aura_restrictions")) + 1;
                 spellInfo.AuraRestrictionsId = aura.Id;
             }
 
@@ -802,7 +802,10 @@ namespace Spell_Editor.Utils
             req.RequiresSpellFocus = (ushort)spellInfo.RequiresSpellFocus;
 
             if (req.Id == 0)
-                req.Id = CliDB.SpellCastingRequirementsStorage.OrderByDescending(a => a.Key).First().Key + 1;
+            {
+                req.Id = Helpers.SelectGreater(CliDB.SpellCastingRequirementsStorage.OrderByDescending(a => a.Key).First().Key, DataAccess.GetLatestID("spell_casting_requirements")) + 1;
+                spellInfo.SpellCastingRequirements.Id = req.Id;
+            }
 
             spellInfo.SpellCastingRequirements = req;
 
@@ -825,7 +828,7 @@ namespace Spell_Editor.Utils
 
             if (cat.Id == 0)
             {
-                cat.Id = CliDB.SpellCastingRequirementsStorage.OrderByDescending(a => a.Key).First().Key + 1;
+                cat.Id = Helpers.SelectGreater(CliDB.SpellCategoriesStorage.OrderByDescending(a => a.Key).First().Key, DataAccess.GetLatestID("spell_categories")) + 1;
                 spellInfo.SpellCategoriesId = cat.Id;
             }
 
@@ -843,7 +846,7 @@ namespace Spell_Editor.Utils
 
             if (options.Id == 0)
             {
-                options.Id = CliDB.SpellClassOptionsStorage.OrderByDescending(a => a.Key).First().Key + 1;
+                options.Id = Helpers.SelectGreater(CliDB.SpellClassOptionsStorage.OrderByDescending(a => a.Key).First().Key, DataAccess.GetLatestID("spell_class_options")) + 1;
                 spellInfo.ClassOptionsId = options.Id;
             }
 
@@ -862,7 +865,7 @@ namespace Spell_Editor.Utils
 
             if (cdr.Id == 0)
             {
-                cdr.Id = CliDB.SpellCooldownsStorage.OrderByDescending(a => a.Key).First().Key + 1;
+                cdr.Id = Helpers.SelectGreater(CliDB.SpellCooldownsStorage.OrderByDescending(a => a.Key).First().Key, DataAccess.GetLatestID("spell_cooldowns")) + 1;
                 spellInfo.SpellCooldownsId = cdr.Id;
             }
 
@@ -880,7 +883,7 @@ namespace Spell_Editor.Utils
 
             if (equip.Id == 0)
             {
-                equip.Id = CliDB.SpellEquippedItemsStorage.OrderByDescending(a => a.Key).First().Key + 1;
+                equip.Id = Helpers.SelectGreater(CliDB.SpellEquippedItemsStorage.OrderByDescending(a => a.Key).First().Key, DataAccess.GetLatestID("spell_equipped_items")) + 1;
                 spellInfo.SpellEquippedItemsId = equip.Id;
             }
 
@@ -901,7 +904,7 @@ namespace Spell_Editor.Utils
 
             if (sir.Id == 0)
             {
-                sir.Id = CliDB.SpellEquippedItemsStorage.OrderByDescending(a => a.Key).First().Key + 1;
+                sir.Id = Helpers.SelectGreater(CliDB.SpellInterruptsStorage.OrderByDescending(a => a.Key).First().Key, DataAccess.GetLatestID("spell_interrupts")) + 1;
                 spellInfo.SpellInterruptsId = sir.Id;
             }
 
@@ -911,6 +914,7 @@ namespace Spell_Editor.Utils
         public static List<SpellLabelRecord> GetSpellLabelRecords(this SpellInfo spellInfo)
         {
             List<SpellLabelRecord> labels = new List<SpellLabelRecord>();
+            uint curMax = 0;
 
             foreach (uint label in spellInfo.Labels)
             {
@@ -922,8 +926,7 @@ namespace Spell_Editor.Utils
 
                 if (lbls.Count() > 0)
                     newLabel.Id = lbls.Last().Key;
-
-                if (newLabel.Id == 0)
+                else
                 {
                     var lblStmt = new PreparedStatement(DataAccess.SELECT_LATEST_SPECIFIC_SPELL_LABEL);
                     lblStmt.AddValue(0, newLabel.LabelID);
@@ -932,6 +935,15 @@ namespace Spell_Editor.Utils
 
                     if (dbLbl > 0)
                         newLabel.Id = dbLbl;
+                }
+
+                if (newLabel.Id == 0)
+                {
+                    if (curMax == 0)
+                        curMax = Helpers.SelectGreater(CliDB.SpellLabelStorage.OrderByDescending(a => a.Key).First().Key, DataAccess.GetLatestID("spell_label"));
+
+                    curMax++;
+                    newLabel.Id = curMax;
                 }
 
                 labels.Add(newLabel);
@@ -953,7 +965,7 @@ namespace Spell_Editor.Utils
 
             if (sl.Id == 0)
             {
-                sl.Id = CliDB.SpellLevelsStorage.OrderByDescending(a => a.Key).First().Key + 1;
+                sl.Id = Helpers.SelectGreater(CliDB.SpellLevelsStorage.OrderByDescending(a => a.Key).First().Key, DataAccess.GetLatestID("spell_levels")) + 1;
                 spellInfo.SpellLevelsId = sl.Id;
             }
 
@@ -972,7 +984,7 @@ namespace Spell_Editor.Utils
 
             if (sr.Id == 0)
             {
-                sr.Id = CliDB.SpellReagentsStorage.OrderByDescending(a => a.Key).First().Key + 1;
+                sr.Id = Helpers.SelectGreater(CliDB.SpellReagentsStorage.OrderByDescending(a => a.Key).First().Key, DataAccess.GetLatestID("spell_reagents")) + 1;
                 spellInfo.SpellReagentsId = sr.Id;
             }
 
@@ -992,7 +1004,7 @@ namespace Spell_Editor.Utils
 
             if (sr.Id == 0)
             {
-                sr.Id = CliDB.SpellShapeshiftStorage.OrderByDescending(a => a.Key).First().Key + 1;
+                sr.Id = Helpers.SelectGreater(CliDB.SpellShapeshiftStorage.OrderByDescending(a => a.Key).First().Key, DataAccess.GetLatestID("spell_shapeshift")) + 1;
                 spellInfo.ShapeshiftRecordId = sr.Id;
             }
 
@@ -1014,7 +1026,7 @@ namespace Spell_Editor.Utils
 
             if (tr.Id == 0)
             {
-                tr.Id = CliDB.SpellTargetRestrictionsStorage.OrderByDescending(a => a.Key).First().Key + 1;
+                tr.Id = Helpers.SelectGreater(CliDB.SpellTargetRestrictionsStorage.OrderByDescending(a => a.Key).First().Key, DataAccess.GetLatestID("spell_target_restrictions")) + 1;
                 spellInfo.TargetRestrictionsId = tr.Id;
             }
 
@@ -1033,7 +1045,7 @@ namespace Spell_Editor.Utils
 
             if (tr.Id == 0)
             {
-                tr.Id = CliDB.SpellTotemsStorage.OrderByDescending(a => a.Key).First().Key + 1;
+                tr.Id = Helpers.SelectGreater(CliDB.SpellTotemsStorage.OrderByDescending(a => a.Key).First().Key, DataAccess.GetLatestID("spell_totems")) + 1;
                 spellInfo.TotemRecordID = tr.Id;
             }
 

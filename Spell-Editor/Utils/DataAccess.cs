@@ -24,11 +24,13 @@ namespace Spell_Editor.Utils
         static BitSet _availableDb2Locales;
 
         public const string SELECT_SPELL_EFFECT_IDS = "SELECT ID FROM spell_effect;";
-        public const string UPDATE_SPELL = "REPLACE INTO spell (ID,NameSubtext,Description,AuraDescription,VerifiedBuild) VALUES (@0, @1, @2, @3, @4);";
-        public const string UPDATE_SPELL_NAME = "REPLACE INTO spell_name (ID,Name,VerifiedBuild) VALUES (@0, @1, @2);";
-        public const string UPDATE_SPELL_EFFECT = "REPLACE INTO spell_effect (ID,EffectAura,DifficultyID,EffectIndex,Effect,EffectAmplitude,EffectAttributes,EffectAuraPeriod,EffectBonusCoefficient,EffectChainAmplitude,EffectChainTargets,EffectItemType,EffectMechanic,EffectPointsPerResource,EffectPosFacing,EffectRealPointsPerLevel,EffectTriggerSpell,BonusCoefficientFromAP,PvpMultiplier,Coefficient,Variance,ResourceCoefficient,GroupSizeBasePointsCoefficient,EffectBasePoints,ScalingClass,EffectMiscValue1,EffectMiscValue2,EffectRadiusIndex1,EffectRadiusIndex2,EffectSpellClassMask1,EffectSpellClassMask2,EffectSpellClassMask3,EffectSpellClassMask4,ImplicitTarget1,ImplicitTarget2,SpellID,VerifiedBuild) VALUES (@0, @1, @2, @3, @4, @5, @6, @7, @8, @9, @10, @11, @12, @13, @14, @15, @16, @17, @18, @19, @20, @21, @22, @23, @24, @25, @26, @27, @28, @29, @30, @31, @32, @33, @34, @35, @36);";
-        public const string UPDATE_SPELL_CATEGORY = "REPLACE INTO spell_category (ID,Name,Flags,UsesPerWeek,MaxCharges,ChargeRecoveryTime,TypeMask,VerifiedBuild) VALUES (@0, @1, @2, @3, @4, @5, @6, @7);";
-        public const string UPDATE_SPELL_CLASS_OPTIONS = "REPLACE INTO spell_class_options (ID,SpellID,ModalNextSpell,SpellClassSet,SpellClassMask1,SpellClassMask2,SpellClassMask3,SpellClassMask4,VerifiedBuild) VALUES (@0, @1, @2, @3, @4, @5, @6, @7, @8);";
+        public const string SELECT_LATEST_SPECIFIC_SPELL_LABEL = "SELECT `ID` FROM `spell_label` WHERE `LabelID` = @0 AND `SpellID` = @1 DESC LIMIT 1;";
+
+        public const string UPDATE_SPELL = "REPLACE INTO `spell` (ID,NameSubtext,Description,AuraDescription,VerifiedBuild) VALUES (@0, @1, @2, @3, @4);";
+        public const string UPDATE_SPELL_NAME = "REPLACE INTO `spell_name` (ID,Name,VerifiedBuild) VALUES (@0, @1, @2);";
+        public const string UPDATE_SPELL_EFFECT = "REPLACE INTO `spell_effect` (ID,EffectAura,DifficultyID,EffectIndex,Effect,EffectAmplitude,EffectAttributes,EffectAuraPeriod,EffectBonusCoefficient,EffectChainAmplitude,EffectChainTargets,EffectItemType,EffectMechanic,EffectPointsPerResource,EffectPosFacing,EffectRealPointsPerLevel,EffectTriggerSpell,BonusCoefficientFromAP,PvpMultiplier,Coefficient,Variance,ResourceCoefficient,GroupSizeBasePointsCoefficient,EffectBasePoints,ScalingClass,EffectMiscValue1,EffectMiscValue2,EffectRadiusIndex1,EffectRadiusIndex2,EffectSpellClassMask1,EffectSpellClassMask2,EffectSpellClassMask3,EffectSpellClassMask4,ImplicitTarget1,ImplicitTarget2,SpellID,VerifiedBuild) VALUES (@0, @1, @2, @3, @4, @5, @6, @7, @8, @9, @10, @11, @12, @13, @14, @15, @16, @17, @18, @19, @20, @21, @22, @23, @24, @25, @26, @27, @28, @29, @30, @31, @32, @33, @34, @35, @36);";
+        public const string UPDATE_SPELL_CATEGORY = "REPLACE INTO `spell_category` (ID,Name,Flags,UsesPerWeek,MaxCharges,ChargeRecoveryTime,TypeMask,VerifiedBuild) VALUES (@0, @1, @2, @3, @4, @5, @6, @7);";
+        public const string UPDATE_SPELL_CLASS_OPTIONS = "REPLACE INTO `spell_class_options` (ID,SpellID,ModalNextSpell,SpellClassSet,SpellClassMask1,SpellClassMask2,SpellClassMask3,SpellClassMask4,VerifiedBuild) VALUES (@0, @1, @2, @3, @4, @5, @6, @7, @8);";
         public const string UPDATE_SPELL_MISC = "REPLACE INTO `spell_misc` (`ID`, `Attributes1`, `Attributes2`, `Attributes3`, `Attributes4`, `Attributes5`, `Attributes6`, `Attributes7`, `Attributes8`, `Attributes9`, `Attributes10`, `Attributes11`, `Attributes12`, `Attributes13`, `Attributes14`, `Attributes15`, `DifficultyID`, `CastingTimeIndex`, `DurationIndex`, `RangeIndex`, `SchoolMask`, `Speed`, `LaunchDelay`, `MinDuration`, `SpellIconFileDataID`, `ActiveIconFileDataID`, `ContentTuningID`, `ShowFutureSpellPlayerConditionID`, `SpellVisualScript`, `ActiveSpellVisualScript`, `SpellID`, `VerifiedBuild`) VALUES (@0, @1, @2, @3, @4, @5, @6, @7, @8, @9, @10, @11, @12, @13, @14, @15, @16, @17, @18, @19, @20, @21, @22, @23, @24, @25, @26, @27, @28, @29, @30, @31)";
         public const string UPDATE_SPELL_SCALING = "REPLACE INTO `spell_scaling` (`ID`, `SpellID`, `MinScalingLevel`, `MaxScalingLevel`, `ScalesFromItemLevel`, `VerifiedBuild`) VALUES (@0, @1, @2, @3, @4, @5);";
         public const string UPDATE_SPELL_AURA_OPTIONS = "REPLACE INTO `spell_aura_options` (`ID`, `DifficultyID`, `CumulativeAura`, `ProcCategoryRecovery`, `ProcChance`, `ProcCharges`, `SpellProcsPerMinuteID`, `ProcTypeMask1`, `ProcTypeMask2`, `SpellID`, `VerifiedBuild`) VALUES (@0, @1, @2, @3, @4, @5, @6, @7, @8, @9, @10);";
@@ -40,8 +42,6 @@ namespace Spell_Editor.Utils
         public const string UPDATE_SPELL_EQUIPPED_ITEMS = "REPLACE INTO `spell_equipped_items` (`ID`, `SpellID`, `EquippedItemClass`, `EquippedItemInvTypes`, `EquippedItemSubclass`, `VerifiedBuild`) VALUES (@0, @1, @2, @3, @4, @5);";
         public const string UPDATE_SPELL_INTERRUPTS = "REPLACE INTO `spell_interrupts` (`ID`, `DifficultyID`, `InterruptFlags`, `AuraInterruptFlags1`, `AuraInterruptFlags2`, `ChannelInterruptFlags1`, `ChannelInterruptFlags2`, `SpellID`, `VerifiedBuild`) VALUES (@0, @1, @2, @3, @4, @5, @6, @7, @8);";
         public const string UPDATE_SPELL_LABEL = "REPLACE INTO `spell_label` (`ID`, `LabelID`, `SpellID`, `VerifiedBuild`) VALUES (@0, @1, @2, @3);";
-        public const string SELECT_LATEST_SPECIFIC_SPELL_LABEL = "SELECT `ID` FROM `spell_label` WHERE `LabelID` = @0 AND `SpellID` = @1 DESC LIMIT 1;";
-        public const string SELECT_LATEST_SPELL_LABEL = "SELECT `ID` FROM `spell_label` ORDER BY `ID` DESC LIMIT 1;";
         public const string UPDATE_SPELL_LEVELS = "REPLACE INTO `spell_levels` (`ID`, `DifficultyID`, `MaxLevel`, `MaxPassiveAuraLevel`, `BaseLevel`, `SpellLevel`, `SpellID`, `VerifiedBuild`) VALUES (@0, @1, @2, @3, @4, @5, @6, @7);";
         public const string UPDATE_SPELL_POWER = "REPLACE INTO `spell_power` (`ID`, `OrderIndex`, `ManaCost`, `ManaCostPerLevel`, `ManaPerSecond`, `PowerDisplayID`, `AltPowerBarID`, `PowerCostPct`, `PowerCostMaxPct`, `PowerPctPerSecond`, `PowerType`, `RequiredAuraSpellID`, `OptionalCost`, `SpellID`, `VerifiedBuild`) VALUES (@0, @1, @2, @3, @4, @5, @6, @7, @8, @9, @10, @11, @12, @13, @14);";
         public const string UPDATE_SPELL_REAGENTS = "REPLACE INTO `spell_reagents` (`ID`, `SpellID`, `Reagent1`, `Reagent2`, `Reagent3`, `Reagent4`, `Reagent5`, `Reagent6`, `Reagent7`, `Reagent8`, `ReagentCount1`, `ReagentCount2`, `ReagentCount3`, `ReagentCount4`, `ReagentCount5`, `ReagentCount6`, `ReagentCount7`, `ReagentCount8`, `VerifiedBuild`) VALUES (@0, @1, @2, @3, @4, @5, @6, @7, @8, @9, @10, @11, @12, @13, @14, @15, @16, @17, @18);";
@@ -50,6 +50,14 @@ namespace Spell_Editor.Utils
         public const string UPDATE_SPELL_TARGET_RESTRICTIONS = "REPLACE INTO `spell_target_restrictions` (`ID`, `DifficultyID`, `ConeDegrees`, `MaxTargets`, `MaxTargetLevel`, `TargetCreatureType`, `Targets`, `Width`, `SpellID`, `VerifiedBuild`) VALUES (@0, @1, @2, @3, @4, @5, @6, @7, @8, @9);";
         public const string UPDATE_SPELL_TOTEMS = "REPLACE INTO `spell_totems` (`ID`, `SpellID`, `RequiredTotemCategoryID1`, `RequiredTotemCategoryID2`, `Totem1`, `Totem2`, `VerifiedBuild`) VALUES (@0, @1, @2, @3, @4, @5, @6);";
         public const string UPDATE_SPELL_X_SPELL_VISUAL = "REPLACE INTO `spell_x_spell_visual` (`ID`, `DifficultyID`, `SpellVisualID`, `Probability`, `Priority`, `SpellIconFileID`, `ActiveIconFileID`, `ViewerUnitConditionID`, `ViewerPlayerConditionID`, `CasterUnitConditionID`, `CasterPlayerConditionID`, `SpellID`, `VerifiedBuild`) VALUES (@0, @1, @2, @3, @4, @5, @6, @7, @8, @9, @10, @11, @12);";
+
+        public const string SELECT_IDS_BUILD_SPELL_EFFECTS = "SELECT `ID` FROM `spell_effect` WHERE `SpellID` = @0 AND `VerifiedBuild` = @1;";
+        public const string SELECT_IDS_BUILD_SPELL_LABEL = "SELECT `ID` FROM `spell_label` WHERE `SpellID` = @0 AND `VerifiedBuild` = @1;";
+        public const string SELECT_IDS_BUILD_SPELL_REAGENTS_CURRENCY = "SELECT `ID` FROM `spell_reagents_currency` WHERE `SpellID` = @0 AND `VerifiedBuild` = @1;";
+
+        public const string DELETE_BUILD_SPELL_EFFECTS = "DELETE FROM `spell_effect` WHERE `SpellID` = @0 AND `VerifiedBuild` = @1;";
+        public const string DELETE_BUILD_SPELL_LABEL = "DELETE FROM `spell_label` WHERE `SpellID` = @0 AND `VerifiedBuild` = @1;";
+        public const string DELETE_BUILD_SPELL_REAGENTS_CURRENCY = "DELETE FROM `spell_reagents_currency` WHERE `SpellID` = @0 AND `VerifiedBuild` = @1;";
 
         public const string DELETE_SPELL = "DELETE FROM `spell` WHERE `ID` = @0 AND `VerifiedBuild` > 44730;";
         public const string DELETE_SPELL_NAME = "DELETE FROM `spell_name` WHERE `ID` = @0 AND `VerifiedBuild` > 44730;";
@@ -73,6 +81,8 @@ namespace Spell_Editor.Utils
         public const string DELETE_SPELL_TARGET_RESTRICTIONS = "DELETE FROM `spell_target_restrictions` WHERE `SpellID` = @0 AND `VerifiedBuild` > 44730;";
         public const string DELETE_SPELL_TOTEMS = "DELETE FROM `spell_totems` WHERE `SpellID` = @0 AND `VerifiedBuild` > 44730;";
         public const string DELETE_SPELL_X_SPELL_VISUAL = "DELETE FROM `spell_x_spell_visual` WHERE `SpellID` = @0 AND `VerifiedBuild` > 44730;";
+
+        public const string SELECT_LATEST_ID = "SELECT `ID` FROM `{0}` ORDER BY `ID` DESC LIMIT 1;";
 
         static DataAccess()
         {
@@ -189,6 +199,18 @@ namespace Spell_Editor.Utils
             DB.Hotfix.Execute(stmt);
         }
 
+        public static List<T> GetHotfixValues<T>(PreparedStatement stmt)
+        {
+            var ret = new List<T>();
+
+            stmt.AddValue(stmt.Parameters.Count, Settings.Default.BuildNumber);
+            var results = DB.Hotfix.Query(SELECT_SPELL_EFFECT_IDS);
+            while (results.NextRow())
+                ret.Add(results.Read<T>(0));
+
+            return ret;
+        }
+
         public static List<uint> GetHotfixSpellEffectIDs()
         {
             var ret = new List<uint>();
@@ -213,6 +235,11 @@ namespace Spell_Editor.Utils
                 return 0;
 
             return result.Read<uint>(0);
+        }
+
+        public static uint GetLatestID(string tableName)
+        {
+            return GetHotfixValue(new PreparedStatement(string.Format(SELECT_LATEST_ID, tableName)));
         }
     }
 

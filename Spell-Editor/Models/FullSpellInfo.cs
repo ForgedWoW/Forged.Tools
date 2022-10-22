@@ -60,6 +60,17 @@ namespace Spell_Editor.Models
             DataAccess.SpellStorage[spellRecord.Id] = spellRecord;
 
             // spell_effect
+            var idsSeStmt = new PreparedStatement(DataAccess.SELECT_IDS_BUILD_SPELL_EFFECTS);
+            idsSeStmt.AddValue(0, SpellInfo.Id);
+            List<uint> seIds = DataAccess.GetHotfixValues<uint>(idsSeStmt);
+
+            foreach (uint id in seIds)
+                CliDB.SpellEffectStorage.Remove(id);
+
+            var cleanSeStmt = new PreparedStatement(DataAccess.DELETE_BUILD_SPELL_EFFECTS);
+            cleanSeStmt.AddValue(0, SpellInfo.Id);
+            DataAccess.UpdateHotfixDB(cleanSeStmt);
+
             foreach (var spellEffect in SpellInfo.GetEffects())
             {
                 var spellEffectRec = spellEffect.ToSpellEffectRecord();
@@ -278,32 +289,29 @@ namespace Spell_Editor.Models
             DataAccess.UpdateHotfixDB(interruptStmt);
             CliDB.SpellInterruptsStorage[interrupt.Id] = interrupt;
 
-            uint curLabelMax = 0;
+            // Spell_Label
             List<SpellLabelRecord> labels = SpellInfo.GetSpellLabelRecords();
+
+            var idsLblStmt = new PreparedStatement(DataAccess.SELECT_IDS_BUILD_SPELL_LABEL);
+            idsLblStmt.AddValue(0, SpellInfo.Id);
+            List<uint> lblIds = DataAccess.GetHotfixValues<uint>(idsLblStmt);
+
+            foreach (uint id in lblIds)
+                CliDB.SpellLabelStorage.Remove(id);
+
+            var cleanLblStmt = new PreparedStatement(DataAccess.DELETE_BUILD_SPELL_LABEL);
+            cleanLblStmt.AddValue(0, SpellInfo.Id);
+            DataAccess.UpdateHotfixDB(cleanLblStmt);
+
             foreach (var label in labels)
             {
-                if (label.Id == 0)
-                {
-                    if (curLabelMax == 0)
-                    {
-                        curLabelMax = CliDB.SpellLabelStorage.OrderByDescending(a => a.Key).First().Key;
-                        uint dbMax = DataAccess.GetHotfixValue(new PreparedStatement(DataAccess.SELECT_LATEST_SPELL_LABEL));
-
-                        if (curLabelMax < dbMax)
-                            curLabelMax = dbMax;
-                    }
-
-                    curLabelMax++;
-                    label.Id = curLabelMax;
-                }
-
-                CliDB.SpellLabelStorage[label.Id] = label;
                 var lblStmt = new PreparedStatement(DataAccess.UPDATE_SPELL_LABEL);
                 lblStmt.AddValue(0, label.Id);
                 lblStmt.AddValue(1, label.LabelID);
                 lblStmt.AddValue(2, label.SpellID);
 
                 DataAccess.UpdateHotfixDB(lblStmt);
+                CliDB.SpellLabelStorage[label.Id] = label;
             }
 
             // SpellLevelsEntry
@@ -320,10 +328,17 @@ namespace Spell_Editor.Models
             DataAccess.UpdateHotfixDB(levelsStmt);
             CliDB.SpellLevelsStorage[levels.Id] = levels;
 
+            uint curMaxPwr = 0;
             foreach (var power in SpellInfo.PowerCosts)
             {
                 if (power.Id == 0)
-                    power.Id = CliDB.SpellPowerStorage.OrderByDescending(a => a.Key).First().Key + 1;
+                {
+                    if (curMaxPwr == 0)
+                        curMaxPwr = Helpers.SelectGreater(CliDB.SpellPowerStorage.OrderByDescending(a => a.Key).First().Key, DataAccess.GetLatestID("spell_power"));
+
+                    curMaxPwr++;
+                    power.Id = curMaxPwr;
+                }
 
                 var pwrStmt = new PreparedStatement(DataAccess.UPDATE_SPELL_POWER);
                 pwrStmt.AddValue(0, power.Id);
@@ -371,6 +386,17 @@ namespace Spell_Editor.Models
             CliDB.SpellReagentsStorage[reagents.Id] = reagents;
 
             // SpellReagentsCurrency
+            var idsCurrencyStmt = new PreparedStatement(DataAccess.SELECT_IDS_BUILD_SPELL_REAGENTS_CURRENCY);
+            idsCurrencyStmt.AddValue(0, SpellInfo.Id);
+            List<uint> currIds = DataAccess.GetHotfixValues<uint>(idsCurrencyStmt);
+
+            foreach (uint id in currIds)
+                CliDB.SpellReagentsCurrencyStorage.Remove(id);
+
+            var cleanCurrencyStmt = new PreparedStatement(DataAccess.DELETE_BUILD_SPELL_REAGENTS_CURRENCY);
+            cleanCurrencyStmt.AddValue(0, SpellInfo.Id);
+            DataAccess.UpdateHotfixDB(cleanCurrencyStmt);
+
             foreach (SpellReagentsCurrencyRecord currency in SpellInfo.ReagentsCurrency)
             {
                 currency.SpellID = (int)SpellInfo.Id;
