@@ -1,0 +1,21 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="HotfixPatchCompiler" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="HotfixDatabaseName" Type="System.String" Scope="User">
+      <Value Profile="(Default)">hotfixes</Value>
+    </Setting>
+    <Setting Name="HotfixDatabaseHost" Type="System.String" Scope="User">
+      <Value Profile="(Default)">127.0.0.1</Value>
+    </Setting>
+    <Setting Name="HotfixDatabasePort" Type="System.String" Scope="User">
+      <Value Profile="(Default)">3306</Value>
+    </Setting>
+    <Setting Name="HotfixDatabaseUser" Type="System.String" Scope="User">
+      <Value Profile="(Default)">root</Value>
+    </Setting>
+    <Setting Name="HotfixDatabasePassword" Type="System.String" Scope="User">
+      <Value Profile="(Default)">root</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>

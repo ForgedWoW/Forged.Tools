@@ -1548,7 +1548,7 @@ namespace Spell_Editor
                 {
                     var retryResult = MessageBox.Show("Id 0 is invalid. Would you like to try to create the copied spell with the selected spell's ID + 1?", "Error", MessageBoxButtons.YesNo);
 
-                    if (confirmResult == DialogResult.No)
+                    if (retryResult == DialogResult.No)
                         return;
 
                     numNewSpellID.Value = CurrentSpell.SpellInfo.Id + 1;
