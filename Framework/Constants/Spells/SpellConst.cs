@@ -2451,8 +2451,23 @@ namespace Framework.Constants
         ModifyKeystone2 = 285,
         GrantBattlepetExperience = 286,
         SetGarrisonFollowerLevel = 287,
-        Unk288 = 288,
-        Unk289 = 289,
+        SPELL_EFFECT_CRAFT_ITEM = 288, // MiscValue[0] = CraftingDataID
+        SPELL_EFFECT_MODIFY_AURA_STACKS = 289, // MiscValue[0] = 0 means add, = 1 means set
+        SPELL_EFFECT_MODIFY_COOLDOWN = 290,
+        SPELL_EFFECT_MODIFY_COOLDOWNS = 291, // MiscValue[0] = SpellFamily, MiscValue[1] = maybe bit index for family flags? off by 1 for the only spell using this effect
+        SPELL_EFFECT_MODIFY_COOLDOWNS_BY_CATEGORY = 292, // MiscValue[0] = category
+        SPELL_EFFECT_MODIFY_CHARGES = 293, // MiscValue[0] = charge category
+        SPELL_EFFECT_CRAFT_LOOT = 294, // MiscValue[0] = CraftingDataID
+        SPELL_EFFECT_SALVAGE_ITEM = 295, // MiscValue[0] = ItemSalvageID
+        SPELL_EFFECT_CRAFT_SALVAGE_ITEM = 296, // MiscValue[0] = ItemSalvageID, MiscValue[1] = CraftingDataID
+        SPELL_EFFECT_RECRAFT_ITEM = 297,
+        SPELL_EFFECT_CANCEL_ALL_PRIVATE_CONVERSATIONS = 298,
+        SPELL_EFFECT_299 = 299, // something with items, as of 10.0.2 all spells are named "Downgrading"
+        SPELL_EFFECT_300 = 300,
+        SPELL_EFFECT_CRAFT_ENCHANT = 301, // MiscValue[0] = CraftingDataID, MiscValue[1] = ?
+        SPELL_EFFECT_GATHERING = 302,
+        SPELL_EFFECT_CREATE_TRAIT_TREE_CONFIG = 303, // MiscValue[0] = TraitTreeID
+        SPELL_EFFECT_CHANGE_ACTIVE_COMBAT_TRAIT_CONFIG = 304,
         TotalSpellEffects
     }
 

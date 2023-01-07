@@ -371,6 +371,9 @@ namespace Game.DataStorage
                         arr3[i] = _data.ReadSigned<T>(columnMeta.Immediate.BitWidth);
 
                     return arr3;
+                case DB2ColumnCompression.Pallet:
+                    uint palletIndex = _data.Read<uint>(columnMeta.Pallet.BitWidth);
+                    return new T[] { _palletData[fieldIndex][palletIndex].As<T>() };
                 case DB2ColumnCompression.PalletArray:
                     int cardinality = columnMeta.Pallet.Cardinality;
 
