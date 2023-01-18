@@ -23,5 +23,7 @@ namespace Framework.Database
         public static CharacterDatabase Characters = new();
         public static WorldDatabase World = new();
         public static HotfixDatabase Hotfix = new();
+
+        public static void Init() { }
     }
 }

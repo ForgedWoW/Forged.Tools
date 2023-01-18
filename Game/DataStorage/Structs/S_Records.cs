@@ -85,9 +85,9 @@ namespace Game.DataStorage
     public sealed class SkillLineRecord
     {
         public LocalizedString DisplayName;
-        public string AlternateVerb;
-        public string Description;
-        public string HordeDisplayName;
+        public LocalizedString AlternateVerb;
+        public LocalizedString Description;
+        public LocalizedString HordeDisplayName;
         public string OverrideSourceInfoDisplayName;
         public uint Id;
         public SkillCategory CategoryID;
@@ -97,6 +97,8 @@ namespace Game.DataStorage
         public int ParentTierIndex;
         public ushort Flags;
         public int SpellBookSpellID;
+        public uint ExpansionNameSharedStringID;
+        public uint HordeExpansionNameSharedStringID;
 
         public SkillLineFlags GetFlags() => (SkillLineFlags)Flags;
     }
@@ -827,5 +829,25 @@ namespace Game.DataStorage
         public uint[] Flags = new uint[2];
 
         public SummonPropertiesFlags GetFlags() { return (SummonPropertiesFlags)Flags[0]; }
+    }
+
+    public sealed class SpellEmpowerRecord
+    {
+        public uint Id;
+        public uint SpellID;
+        public uint OtherValue;
+    }
+
+    public sealed class SpellEmpowerStageRecord
+    {
+        public uint Id;
+        public uint SpellEmpowerStage;
+        public uint OtherValue;
+    }
+
+    public sealed class SpellReplacementRecord
+    {
+        public uint Id;
+        public uint SpellID;
     }
 }

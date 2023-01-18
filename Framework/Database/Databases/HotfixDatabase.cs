@@ -964,6 +964,9 @@ namespace Framework.Database
             PrepareStatement(HotfixStatements.SEL_SKILL_LINE_LOCALE, "SELECT ID, DisplayName_lang, AlternateVerb_lang, Description_lang, HordeDisplayName_lang" +
                 " FROM skill_line_locale WHERE locale = ?");
 
+            // SkillLineXTraitTree.db2
+            PrepareStatement(HotfixStatements.SEL_SKILL_LINE_X_TRAIT_TREE, "SELECT ID, SkillLineID, TraitTreeID, OrderIndex FROM skill_line_x_trait_tree");
+
             // SkillLineAbility.db2
             PrepareStatement(HotfixStatements.SEL_SKILL_LINE_ABILITY, "SELECT RaceMask, ID, SkillLine, Spell, MinSkillLineRank, ClassMask, SupercedesSpell, " +
                 "AcquireMethod, TrivialSkillLineRankHigh, TrivialSkillLineRankLow, Flags, NumSkillUps, UniqueBit, TradeSkillCategoryID, SkillupSkillLineID" +
@@ -1185,6 +1188,98 @@ namespace Framework.Database
             PrepareStatement(HotfixStatements.SEL_TOY, "SELECT SourceText, ID, ItemID, Flags, SourceTypeEnum FROM toy");
             PrepareStatement(HotfixStatements.SEL_TOY_LOCALE, "SELECT ID, SourceText_lang FROM toy_locale WHERE locale = ?");
 
+            // TraitCond.db2
+            PrepareStatement(HotfixStatements.SEL_TRAIT_COND, "SELECT ID, CondType, TraitTreeID, GrantedRanks, QuestID, AchievementID, SpecSetID, TraitNodeGroupID, " +
+        "TraitNodeID, TraitCurrencyID, SpentAmountRequired, Flags, RequiredLevel, FreeSharedStringID, SpendMoreSharedStringID FROM trait_cond" +
+        " WHERE (`VerifiedBuild` > 0) = ?");
+
+            // TraitCost.db2
+            PrepareStatement(HotfixStatements.SEL_TRAIT_COST, "SELECT InternalName, ID, Amount, TraitCurrencyID FROM trait_cost WHERE (`VerifiedBuild` > 0) = ?");
+
+            // TraitCurrency.db2
+            PrepareStatement(HotfixStatements.SEL_TRAIT_CURRENCY, "SELECT ID, Type, CurrencyTypesID, Flags, Icon FROM trait_currency WHERE (`VerifiedBuild` > 0) = ?");
+
+            // TraitCurrencySource.db2
+            PrepareStatement(HotfixStatements.SEL_TRAIT_CURRENCY_SOURCE, "SELECT Requirement, ID, TraitCurrencyID, Amount, QuestID, AchievementID, PlayerLevel, " +
+                "TraitNodeEntryID, OrderIndex FROM trait_currency_source WHERE (`VerifiedBuild` > 0) = ?");
+            PrepareStatement(HotfixStatements.SEL_TRAIT_CURRENCY_SOURCE_LOCALE, "SELECT ID, Requirement_lang FROM trait_currency_source_locale" +
+                " WHERE (`VerifiedBuild` > 0) = ? AND locale = ?");
+
+            // TraitDefinition.db2
+            PrepareStatement(HotfixStatements.SEL_TRAIT_DEFINITION, "SELECT OverrideName, OverrideSubtext, OverrideDescription, ID, SpellID, OverrideIcon, " +
+                "OverridesSpellID, VisibleSpellID FROM trait_definition WHERE (`VerifiedBuild` > 0) = ?");
+            PrepareStatement(HotfixStatements.SEL_TRAIT_DEFINITION_LOCALE, "SELECT ID, OverrideName_lang, OverrideSubtext_lang, OverrideDescription_lang " +
+                "FROM trait_definition_locale WHERE (`VerifiedBuild` > 0) = ? AND locale = ?");
+
+            // TraitDefinitionEffectPoints.db2
+            PrepareStatement(HotfixStatements.SEL_TRAIT_DEFINITION_EFFECT_POINTS, "SELECT ID, TraitDefinitionID, EffectIndex, OperationType, CurveID" +
+                " FROM trait_definition_effect_points WHERE (`VerifiedBuild` > 0) = ?");
+
+            // TraitEdge.db2
+            PrepareStatement(HotfixStatements.SEL_TRAIT_EDGE, "SELECT ID, VisualStyle, LeftTraitNodeID, RightTraitNodeID, Type FROM trait_edge WHERE (`VerifiedBuild` > 0) = ?");
+
+            // TraitNode.db2
+            PrepareStatement(HotfixStatements.SEL_TRAIT_NODE, "SELECT ID, TraitTreeID, PosX, PosY, Type, Flags FROM trait_node WHERE (`VerifiedBuild` > 0) = ?");
+
+            // TraitNodeEntry.db2
+            PrepareStatement(HotfixStatements.SEL_TRAIT_NODE_ENTRY, "SELECT ID, TraitDefinitionID, MaxRanks, NodeEntryType FROM trait_node_entry" +
+                " WHERE (`VerifiedBuild` > 0) = ?");
+
+            // TraitNodeEntryXTraitCond.db2
+            PrepareStatement(HotfixStatements.SEL_TRAIT_NODE_ENTRY_X_TRAIT_COND, "SELECT ID, TraitCondID, TraitNodeEntryID FROM trait_node_entry_x_trait_cond" +
+                " WHERE (`VerifiedBuild` > 0) = ?");
+
+            // TraitNodeEntryXTraitCost.db2
+            PrepareStatement(HotfixStatements.SEL_TRAIT_NODE_ENTRY_X_TRAIT_COST, "SELECT ID, TraitNodeEntryID, TraitCostID FROM trait_node_entry_x_trait_cost" +
+                " WHERE (`VerifiedBuild` > 0) = ?");
+
+            // TraitNodeGroup.db2
+            PrepareStatement(HotfixStatements.SEL_TRAIT_NODE_GROUP, "SELECT ID, TraitTreeID, Flags FROM trait_node_group WHERE (`VerifiedBuild` > 0) = ?");
+
+            // TraitNodeGroupXTraitCond.db2
+            PrepareStatement(HotfixStatements.SEL_TRAIT_NODE_GROUP_X_TRAIT_COND, "SELECT ID, TraitCondID, TraitNodeGroupID FROM trait_node_group_x_trait_cond" +
+                " WHERE (`VerifiedBuild` > 0) = ?");
+
+            // TraitNodeGroupXTraitCost.db2
+            PrepareStatement(HotfixStatements.SEL_TRAIT_NODE_GROUP_X_TRAIT_COST, "SELECT ID, TraitNodeGroupID, TraitCostID FROM trait_node_group_x_trait_cost" +
+                " WHERE (`VerifiedBuild` > 0) = ?");
+
+            // TraitNodeGroupXTraitNode.db2
+            PrepareStatement(HotfixStatements.SEL_TRAIT_NODE_GROUP_X_TRAIT_NODE, "SELECT ID, TraitNodeGroupID, TraitNodeID, `Index` FROM trait_node_group_x_trait_node" +
+                " WHERE (`VerifiedBuild` > 0) = ?");
+
+            // TraitNodeXTraitCond.db2
+            PrepareStatement(HotfixStatements.SEL_TRAIT_NODE_X_TRAIT_COND, "SELECT ID, TraitCondID, TraitNodeID FROM trait_node_x_trait_cond" +
+                " WHERE (`VerifiedBuild` > 0) = ?");
+
+            // TraitNodeXTraitCost.db2
+            PrepareStatement(HotfixStatements.SEL_TRAIT_NODE_X_TRAIT_COST, "SELECT ID, TraitNodeID, TraitCostID FROM trait_node_x_trait_cost" +
+                " WHERE (`VerifiedBuild` > 0) = ?");
+
+            // TraitNodeXTraitNodeEntry.db2
+            PrepareStatement(HotfixStatements.SEL_TRAIT_NODE_X_TRAIT_NODE_ENTRY, "SELECT ID, TraitNodeID, TraitNodeEntryID, `Index` FROM trait_node_x_trait_node_entry" +
+                " WHERE (`VerifiedBuild` > 0) = ?");
+
+            // TraitSystem.db2
+            PrepareStatement(HotfixStatements.SEL_TRAIT_SYSTEM, "SELECT ID, UNK1, UNK2 FROM trait_system" +
+                " WHERE (`VerifiedBuild` > 0) = ?");
+
+            // TraitTree.db2
+            PrepareStatement(HotfixStatements.SEL_TRAIT_TREE, "SELECT ID, TraitSystemID, Unused1000_1, FirstTraitNodeID, PlayerConditionID, Flags, Unused1000_2, " +
+                "Unused1000_3 FROM trait_tree WHERE (`VerifiedBuild` > 0) = ?");
+
+            // TraitTreeLoadout.db2
+            PrepareStatement(HotfixStatements.SEL_TRAIT_TREE_LOADOUT, "SELECT ID, TraitTreeID, ChrSpecializationID FROM trait_tree_loadout WHERE (`VerifiedBuild` > 0) = ?");
+
+            // TraitTreeLoadoutEntry.db2
+            PrepareStatement(HotfixStatements.SEL_TRAIT_TREE_LOADOUT_ENTRY, "SELECT ID, TraitTreeLoadoutID, SelectedTraitNodeID, SelectedTraitNodeEntryID, NumPoints, OrderIndex FROM trait_tree_loadout_entry WHERE (`VerifiedBuild` > 0) = ?");
+
+            // TraitTreeXTraitCost.db2
+            PrepareStatement(HotfixStatements.SEL_TRAIT_TREE_X_TRAIT_COST, "SELECT ID, TraitTreeID, TraitCostID FROM trait_tree_x_trait_cost WHERE (`VerifiedBuild` > 0) = ?");
+
+            // TraitTreeXTraitCurrency.db2
+            PrepareStatement(HotfixStatements.SEL_TRAIT_TREE_X_TRAIT_CURRENCY, "SELECT ID, `Index`, TraitTreeID, TraitCurrencyID FROM trait_tree_x_trait_currency WHERE (`VerifiedBuild` > 0) = ?");
+            
             // TransmogHoliday.db2
             PrepareStatement(HotfixStatements.SEL_TRANSMOG_HOLIDAY, "SELECT ID, RequiredTransmogHoliday FROM transmog_holiday");
 
@@ -1794,6 +1889,8 @@ namespace Framework.Database
         SEL_SKILL_LINE,
         SEL_SKILL_LINE_LOCALE,
 
+        SEL_SKILL_LINE_X_TRAIT_TREE,
+
         SEL_SKILL_LINE_ABILITY,
 
         SEL_SKILL_RACE_CLASS_INFO,
@@ -1910,6 +2007,37 @@ namespace Framework.Database
 
         SEL_TOY,
         SEL_TOY_LOCALE,
+
+        // trait tables here,
+        SEL_TRAIT_COND,
+        SEL_TRAIT_COST,
+        SEL_TRAIT_CURRENCY,
+
+        SEL_TRAIT_CURRENCY_SOURCE,
+        SEL_TRAIT_CURRENCY_SOURCE_LOCALE,
+
+        SEL_TRAIT_DEFINITION,
+        SEL_TRAIT_DEFINITION_LOCALE,
+
+        SEL_TRAIT_DEFINITION_EFFECT_POINTS,
+        SEL_TRAIT_EDGE,
+        SEL_TRAIT_NODE,
+        SEL_TRAIT_NODE_ENTRY,
+        SEL_TRAIT_NODE_ENTRY_X_TRAIT_COND,
+        SEL_TRAIT_NODE_ENTRY_X_TRAIT_COST,
+        SEL_TRAIT_NODE_GROUP,
+        SEL_TRAIT_NODE_GROUP_X_TRAIT_COND,
+        SEL_TRAIT_NODE_GROUP_X_TRAIT_COST,
+        SEL_TRAIT_NODE_GROUP_X_TRAIT_NODE,
+        SEL_TRAIT_NODE_X_TRAIT_COND,
+        SEL_TRAIT_NODE_X_TRAIT_COST,
+        SEL_TRAIT_NODE_X_TRAIT_NODE_ENTRY,
+        SEL_TRAIT_SYSTEM,
+        SEL_TRAIT_TREE,
+        SEL_TRAIT_TREE_LOADOUT,
+        SEL_TRAIT_TREE_LOADOUT_ENTRY,
+        SEL_TRAIT_TREE_X_TRAIT_COST,
+        SEL_TRAIT_TREE_X_TRAIT_CURRENCY,
 
         SEL_TRANSMOG_HOLIDAY,
 

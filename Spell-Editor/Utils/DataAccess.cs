@@ -19,6 +19,9 @@ namespace Spell_Editor.Utils
     {
         public static DB6Storage<SpellRecord> SpellStorage;
         public static DB6Storage<SpellIconRecord> SpellIconStorage;
+        public static DB6Storage<SpellEmpowerRecord> SpellEmpowerStorage;
+        public static DB6Storage<SpellEmpowerStageRecord> SpellEmpowerStageStorage;
+        public static DB6Storage<SpellReplacementRecord> SpellReplacementStorage;
 
         static string _db2Path = string.Empty;
         static BitSet _availableDb2Locales;
@@ -153,6 +156,9 @@ namespace Spell_Editor.Utils
             CliDB.TotemCategoryStorage = ReadDB2<TotemCategoryRecord>("TotemCategory.db2", HotfixStatements.SEL_TOTEM_CATEGORY, HotfixStatements.SEL_TOTEM_CATEGORY_LOCALE);
             CliDB.CurrencyTypesStorage = ReadDB2<CurrencyTypesRecord>("CurrencyTypes.db2", HotfixStatements.SEL_CURRENCY_TYPES, HotfixStatements.SEL_CURRENCY_TYPES_LOCALE);
             SpellStorage = ReadDB2<SpellRecord>("Spell.db2", HotfixStatements.SEL_SPELL);
+            SpellEmpowerStorage = ReadDB2<SpellEmpowerRecord>("SpellEmpower.db2", HotfixStatements.SEL_SPELL);
+            SpellEmpowerStageStorage = ReadDB2<SpellEmpowerStageRecord>("SpellEmpowerStage.db2", HotfixStatements.SEL_SPELL);
+            SpellReplacementStorage = ReadDB2<SpellReplacementRecord>("SpellReplacement.db2", HotfixStatements.SEL_SPELL);
 
             // build and pre-order spell icons
             SpellIconStorage = new DB6Storage<SpellIconRecord>();
@@ -204,7 +210,7 @@ namespace Spell_Editor.Utils
             var ret = new List<T>();
 
             stmt.AddValue(stmt.Parameters.Count, Settings.Default.BuildNumber);
-            var results = DB.Hotfix.Query(SELECT_SPELL_EFFECT_IDS);
+            var results = DB.Hotfix.Query(stmt);
             while (results.NextRow())
                 ret.Add(results.Read<T>(0));
 
