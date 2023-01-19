@@ -28,12 +28,32 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
+            this.listTrees = new System.Windows.Forms.ListBox();
+            this.SuspendLayout();
+            // 
+            // listTrees
+            // 
+            this.listTrees.FormattingEnabled = true;
+            this.listTrees.ItemHeight = 15;
+            this.listTrees.Location = new System.Drawing.Point(12, 12);
+            this.listTrees.Name = "listTrees";
+            this.listTrees.Size = new System.Drawing.Size(250, 1234);
+            this.listTrees.TabIndex = 2;
+            // 
+            // MainForm
+            // 
+            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
+            this.ClientSize = new System.Drawing.Size(1284, 1261);
+            this.Controls.Add(this.listTrees);
+            this.Name = "MainForm";
             this.Text = "Form1";
+            this.ResumeLayout(false);
+
         }
 
         #endregion
+
+        private ListBox listTrees;
     }
 }

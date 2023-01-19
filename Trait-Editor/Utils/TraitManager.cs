@@ -15,9 +15,10 @@ namespace Trait_Editor.Utils
 {
     public static class TraitManager
     {
+        public static Dictionary<uint, TraitTree> TraitTrees = new();
+
         static Dictionary<uint, TraitNodeGroup> _traitGroups = new();
         static Dictionary<uint, TraitNode> _traitNodes = new();
-        static Dictionary<uint, TraitTree> _traitTrees = new();
         static uint[] _skillLinesByClass = new uint[15];
         static Dictionary<uint, List<TraitTree>> _traitTreesBySkillLine = new();
         static Dictionary<uint, List<TraitTree>> _traitTreesByTraitSystem = new();
@@ -141,12 +142,12 @@ namespace Trait_Editor.Utils
             foreach (var traitTree in DataAccess.TraitTreeStorage)
             {
                 TraitTree tree;
-                if (_traitTrees.ContainsKey(traitTree.Value.Id))
-                    tree = _traitTrees[traitTree.Value.Id];
+                if (TraitTrees.ContainsKey(traitTree.Value.Id))
+                    tree = TraitTrees[traitTree.Value.Id];
                 else
                 {
                     tree = new();
-                    _traitTrees[traitTree.Value.Id] = tree;
+                    TraitTrees[traitTree.Value.Id] = tree;
                 }
 
                 tree.Data = traitTree.Value;
@@ -200,8 +201,8 @@ namespace Trait_Editor.Utils
 
                 node.Data = traitNode.Value;
 
-                if (_traitTrees.ContainsKey(traitNode.Value.TraitTreeID))
-                    _traitTrees[traitNode.Value.TraitTreeID].Nodes.Add(node);
+                if (TraitTrees.ContainsKey(traitNode.Value.TraitTreeID))
+                    TraitTrees[traitNode.Value.TraitTreeID].Nodes.Add(node);
 
                 if (nodeEntries.ContainsKey(traitNode.Value.Id))
                     foreach (var traitNodeEntry in nodeEntries[traitNode.Value.Id])
@@ -249,11 +250,11 @@ namespace Trait_Editor.Utils
 
             foreach (var skillLineXTraitTreeRecord in DataAccess.SkillLineXTraitTreeStorage)
             {
-                if (!_traitTrees.ContainsKey(skillLineXTraitTreeRecord.Value.TraitTreeID) ||
+                if (!TraitTrees.ContainsKey(skillLineXTraitTreeRecord.Value.TraitTreeID) ||
                     !DataAccess.SkillLineStorage.ContainsKey(skillLineXTraitTreeRecord.Value.SkillLineID))
                     continue;
 
-                var tree = _traitTrees[skillLineXTraitTreeRecord.Value.TraitTreeID];
+                var tree = TraitTrees[skillLineXTraitTreeRecord.Value.TraitTreeID];
                 var skillLineRecord = DataAccess.SkillLineStorage[skillLineXTraitTreeRecord.Value.SkillLineID];
 
                 if (!_traitTreesBySkillLine.ContainsKey(skillLineXTraitTreeRecord.Value.SkillLineID))
@@ -276,12 +277,12 @@ namespace Trait_Editor.Utils
 
             foreach (var ids in traitTreesIdsByTraitSystem)
                 foreach (uint traitTreeId in ids.Value)
-                    if (_traitTrees.ContainsKey(traitTreeId))
+                    if (TraitTrees.ContainsKey(traitTreeId))
                     {
                         if (!_traitTreesByTraitSystem.ContainsKey(ids.Key))
                             _traitTreesByTraitSystem[ids.Key] = new List<TraitTree>();
 
-                        _traitTreesByTraitSystem[ids.Key].Add(_traitTrees[traitTreeId]);
+                        _traitTreesByTraitSystem[ids.Key].Add(TraitTrees[traitTreeId]);
                     }
 
             foreach (var traitCurrencySource in DataAccess.TraitCurrencySourceStorage)
@@ -326,8 +327,6 @@ namespace Trait_Editor.Utils
                     _traitTreeLoadoutsByChrSpecialization[traitTreeLoadout.Value.ChrSpecializationID] = entries.ToList();
                 }
             }
-
-            string test = "";
         }
     }
 }

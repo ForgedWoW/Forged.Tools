@@ -5,7 +5,7 @@ namespace Trait_Editor
 {
     internal static class Program
     {
-        public static MainForm mainForm;
+        public static MainForm MainForm;
 
         /// <summary>
         ///  The main entry point for the application.
@@ -36,10 +36,10 @@ namespace Trait_Editor
             DB.Hotfix.PreparedStatements();
 
             Loading.ShowLoadingScreen();
-            mainForm = new MainForm();
+            MainForm = new MainForm();
             Loading.CloseForm();
 
-            Application.Run(mainForm);
+            Application.Run(MainForm);
         }
     }
 }
