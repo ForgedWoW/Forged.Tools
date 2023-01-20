@@ -15,20 +15,23 @@ namespace Trait_Editor.Utils
 {
     public static class TraitManager
     {
+        public static Dictionary<int, Class> ClassSpecs = new();
         public static Dictionary<uint, TraitTree> TraitTrees = new();
+        public static Dictionary<uint, List<TraitTreeLoadoutEntryRecord>> TraitTreeLoadoutsByChrSpecialization = new();
+        public static Dictionary<uint, TraitNode> TraitNodes = new();
 
         static Dictionary<uint, TraitNodeGroup> _traitGroups = new();
-        static Dictionary<uint, TraitNode> _traitNodes = new();
         static uint[] _skillLinesByClass = new uint[15];
         static Dictionary<uint, List<TraitTree>> _traitTreesBySkillLine = new();
         static Dictionary<uint, List<TraitTree>> _traitTreesByTraitSystem = new();
         static int _configIdGenerator = 0;
         static Dictionary<uint, List<TraitCurrencySourceRecord>> _traitCurrencySourcesByCurrency = new();
         static Dictionary<uint, List<TraitDefinitionEffectPointsRecord>> _traitDefinitionEffectPointModifiers = new();
-        static Dictionary<uint, List<TraitTreeLoadoutEntryRecord>> _traitTreeLoadoutsByChrSpecialization = new();
 
         public static void Load()
         {
+            BuildClassSpecs();
+
             Dictionary<uint, List<TraitCondRecord>> nodeEntryConditions = new();
             foreach (var traitNodeEntryXTraitCondRecord in DataAccess.TraitNodeEntryXTraitCondStorage)
                 if (DataAccess.TraitCondStorage.ContainsKey(traitNodeEntryXTraitCondRecord.Value.TraitCondID))
@@ -191,12 +194,12 @@ namespace Trait_Editor.Utils
             foreach (var traitNode in DataAccess.TraitNodeStorage)
             {
                 TraitNode node;
-                if (_traitNodes.ContainsKey(traitNode.Value.Id))
-                    node = _traitNodes[traitNode.Value.Id];
+                if (TraitNodes.ContainsKey(traitNode.Value.Id))
+                    node = TraitNodes[traitNode.Value.Id];
                 else
                 {
                     node = new();
-                    _traitNodes[traitNode.Value.Id] = node;
+                    TraitNodes[traitNode.Value.Id] = node;
                 }
 
                 node.Data = traitNode.Value;
@@ -240,11 +243,11 @@ namespace Trait_Editor.Utils
 
             foreach (var traitEdgeRecord in DataAccess.TraitEdgeStorage)
             {
-                if (!_traitNodes.ContainsKey(traitEdgeRecord.Value.LeftTraitNodeID)
-                    || !_traitNodes.ContainsKey(traitEdgeRecord.Value.RightTraitNodeID))
+                if (!TraitNodes.ContainsKey(traitEdgeRecord.Value.LeftTraitNodeID)
+                    || !TraitNodes.ContainsKey(traitEdgeRecord.Value.RightTraitNodeID))
                     continue;
 
-                _traitNodes[traitEdgeRecord.Value.RightTraitNodeID].ParentNodes[_traitNodes[traitEdgeRecord.Value.LeftTraitNodeID]]
+                TraitNodes[traitEdgeRecord.Value.RightTraitNodeID].ParentNodes[TraitNodes[traitEdgeRecord.Value.LeftTraitNodeID]]
                     = (TraitEdgeType)traitEdgeRecord.Value.Type;
             }
 
@@ -320,13 +323,69 @@ namespace Trait_Editor.Utils
                     var entries = traitTreeLoadoutEntries[traitTreeLoadout.Value.Id];
                     entries = entries.OrderBy(a => a.OrderIndex).ToList();
 
-                    if (!_traitTreeLoadoutsByChrSpecialization.ContainsKey(traitTreeLoadout.Value.ChrSpecializationID))
-                        _traitTreeLoadoutsByChrSpecialization.Add(traitTreeLoadout.Value.ChrSpecializationID, new List<TraitTreeLoadoutEntryRecord>());
+                    if (!TraitTreeLoadoutsByChrSpecialization.ContainsKey(traitTreeLoadout.Value.ChrSpecializationID))
+                        TraitTreeLoadoutsByChrSpecialization.Add(traitTreeLoadout.Value.ChrSpecializationID, new List<TraitTreeLoadoutEntryRecord>());
 
                     // there should be only one loadout per spec, we take last one encountered
-                    _traitTreeLoadoutsByChrSpecialization[traitTreeLoadout.Value.ChrSpecializationID] = entries.ToList();
+                    TraitTreeLoadoutsByChrSpecialization[traitTreeLoadout.Value.ChrSpecializationID] = entries.ToList();
                 }
             }
+
+            string test = "";
+        }
+
+        private static void BuildClassSpecs()
+        {
+            ClassSpecs[(int)SpecID.Arms] = Class.Warrior;
+            ClassSpecs[(int)SpecID.Fury] = Class.Warrior;
+            ClassSpecs[(int)SpecID.ProtectionWarrior] = Class.Warrior;
+
+            ClassSpecs[(int)SpecID.HolyPaladin] = Class.Paladin;
+            ClassSpecs[(int)SpecID.Retribution] = Class.Paladin;
+            ClassSpecs[(int)SpecID.ProtectionPaladin] = Class.Paladin;
+
+            ClassSpecs[(int)SpecID.Marksmanship] = Class.Hunter;
+            ClassSpecs[(int)SpecID.Survival] = Class.Hunter;
+            ClassSpecs[(int)SpecID.BeastMastery] = Class.Hunter;
+
+            ClassSpecs[(int)SpecID.Assassination] = Class.Rogue;
+            ClassSpecs[(int)SpecID.Outlaw] = Class.Rogue;
+            ClassSpecs[(int)SpecID.Subtlety] = Class.Rogue;
+
+            ClassSpecs[(int)SpecID.HolyPriest] = Class.Priest;
+            ClassSpecs[(int)SpecID.Discipline] = Class.Priest;
+            ClassSpecs[(int)SpecID.Shadow] = Class.Priest;
+
+            ClassSpecs[(int)SpecID.Blood] = Class.Deathknight;
+            ClassSpecs[(int)SpecID.FrostDK] = Class.Deathknight;
+            ClassSpecs[(int)SpecID.Unholy] = Class.Deathknight;
+
+            ClassSpecs[(int)SpecID.Elemental] = Class.Shaman;
+            ClassSpecs[(int)SpecID.Enhancement] = Class.Shaman;
+            ClassSpecs[(int)SpecID.RestorationShaman] = Class.Shaman;
+
+            ClassSpecs[(int)SpecID.FrostMage] = Class.Mage;
+            ClassSpecs[(int)SpecID.Fire] = Class.Mage;
+            ClassSpecs[(int)SpecID.Arcane] = Class.Mage;
+
+            ClassSpecs[(int)SpecID.Demonology] = Class.Warlock;
+            ClassSpecs[(int)SpecID.Destruction] = Class.Warlock;
+            ClassSpecs[(int)SpecID.Affliction] = Class.Warlock;
+
+            ClassSpecs[(int)SpecID.Windwalker] = Class.Monk;
+            ClassSpecs[(int)SpecID.Brewmaster] = Class.Monk;
+            ClassSpecs[(int)SpecID.Mistweaver] = Class.Monk;
+
+            ClassSpecs[(int)SpecID.Feral] = Class.Druid;
+            ClassSpecs[(int)SpecID.Guardian] = Class.Druid;
+            ClassSpecs[(int)SpecID.RestorationDruid] = Class.Druid;
+            ClassSpecs[(int)SpecID.Balance] = Class.Druid;
+
+            ClassSpecs[(int)SpecID.Havoc] = Class.DemonHunter;
+            ClassSpecs[(int)SpecID.Vengeance] = Class.DemonHunter;
+
+            ClassSpecs[(int)SpecID.Devastation] = Class.Evoker;
+            ClassSpecs[(int)SpecID.Preservation] = Class.Evoker;
         }
     }
 }

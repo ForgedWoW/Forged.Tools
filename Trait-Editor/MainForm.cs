@@ -8,10 +8,11 @@ namespace Trait_Editor
     public partial class MainForm : Form
     {
         public uint SelectedTree = 0;
-        public DataGridViewTextBoxCell SelectedCell;
+        public TextBox SelectedCell;
 
-        private DataGridView traitGrid;
         private ContainerControl gridContainer;
+
+        Dictionary<int, List<TextBox>> Rows = new();
 
         public MainForm()
         {
@@ -21,7 +22,6 @@ namespace Trait_Editor
             TraitManager.Load();
 
             BuildGrid();
-            traitGrid.ReadOnly = true;
             PopulateTrees();
             listTrees.SelectedIndexChanged += ListTrees_SelectedIndexChanged;
             
@@ -35,36 +35,61 @@ namespace Trait_Editor
 
         private void ListTrees_SelectedIndexChanged(object? sender, EventArgs e)
         {
-            ClearCells();
-            SelectedTree = uint.Parse(((string)listTrees.SelectedItem).Split("-").Last());
-
-            foreach(var node in TraitManager.TraitTrees[SelectedTree].Nodes)
+            if (listTrees.SelectedItem != null)
             {
-                var coord = new Coordinate(node.Data.PosX, node.Data.PosY);
-                var cell = GetCell(coord);
+                ClearCells();
+                var selected = (TreeListItem)listTrees.SelectedItem;
+                SelectedTree = selected.TreeID;
 
-                if (cell != null)
+                //foreach(var node in TraitManager.TraitTrees[SelectedTree].Nodes)
+                //{
+                //    var coord = new Coordinate(node.Data.PosX, node.Data.PosY);
+                //    var cell = GetCell(coord);
+
+                //    if (cell != null)
+                //    {
+                //        // DataAccess.SkillLineStorage for info
+                //        cell.Value = "Thing";
+                //    }
+                //}
+
+                foreach (var spec in TraitManager.TraitTreeLoadoutsByChrSpecialization[(uint)selected.SpecID])
                 {
-                    // DataAccess.SkillLineStorage for info
-                    cell.Value = "Thing";
+                    var node = TraitManager.TraitNodes[spec.SelectedTraitNodeID];
+                    var cell = GetCell(node.Data.PosX, node.Data.PosY);
+
+                    if (cell != null)
+                    {
+                        // DataAccess.SkillLineStorage for info
+                        cell.Text = "Test";
+                        ((CellValue)cell.Tag).Display = "Test";
+                    }
                 }
             }
         }
 
         private void PopulateTrees()
         {
-            foreach (var tree in TraitManager.TraitTrees)
+            foreach (var spec in TraitManager.TraitTreeLoadoutsByChrSpecialization)
             {
-                listTrees.Items.Add($"{tree.Value.ConfigType}-{tree.Value.Data.Id}");
-                //tree.Value.ConfigType
+                int id = (int)spec.Key;
+                var item = new TreeListItem()
+                {
+                    SpecID = (SpecID)id,
+                    Class = TraitManager.ClassSpecs[id],
+                    TreeID = DataAccess.TraitTreeLoadoutStorage[spec.Value.First().TraitTreeLoadoutID].TraitTreeID
+                };
+                item.Description = $"{item.SpecID} {item.Class}";
+
+                listTrees.Items.Add(item);
             }
         }
 
-        private void TraitGrid_CellDoubleClick(object? sender, DataGridViewCellEventArgs e)
+        private void Box_DoubleClick(object? sender, EventArgs e)
         {
             if (sender != null)
             {
-                SelectedCell = (DataGridViewTextBoxCell)((DataGridView)sender).CurrentCell;
+                SelectedCell = (TextBox)sender;
             }
         }
 
@@ -77,24 +102,7 @@ namespace Trait_Editor
             gridContainer.AutoScroll = true;
             gridContainer.Visible = true;
             gridContainer.Enabled = true;
-
-            traitGrid = new DataGridView();
-            traitGrid.Parent = gridContainer;
-            ((System.ComponentModel.ISupportInitialize)(traitGrid)).BeginInit();
-            SuspendLayout();
-            traitGrid.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            traitGrid.Location = new Point(15, 15);
-            traitGrid.Name = "myNewGrid";
-            traitGrid.Size = new Size(2000, 1200);
-            traitGrid.TabIndex = 0;
-            traitGrid.ColumnHeadersVisible = true;
-            traitGrid.RowHeadersVisible = true;
-            traitGrid.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
-            traitGrid.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.DisplayedCells;
-            traitGrid.CellDoubleClick += TraitGrid_CellDoubleClick;
-            ((System.ComponentModel.ISupportInitialize)(traitGrid)).EndInit();
-            ResumeLayout(false);
-            traitGrid.Visible = true;
+            gridContainer.Anchor = AnchorStyles.Right | AnchorStyles.Left | AnchorStyles.Top | AnchorStyles.Bottom;
 
             int curX = 0;
             int curY = -300;
@@ -113,48 +121,62 @@ namespace Trait_Editor
                 curX += 300;
             }
 
-            traitGrid.Columns.AddRange(cols.OrderBy(a => a.Tag).ToArray());
+            int rowIndex = 0;
+            int columnIndex = 0;
 
             while (curY < 7000)
             {
-                var row = new DataGridViewRow() { Tag = curY };
+                List<TextBox> row = new();
+                Rows[rowIndex] = row;
 
                 curX = 0;
+                columnIndex = 0;
                 while (curX < 16900)
                 {
-                    row.Cells.Add(new DataGridViewTextBoxCell() 
-                    { 
-                        Tag = new Coordinate(curX, curY),
-                        Style = new DataGridViewCellStyle { WrapMode = DataGridViewTriState.True }
-                    });
+                    TextBox box = new TextBox();
+                    box.Multiline = true;
+                    box.Parent = gridContainer;
+                    box.Location = new Point(12 + (columnIndex * 56), 12 + (rowIndex * 56));
+                    box.Size = new Size(50, 50);
+                    box.Tag = new CellValue() { Coordinate = new Coordinate(curX, curY) };
+                    box.Enabled = true;
+                    box.Visible = true;
+                    box.ReadOnly= true;
+                    box.DoubleClick += Box_DoubleClick;
+
+                    row.Add(box);
 
                     curX += 300;
+                    columnIndex++;
                 }
 
-                traitGrid.Rows.Add(row);
-
                 curY += 300;
+                rowIndex++;
             }
         }
 
         private void ClearCells()
         {
-            foreach (DataGridViewRow row in traitGrid.Rows)
+            foreach (var row in Rows)
             {
-                foreach (DataGridViewTextBoxCell cell in row.Cells)
+                foreach (var cell in row.Value)
                 {
-                    cell.Value = string.Empty;
+                    if (cell.Tag != null)
+                    {
+                        cell.Text = string.Empty;
+                        ((CellValue)cell.Tag).Display = string.Empty;
+                    }
                 }
             }
         }
 
-        private DataGridViewTextBoxCell GetCell(Coordinate coord)
+        private TextBox GetCell(int x, int y)
         {
-            foreach (DataGridViewRow row in traitGrid.Rows)
+            foreach (var row in Rows)
             {
-                foreach (DataGridViewTextBoxCell cell in row.Cells)
+                foreach (var cell in row.Value)
                 {
-                    if (((Coordinate)cell.Tag).Equals(coord))
+                    if (((CellValue)cell.Tag).CompareCoordinate(x, y))
                         return cell;
                 }
             }

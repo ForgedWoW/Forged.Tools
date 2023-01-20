@@ -33,12 +33,14 @@
             // 
             // listTrees
             // 
+            this.listTrees.DisplayMember = "Description";
             this.listTrees.FormattingEnabled = true;
             this.listTrees.ItemHeight = 15;
             this.listTrees.Location = new System.Drawing.Point(12, 12);
             this.listTrees.Name = "listTrees";
             this.listTrees.Size = new System.Drawing.Size(250, 1234);
             this.listTrees.TabIndex = 2;
+            this.listTrees.ValueMember = "Description";
             // 
             // MainForm
             // 
@@ -47,7 +49,7 @@
             this.ClientSize = new System.Drawing.Size(1284, 1261);
             this.Controls.Add(this.listTrees);
             this.Name = "MainForm";
-            this.Text = "Form1";
+            this.Text = "text text text text";
             this.ResumeLayout(false);
 
         }

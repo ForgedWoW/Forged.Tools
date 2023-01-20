@@ -7,7 +7,6 @@ using Trait_Editor.Models.DB2Records;
 
 namespace Trait_Editor.Models
 {
-    [Serializable]
     public sealed class TraitTree
     {
         public TraitTreeRecord Data = new();

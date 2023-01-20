@@ -95,4 +95,53 @@ namespace Trait_Editor.Models
         CannotRefund = 0x1,
         HideSingleRankNumbers = 0x2
     }
+
+    public enum SpecID
+    {
+        None = 0,
+        Arcane = 62,
+        Fire = 63,
+        FrostMage = 64,
+        HolyPaladin = 65,
+        ProtectionPaladin = 66,
+        Retribution = 70,
+        Arms = 71,
+        Fury = 72,
+        ProtectionWarrior = 73,
+        Balance = 102,
+        Feral = 103,
+        Guardian = 104,
+        RestorationDruid = 105,
+        Blood = 250,
+        FrostDK = 251,
+        Unholy = 252,
+        BeastMastery = 253,
+        Marksmanship = 254,
+        Survival = 255,
+        Discipline = 256,
+        HolyPriest = 257,
+        Shadow = 258,
+        Assassination = 259,
+        Outlaw = 260,
+        Subtlety = 261,
+        Elemental = 262,
+        Enhancement = 263,
+        RestorationShaman = 264,
+        Affliction = 265,
+        Demonology = 266,
+        Destruction = 267,
+        Brewmaster = 268,
+        Windwalker = 269,
+        Mistweaver = 270,
+        Havoc = 577,
+        Vengeance = 581,
+        Devastation = 1467,
+        Preservation = 1468
+    }
+
+    public enum SpecSet
+    {
+        None = 0,
+        Tank = 1,
+    }
 }
