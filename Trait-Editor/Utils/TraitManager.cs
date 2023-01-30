@@ -20,6 +20,8 @@ namespace Trait_Editor.Utils
         public static Dictionary<uint, List<TraitTreeLoadoutEntryRecord>> TraitTreeLoadoutsByChrSpecialization = new();
         public static Dictionary<uint, TraitNode> TraitNodes = new();
         public static Dictionary<uint, TraitDefinitionRecord> TraitDefinitionByNodeID = new();
+        public static Dictionary<uint, List<uint>> TraitNodesByGroup = new();
+        public static Dictionary<uint, List<uint>> TraitNodeGroupByTree = new();
 
         static Dictionary<uint, TraitNodeGroup> _traitGroups = new();
         static uint[] _skillLinesByClass = new uint[15];
@@ -36,111 +38,54 @@ namespace Trait_Editor.Utils
             Dictionary<uint, List<TraitCondRecord>> nodeEntryConditions = new();
             foreach (var traitNodeEntryXTraitCondRecord in DataAccess.TraitNodeEntryXTraitCondStorage)
                 if (DataAccess.TraitCondStorage.ContainsKey(traitNodeEntryXTraitCondRecord.Value.TraitCondID))
-                {
-                    if (!nodeEntryConditions.ContainsKey(traitNodeEntryXTraitCondRecord.Value.TraitNodeEntryID))
-                        nodeEntryConditions[traitNodeEntryXTraitCondRecord.Value.TraitNodeEntryID] = new();
-
-                    nodeEntryConditions[traitNodeEntryXTraitCondRecord.Value.TraitNodeEntryID]
-                        .Add(DataAccess.TraitCondStorage[traitNodeEntryXTraitCondRecord.Value.TraitCondID]);
-                }
+                    nodeEntryConditions.AddListItem(traitNodeEntryXTraitCondRecord.Value.TraitNodeEntryID, DataAccess.TraitCondStorage[traitNodeEntryXTraitCondRecord.Value.TraitCondID]);
 
             Dictionary<uint, List<TraitCostRecord>> nodeEntryCosts = new();
             foreach (var traitNodeEntryXTraitCostRecord in DataAccess.TraitNodeEntryXTraitCostStorage)
                 if (DataAccess.TraitCostStorage.ContainsKey(traitNodeEntryXTraitCostRecord.Value.TraitCostID))
-                {
-                    if (!nodeEntryCosts.ContainsKey(traitNodeEntryXTraitCostRecord.Value.TraitNodeEntryID))
-                        nodeEntryCosts[traitNodeEntryXTraitCostRecord.Value.TraitNodeEntryID] = new();
-
-                    nodeEntryCosts[traitNodeEntryXTraitCostRecord.Value.TraitNodeEntryID]
-                        .Add(DataAccess.TraitCostStorage[traitNodeEntryXTraitCostRecord.Value.TraitCostID]);
-                }
+                    nodeEntryCosts.AddListItem(traitNodeEntryXTraitCostRecord.Value.TraitNodeEntryID, DataAccess.TraitCostStorage[traitNodeEntryXTraitCostRecord.Value.TraitCostID]);
 
             Dictionary<uint, List<TraitCondRecord>> nodeGroupConditions = new();
             foreach (var traitNodeGroupXTraitCondRecord in DataAccess.TraitNodeGroupXTraitCondStorage)
                 if (DataAccess.TraitCondStorage.ContainsKey(traitNodeGroupXTraitCondRecord.Value.TraitCondID))
-                {
-                    if (!nodeGroupConditions.ContainsKey(traitNodeGroupXTraitCondRecord.Value.TraitNodeGroupID))
-                        nodeGroupConditions[traitNodeGroupXTraitCondRecord.Value.TraitNodeGroupID] = new();
-
-                    nodeGroupConditions[traitNodeGroupXTraitCondRecord.Value.TraitNodeGroupID]
-                                .Add(DataAccess.TraitCondStorage[traitNodeGroupXTraitCondRecord.Value.TraitCondID]);
-                }
+                    nodeGroupConditions.AddListItem(traitNodeGroupXTraitCondRecord.Value.TraitNodeGroupID, DataAccess.TraitCondStorage[traitNodeGroupXTraitCondRecord.Value.TraitCondID]);
 
             Dictionary<uint, List<TraitCostRecord>> nodeGroupCosts = new();
             foreach (var traitNodeGroupXTraitCostRecord in DataAccess.TraitNodeGroupXTraitCostStorage)
                 if (DataAccess.TraitCostStorage.ContainsKey(traitNodeGroupXTraitCostRecord.Value.TraitCostID))
-                {
-                    if (!nodeGroupCosts.ContainsKey(traitNodeGroupXTraitCostRecord.Value.TraitNodeGroupID))
-                        nodeGroupCosts[traitNodeGroupXTraitCostRecord.Value.TraitNodeGroupID] = new();
+                nodeGroupCosts.AddListItem(traitNodeGroupXTraitCostRecord.Value.TraitNodeGroupID, DataAccess.TraitCostStorage[traitNodeGroupXTraitCostRecord.Value.TraitCostID]);
 
-                    nodeGroupCosts[traitNodeGroupXTraitCostRecord.Value.TraitNodeGroupID]
-                        .Add(DataAccess.TraitCostStorage[traitNodeGroupXTraitCostRecord.Value.TraitCostID]);
-                }
-
-            Dictionary<uint, List<uint>> nodeGroups = new();
+            Dictionary<uint, List<uint>> traitNodegroupsByNode = new();
+            TraitNodesByGroup = new();
             foreach (var traitNodeGroupXTraitNodeRecord in DataAccess.TraitNodeGroupXTraitNodeStorage)
             {
-                if (!nodeGroups.ContainsKey(traitNodeGroupXTraitNodeRecord.Value.TraitNodeID))
-                    nodeGroups[traitNodeGroupXTraitNodeRecord.Value.TraitNodeID] = new();
-
-                nodeGroups[traitNodeGroupXTraitNodeRecord.Value.TraitNodeID]
-                    .Add(traitNodeGroupXTraitNodeRecord.Value.TraitNodeGroupID);
+                traitNodegroupsByNode.AddListItem(traitNodeGroupXTraitNodeRecord.Value.TraitNodeID, traitNodeGroupXTraitNodeRecord.Value.TraitNodeGroupID);
+                TraitNodesByGroup.AddListItem(traitNodeGroupXTraitNodeRecord.Value.TraitNodeGroupID, traitNodeGroupXTraitNodeRecord.Value.TraitNodeID);
             }
 
             Dictionary<uint, List<TraitCondRecord>> nodeConditions = new();
             foreach (var traitNodeXTraitCondRecord in DataAccess.TraitNodeXTraitCondStorage)
                 if (DataAccess.TraitCondStorage.ContainsKey(traitNodeXTraitCondRecord.Value.TraitCondID))
-                {
-                    if (!nodeConditions.ContainsKey(traitNodeXTraitCondRecord.Value.TraitNodeID))
-                        nodeConditions[traitNodeXTraitCondRecord.Value.TraitNodeID] = new();
-
-                    nodeConditions[traitNodeXTraitCondRecord.Value.TraitNodeID]
-                        .Add(DataAccess.TraitCondStorage[traitNodeXTraitCondRecord.Value.TraitCondID]);
-                }
+                    nodeConditions.AddListItem(traitNodeXTraitCondRecord.Value.TraitNodeID, DataAccess.TraitCondStorage[traitNodeXTraitCondRecord.Value.TraitCondID]);
 
             Dictionary<uint, List<TraitCostRecord>> nodeCosts = new();
             foreach (var traitNodeXTraitCostRecord in DataAccess.TraitNodeXTraitCostStorage)
                 if (DataAccess.TraitCostStorage.ContainsKey(traitNodeXTraitCostRecord.Value.TraitCostID))
-                {
-                    if (!nodeCosts.ContainsKey(traitNodeXTraitCostRecord.Value.TraitNodeID))
-                        nodeCosts[traitNodeXTraitCostRecord.Value.TraitNodeID] = new();
-
-                    nodeCosts[traitNodeXTraitCostRecord.Value.TraitNodeID]
-                        .Add(DataAccess.TraitCostStorage[traitNodeXTraitCostRecord.Value.TraitCostID]);
-                }
+                    nodeCosts.AddListItem(traitNodeXTraitCostRecord.Value.TraitNodeID, DataAccess.TraitCostStorage[traitNodeXTraitCostRecord.Value.TraitCostID]);
 
             Dictionary<uint, List<TraitNodeEntryRecord>> nodeEntries = new();
             foreach (var traitNodeXTraitNodeEntryRecord in DataAccess.TraitNodeXTraitNodeEntryStorage)
-                if (DataAccess.TraitNodeEntryStorage.ContainsKey(traitNodeXTraitNodeEntryRecord.Value.TraitNodeEntryID))
-                {
-                    if (!nodeEntries.ContainsKey(traitNodeXTraitNodeEntryRecord.Value.TraitNodeID))
-                        nodeEntries[traitNodeXTraitNodeEntryRecord.Value.TraitNodeID] = new();
-
-                    nodeEntries[traitNodeXTraitNodeEntryRecord.Value.TraitNodeID]
-                        .Add(DataAccess.TraitNodeEntryStorage[traitNodeXTraitNodeEntryRecord.Value.TraitNodeEntryID]);
-                }
+                nodeEntries.AddListItem(traitNodeXTraitNodeEntryRecord.Value.TraitNodeID, DataAccess.TraitNodeEntryStorage[traitNodeXTraitNodeEntryRecord.Value.TraitNodeEntryID]);
 
             Dictionary<uint, List<TraitCostRecord>> treeCosts = new();
             foreach (var traitTreeXTraitCostRecord in DataAccess.TraitTreeXTraitCostStorage)
                 if (DataAccess.TraitCostStorage.ContainsKey(traitTreeXTraitCostRecord.Value.TraitCostID))
-                {
-                    if (!treeCosts.ContainsKey(traitTreeXTraitCostRecord.Value.TraitTreeID))
-                        treeCosts[traitTreeXTraitCostRecord.Value.TraitTreeID] = new();
-
-                    treeCosts[traitTreeXTraitCostRecord.Value.TraitTreeID]
-                        .Add(DataAccess.TraitCostStorage[traitTreeXTraitCostRecord.Value.TraitCostID]);
-                }
+                    treeCosts.AddListItem(traitTreeXTraitCostRecord.Value.TraitTreeID, DataAccess.TraitCostStorage[traitTreeXTraitCostRecord.Value.TraitCostID]);
 
             Dictionary<uint, List<TraitCurrencyRecord>> treeCurrencies = new();
             foreach (var traitTreeXTraitCurrencyRecord in DataAccess.TraitTreeXTraitCurrencyStorage)
                 if (DataAccess.TraitCurrencyStorage.ContainsKey(traitTreeXTraitCurrencyRecord.Value.TraitCurrencyID))
-                {
-                    if (!treeCurrencies.ContainsKey(traitTreeXTraitCurrencyRecord.Value.TraitTreeID))
-                        treeCurrencies[traitTreeXTraitCurrencyRecord.Value.TraitTreeID] = new();
-
-                    treeCurrencies[traitTreeXTraitCurrencyRecord.Value.TraitTreeID]
-                        .Add(DataAccess.TraitCurrencyStorage[traitTreeXTraitCurrencyRecord.Value.TraitCurrencyID]);
-                }
+                    treeCurrencies.AddListItem(traitTreeXTraitCurrencyRecord.Value.TraitTreeID, DataAccess.TraitCurrencyStorage[traitTreeXTraitCurrencyRecord.Value.TraitCurrencyID]);
 
             Dictionary<uint, List<uint>> traitTreesIdsByTraitSystem = new();
             foreach (var traitTree in DataAccess.TraitTreeStorage)
@@ -164,10 +109,7 @@ namespace Trait_Editor.Utils
 
                 if (traitTree.Value.TraitSystemID != 0)
                 {
-                    if (!traitTreesIdsByTraitSystem.ContainsKey(traitTree.Value.TraitSystemID))
-                        traitTreesIdsByTraitSystem.Add(traitTree.Value.TraitSystemID, new List<uint>());
-
-                    traitTreesIdsByTraitSystem[traitTree.Value.TraitSystemID].Add(traitTree.Value.Id);
+                    traitTreesIdsByTraitSystem.AddListItem(traitTree.Value.TraitSystemID, traitTree.Value.Id);
                     tree.ConfigType = TraitConfigType.Generic;
                 }
             }
@@ -190,6 +132,11 @@ namespace Trait_Editor.Utils
 
                 if (nodeGroupCosts.ContainsKey(traitNodeGroup.Value.Id))
                     nodeGroup.Costs = nodeGroupCosts[traitNodeGroup.Value.Id].ToList();
+
+                if (!TraitNodeGroupByTree.ContainsKey(traitNodeGroup.Value.TraitTreeID))
+                    TraitNodeGroupByTree[traitNodeGroup.Value.TraitTreeID] = new List<uint>();
+
+                TraitNodeGroupByTree[traitNodeGroup.Value.TraitTreeID].AddIfDoesntExist(traitNodeGroup.Key);
             }
 
             foreach (var traitNode in DataAccess.TraitNodeStorage)
@@ -224,8 +171,8 @@ namespace Trait_Editor.Utils
                         }
                     }
 
-                if (nodeGroups.ContainsKey(traitNode.Value.Id))
-                    foreach (var nodeGroupId in nodeGroups[traitNode.Value.Id])
+                if (traitNodegroupsByNode.ContainsKey(traitNode.Value.Id))
+                    foreach (var nodeGroupId in traitNodegroupsByNode[traitNode.Value.Id])
                     {
                         if (!_traitGroups.ContainsKey(nodeGroupId))
                             continue;
@@ -261,10 +208,8 @@ namespace Trait_Editor.Utils
                 var tree = TraitTrees[skillLineXTraitTreeRecord.Value.TraitTreeID];
                 var skillLineRecord = DataAccess.SkillLineStorage[skillLineXTraitTreeRecord.Value.SkillLineID];
 
-                if (!_traitTreesBySkillLine.ContainsKey(skillLineXTraitTreeRecord.Value.SkillLineID))
-                    _traitTreesBySkillLine[skillLineXTraitTreeRecord.Value.SkillLineID] = new List<TraitTree>();
+                _traitTreesBySkillLine.AddListItem(skillLineXTraitTreeRecord.Value.SkillLineID, tree);
 
-                _traitTreesBySkillLine[skillLineXTraitTreeRecord.Value.SkillLineID].Add(tree);
                 if (skillLineRecord.CategoryID == SkillCategory.Class)
                 {
                     if (DataAccess.SkillRaceClassInfoSorted.ContainsKey(skillLineRecord.Id))
@@ -283,67 +228,41 @@ namespace Trait_Editor.Utils
                 foreach (uint traitTreeId in ids.Value)
                     if (TraitTrees.ContainsKey(traitTreeId))
                     {
-                        if (!_traitTreesByTraitSystem.ContainsKey(ids.Key))
-                            _traitTreesByTraitSystem[ids.Key] = new List<TraitTree>();
-
-                        _traitTreesByTraitSystem[ids.Key].Add(TraitTrees[traitTreeId]);
+                        _traitTreesByTraitSystem.AddListItem(ids.Key, TraitTrees[traitTreeId]);
                     }
 
             foreach (var traitCurrencySource in DataAccess.TraitCurrencySourceStorage)
-            {
-                if (!_traitCurrencySourcesByCurrency.ContainsKey(traitCurrencySource.Value.TraitCurrencyID))
-                    _traitCurrencySourcesByCurrency.Add(traitCurrencySource.Value.TraitCurrencyID, new List<TraitCurrencySourceRecord>());
-
-                _traitCurrencySourcesByCurrency[traitCurrencySource.Value.TraitCurrencyID]
-                    .Add(traitCurrencySource.Value);
-            }
+                _traitCurrencySourcesByCurrency.AddListItem(traitCurrencySource.Value.TraitCurrencyID, traitCurrencySource.Value);
 
             foreach (var traitDefinitionEffectPoints in DataAccess.TraitDefinitionEffectPointsStorage)
-            {
-                if (!_traitDefinitionEffectPointModifiers.ContainsKey(traitDefinitionEffectPoints.Value.TraitDefinitionID))
-                    _traitDefinitionEffectPointModifiers.Add(traitDefinitionEffectPoints.Value.TraitDefinitionID, new List<TraitDefinitionEffectPointsRecord>());
-
-                _traitDefinitionEffectPointModifiers[traitDefinitionEffectPoints.Value.TraitDefinitionID]
-                    .Add(traitDefinitionEffectPoints.Value);
-            }
+                _traitDefinitionEffectPointModifiers.AddListItem(traitDefinitionEffectPoints.Value.TraitDefinitionID, traitDefinitionEffectPoints.Value);
 
             Dictionary<uint, List<TraitTreeLoadoutEntryRecord>> traitTreeLoadoutEntries = new();
             foreach (var traitTreeLoadoutRecord in DataAccess.TraitTreeLoadoutEntryStorage)
-            {
-                if (!traitTreeLoadoutEntries.ContainsKey(traitTreeLoadoutRecord.Value.TraitTreeLoadoutID))
-                    traitTreeLoadoutEntries.Add(traitTreeLoadoutRecord.Value.TraitTreeLoadoutID, new List<TraitTreeLoadoutEntryRecord>());
-
-                traitTreeLoadoutEntries[traitTreeLoadoutRecord.Value.TraitTreeLoadoutID]
-                    .Add(traitTreeLoadoutRecord.Value);
-            }
+                traitTreeLoadoutEntries.AddListItem(traitTreeLoadoutRecord.Value.TraitTreeLoadoutID, traitTreeLoadoutRecord.Value);
 
             Dictionary<uint, List<uint>> treeSpecs = new Dictionary<uint, List<uint>>();
 
             foreach (var traitTreeLoadout in DataAccess.TraitTreeLoadoutStorage)
             {
-                if (!treeSpecs.ContainsKey(traitTreeLoadout.Value.TraitTreeID))
-                    treeSpecs.Add(traitTreeLoadout.Value.TraitTreeID, new List<uint>());
-
-                if (!treeSpecs[traitTreeLoadout.Value.TraitTreeID].Contains(traitTreeLoadout.Value.ChrSpecializationID))
-                    treeSpecs[traitTreeLoadout.Value.TraitTreeID].Add(traitTreeLoadout.Value.ChrSpecializationID);
+                treeSpecs.AddListItem(traitTreeLoadout.Value.TraitTreeID, traitTreeLoadout.Value.ChrSpecializationID);
 
                 if (traitTreeLoadoutEntries.ContainsKey(traitTreeLoadout.Value.Id))
                 {
-                    var entries = traitTreeLoadoutEntries[traitTreeLoadout.Value.Id];
-                    entries = entries.OrderBy(a => a.OrderIndex).ToList();
+                    var entries = traitTreeLoadoutEntries[traitTreeLoadout.Value.Id].OrderBy(a => a.OrderIndex).ToList();
 
                     if (!TraitTreeLoadoutsByChrSpecialization.ContainsKey(traitTreeLoadout.Value.ChrSpecializationID))
                         TraitTreeLoadoutsByChrSpecialization.Add(traitTreeLoadout.Value.ChrSpecializationID, new List<TraitTreeLoadoutEntryRecord>());
 
                     // there should be only one loadout per spec, we take last one encountered
-                    TraitTreeLoadoutsByChrSpecialization[traitTreeLoadout.Value.ChrSpecializationID].AddRange(entries.ToList());
+                    TraitTreeLoadoutsByChrSpecialization[traitTreeLoadout.Value.ChrSpecializationID].AddRange(entries);
                 }
             }
 
             foreach (var node in DataAccess.TraitNodeXTraitNodeEntryStorage)
             {
                 var entry = DataAccess.TraitNodeEntryStorage[node.Value.TraitNodeEntryID];
-                TraitDefinitionByNodeID[node.Value.Id] = DataAccess.TraitDefinitionStorage[entry.TraitDefinitionID];
+                TraitDefinitionByNodeID[node.Value.TraitNodeID] = DataAccess.TraitDefinitionStorage[entry.TraitDefinitionID];
             }
 
             string test = "";

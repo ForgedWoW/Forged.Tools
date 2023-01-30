@@ -10,6 +10,7 @@ namespace Trait_Editor.Models
     {
         public Coordinate Coordinate { get; set; }
         public string Display { get; set; } = string.Empty;
+        public uint TraitNodeID { get; set; } = 0;
         public uint SpellID { get; set; } = 0;
 
         public bool CompareCoordinate(Coordinate other)
@@ -30,6 +31,7 @@ namespace Trait_Editor.Models
         public void Clear()
         {
             Display = string.Empty;
+            TraitNodeID = 0;
             SpellID = 0;
         }
     }

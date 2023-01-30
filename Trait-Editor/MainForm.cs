@@ -12,9 +12,8 @@ namespace Trait_Editor
         public uint SelectedTree = 0;
         public TextBox SelectedCell;
 
-        private ContainerControl gridContainer;
-
-        Dictionary<int, List<TextBox>> Rows = new();
+        private ContainerControl _gridContainer;
+        private Dictionary<int, List<TextBox>> _rows = new();
 
         public MainForm()
         {
@@ -29,6 +28,40 @@ namespace Trait_Editor
             listTrees.Anchor = AnchorStyles.Left | AnchorStyles.Top | AnchorStyles.Bottom;
 
             FormClosed += MainForm_FormClosed;
+            _gridContainer.Paint += gridContainer_Paint;
+        }
+
+        private void gridContainer_Paint(object? sender, PaintEventArgs e)
+        {
+            Pen pen = new Pen(Color.White, 3);
+            
+            foreach (var row in _rows)
+            {
+                foreach (var cell in row.Value)
+                {
+                    CellValue cellVal = (CellValue)cell.Tag;
+
+                    if (cellVal.SpellID != 0)
+                    {
+                        var node = TraitManager.TraitNodes[cellVal.TraitNodeID];
+
+                        if (node.ParentNodes.Count > 0)
+                        {
+                            var p1 = new Point(cell.Location.X + (cell.Width / 2), cell.Location.Y + (cell.Height / 2));
+
+                            foreach (var pnode in node.ParentNodes)
+                            {
+                                var pcell = GetCell(pnode.Key.Data.PosX, pnode.Key.Data.PosY);
+                                var p2 = new Point(pcell.Location.X + (pcell.Width / 2), pcell.Location.Y + (pcell.Height / 2));
+
+                                e.Graphics.DrawLine(pen, p1, p2);
+                            }
+                        }
+                    }
+                }
+            }
+
+            pen.Dispose();
         }
 
         private void MainForm_FormClosed(object? sender, FormClosedEventArgs e)
@@ -45,6 +78,10 @@ namespace Trait_Editor
                 SelectedTree = selected.TreeID;
                 var tree = TraitManager.TraitTrees[SelectedTree];
 
+                var def = DataAccess.TraitDefinitionStorage.Where(a => a.Value.SpellID == 108416).ToList().First().Key;
+                var dpNodeEntry = DataAccess.TraitNodeEntryStorage.Where(a => a.Value.TraitDefinitionID == def).First().Value.Id;
+                var dpNode = TraitManager.TraitNodes[DataAccess.TraitNodeXTraitNodeEntryStorage.Where(a => a.Value.TraitNodeEntryID == dpNodeEntry).First().Value.TraitNodeID];
+
                 foreach (var spec in TraitManager.TraitTreeLoadoutsByChrSpecialization[(uint)selected.SpecID])
                 {
                     var node = TraitManager.TraitNodes[spec.SelectedTraitNodeID];
@@ -56,6 +93,43 @@ namespace Trait_Editor
                         AddCellData(cell, node);
                     }
                 }
+
+                _gridContainer.Refresh();
+                //foreach (var group in TraitManager.TraitNodeGroupByTree[SelectedTree])
+                //{
+                //    if (TraitManager.TraitNodesByGroup.ContainsKey(group))
+                //    {
+                //        var test = TraitManager.TraitTreeLoadoutsByChrSpecialization[(uint)selected.SpecID];
+
+                //        foreach (var nodeId in TraitManager.TraitNodesByGroup[group])
+                //        {
+                //            var node = TraitManager.TraitNodes[nodeId];
+                //            var cell = GetCell(node.Data.PosX, node.Data.PosY);
+
+                //            if (cell != null)
+                //            {
+                //                // DataAccess.SkillLineStorage for info
+                //                AddCellData(cell, node);
+                //            }
+                //        }
+                //    }
+                //}
+
+                //uint groupId = uint.Parse(selected.Description.Replace("Group: ", ""));
+                //foreach (var nodeId in TraitManager.TraitNodesByGroup[groupId])
+                //{
+                //    if (TraitManager.TraitNodes.ContainsKey(nodeId))
+                //    {
+                //        var node = TraitManager.TraitNodes[nodeId];
+                //        var cell = GetCell(node.Data.PosX, node.Data.PosY);
+
+                //        if (cell != null)
+                //        {
+                //            // DataAccess.SkillLineStorage for info
+                //            AddCellData(cell, node);
+                //        }
+                //    }
+                //}
             }
         }
 
@@ -63,22 +137,28 @@ namespace Trait_Editor
         {
             if (string.IsNullOrEmpty(cell.Text))
             {
-                string display = "Not Found";
+                string display = string.Empty;
+                CellValue cellVal = (CellValue)cell.Tag; 
                 if (TraitManager.TraitDefinitionByNodeID.ContainsKey(node.Data.Id))
                 {
                     var def = TraitManager.TraitDefinitionByNodeID[node.Data.Id];
-                    ((CellValue)cell.Tag).SpellID = def.SpellID;
-                    display = def.OverrideName[Locale.enUS];
-
-                    if (string.IsNullOrWhiteSpace(display))
+                    if (def.SpellID != 0)
                     {
-                        display = DataAccess.SpellNameStorage[def.SpellID].Name[Locale.enUS];
+                        cellVal.SpellID = def.SpellID;
+                        display = def.OverrideName[Locale.enUS];
+
+                        if (string.IsNullOrWhiteSpace(display))
+                        {
+                            display = DataAccess.SpellNameStorage[def.SpellID].Name[Locale.enUS];
+                        }
                     }
                 }
 
-                ((CellValue)cell.Tag).Display = display;
+                cellVal.Display = display;
+                cellVal.TraitNodeID = node.Data.Id;
                 cell.Text = display;
                 cell.BackColor = Color.White;
+                cell.Visible = true;
             }
         }
 
@@ -97,6 +177,19 @@ namespace Trait_Editor
 
                 listTrees.Items.Add(item);
             }
+
+            //foreach (var group in TraitManager.TraitNodesByGroup)
+            //{
+            //    var item = new TreeListItem()
+            //    {
+            //        SpecID = 0,
+            //        Class = 0,
+            //        TreeID = 0
+            //    };
+            //    item.Description = $"Group: {group.Key}";
+
+            //    listTrees.Items.Add(item);
+            //}
         }
 
         private void Box_DoubleClick(object? sender, EventArgs e)
@@ -109,14 +202,14 @@ namespace Trait_Editor
 
         private void BuildGrid()
         {
-            gridContainer = new ContainerControl();
-            gridContainer.Parent = this;
-            gridContainer.Location = new Point(268, 12);
-            gridContainer.Size = new Size(1004, 1237);
-            gridContainer.AutoScroll = true;
-            gridContainer.Visible = true;
-            gridContainer.Enabled = true;
-            gridContainer.Anchor = AnchorStyles.Right | AnchorStyles.Left | AnchorStyles.Top | AnchorStyles.Bottom;
+            _gridContainer = new ContainerControl();
+            _gridContainer.Parent = this;
+            _gridContainer.Location = new Point(268, 12);
+            _gridContainer.Size = new Size(1004, 1237);
+            _gridContainer.AutoScroll = true;
+            _gridContainer.Visible = true;
+            _gridContainer.Enabled = true;
+            _gridContainer.Anchor = AnchorStyles.Right | AnchorStyles.Left | AnchorStyles.Top | AnchorStyles.Bottom;
 
             int curX = 0;
             int curY = -300;
@@ -141,7 +234,7 @@ namespace Trait_Editor
             while (curY < 7000)
             {
                 List<TextBox> row = new();
-                Rows[rowIndex] = row;
+                _rows[rowIndex] = row;
 
                 curX = 0;
                 columnIndex = 0;
@@ -149,12 +242,12 @@ namespace Trait_Editor
                 {
                     TextBox box = new TextBox();
                     box.Multiline = true;
-                    box.Parent = gridContainer;
+                    box.Parent = _gridContainer;
                     box.Location = new Point(12 + (columnIndex * 52), 12 + (rowIndex * 52));
                     box.Size = new Size(50, 50);
                     box.Tag = new CellValue() { Coordinate = new Coordinate(curX, curY) };
                     box.Enabled = true;
-                    box.Visible = true;
+                    box.Visible = false;
                     box.ReadOnly= true;
                     box.DoubleClick += Box_DoubleClick;
                     box.BackColor = Color.Gray;
@@ -174,7 +267,7 @@ namespace Trait_Editor
 
         private void ClearCells()
         {
-            foreach (var row in Rows)
+            foreach (var row in _rows)
             {
                 foreach (var cell in row.Value)
                 {
@@ -183,6 +276,7 @@ namespace Trait_Editor
                         cell.Text = string.Empty;
                         ((CellValue)cell.Tag).Clear();
                         cell.BackColor = Color.Gray;
+                        cell.Visible = false;
                     }
                 }
             }
@@ -190,7 +284,7 @@ namespace Trait_Editor
 
         private TextBox GetCell(int x, int y)
         {
-            foreach (var row in Rows)
+            foreach (var row in _rows)
             {
                 foreach (var cell in row.Value)
                 {
