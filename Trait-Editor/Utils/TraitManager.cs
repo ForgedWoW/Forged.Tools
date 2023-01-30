@@ -19,6 +19,7 @@ namespace Trait_Editor.Utils
         public static Dictionary<uint, TraitTree> TraitTrees = new();
         public static Dictionary<uint, List<TraitTreeLoadoutEntryRecord>> TraitTreeLoadoutsByChrSpecialization = new();
         public static Dictionary<uint, TraitNode> TraitNodes = new();
+        public static Dictionary<uint, TraitDefinitionRecord> TraitDefinitionByNodeID = new();
 
         static Dictionary<uint, TraitNodeGroup> _traitGroups = new();
         static uint[] _skillLinesByClass = new uint[15];
@@ -316,8 +317,16 @@ namespace Trait_Editor.Utils
                     .Add(traitTreeLoadoutRecord.Value);
             }
 
+            Dictionary<uint, List<uint>> treeSpecs = new Dictionary<uint, List<uint>>();
+
             foreach (var traitTreeLoadout in DataAccess.TraitTreeLoadoutStorage)
             {
+                if (!treeSpecs.ContainsKey(traitTreeLoadout.Value.TraitTreeID))
+                    treeSpecs.Add(traitTreeLoadout.Value.TraitTreeID, new List<uint>());
+
+                if (!treeSpecs[traitTreeLoadout.Value.TraitTreeID].Contains(traitTreeLoadout.Value.ChrSpecializationID))
+                    treeSpecs[traitTreeLoadout.Value.TraitTreeID].Add(traitTreeLoadout.Value.ChrSpecializationID);
+
                 if (traitTreeLoadoutEntries.ContainsKey(traitTreeLoadout.Value.Id))
                 {
                     var entries = traitTreeLoadoutEntries[traitTreeLoadout.Value.Id];
@@ -327,8 +336,14 @@ namespace Trait_Editor.Utils
                         TraitTreeLoadoutsByChrSpecialization.Add(traitTreeLoadout.Value.ChrSpecializationID, new List<TraitTreeLoadoutEntryRecord>());
 
                     // there should be only one loadout per spec, we take last one encountered
-                    TraitTreeLoadoutsByChrSpecialization[traitTreeLoadout.Value.ChrSpecializationID] = entries.ToList();
+                    TraitTreeLoadoutsByChrSpecialization[traitTreeLoadout.Value.ChrSpecializationID].AddRange(entries.ToList());
                 }
+            }
+
+            foreach (var node in DataAccess.TraitNodeXTraitNodeEntryStorage)
+            {
+                var entry = DataAccess.TraitNodeEntryStorage[node.Value.TraitNodeEntryID];
+                TraitDefinitionByNodeID[node.Value.Id] = DataAccess.TraitDefinitionStorage[entry.TraitDefinitionID];
             }
 
             string test = "";

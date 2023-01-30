@@ -1,5 +1,7 @@
 using Framework.Constants;
+using Framework.GameMath;
 using System.Data;
+using System.Xml.Linq;
 using Trait_Editor.Models;
 using Trait_Editor.Utils;
 
@@ -24,7 +26,8 @@ namespace Trait_Editor
             BuildGrid();
             PopulateTrees();
             listTrees.SelectedIndexChanged += ListTrees_SelectedIndexChanged;
-            
+            listTrees.Anchor = AnchorStyles.Left | AnchorStyles.Top | AnchorStyles.Bottom;
+
             FormClosed += MainForm_FormClosed;
         }
 
@@ -40,18 +43,7 @@ namespace Trait_Editor
                 ClearCells();
                 var selected = (TreeListItem)listTrees.SelectedItem;
                 SelectedTree = selected.TreeID;
-
-                //foreach(var node in TraitManager.TraitTrees[SelectedTree].Nodes)
-                //{
-                //    var coord = new Coordinate(node.Data.PosX, node.Data.PosY);
-                //    var cell = GetCell(coord);
-
-                //    if (cell != null)
-                //    {
-                //        // DataAccess.SkillLineStorage for info
-                //        cell.Value = "Thing";
-                //    }
-                //}
+                var tree = TraitManager.TraitTrees[SelectedTree];
 
                 foreach (var spec in TraitManager.TraitTreeLoadoutsByChrSpecialization[(uint)selected.SpecID])
                 {
@@ -61,10 +53,32 @@ namespace Trait_Editor
                     if (cell != null)
                     {
                         // DataAccess.SkillLineStorage for info
-                        cell.Text = "Test";
-                        ((CellValue)cell.Tag).Display = "Test";
+                        AddCellData(cell, node);
                     }
                 }
+            }
+        }
+
+        private static void AddCellData(TextBox cell, TraitNode node)
+        {
+            if (string.IsNullOrEmpty(cell.Text))
+            {
+                string display = "Not Found";
+                if (TraitManager.TraitDefinitionByNodeID.ContainsKey(node.Data.Id))
+                {
+                    var def = TraitManager.TraitDefinitionByNodeID[node.Data.Id];
+                    ((CellValue)cell.Tag).SpellID = def.SpellID;
+                    display = def.OverrideName[Locale.enUS];
+
+                    if (string.IsNullOrWhiteSpace(display))
+                    {
+                        display = DataAccess.SpellNameStorage[def.SpellID].Name[Locale.enUS];
+                    }
+                }
+
+                ((CellValue)cell.Tag).Display = display;
+                cell.Text = display;
+                cell.BackColor = Color.White;
             }
         }
 
@@ -136,13 +150,16 @@ namespace Trait_Editor
                     TextBox box = new TextBox();
                     box.Multiline = true;
                     box.Parent = gridContainer;
-                    box.Location = new Point(12 + (columnIndex * 56), 12 + (rowIndex * 56));
+                    box.Location = new Point(12 + (columnIndex * 52), 12 + (rowIndex * 52));
                     box.Size = new Size(50, 50);
                     box.Tag = new CellValue() { Coordinate = new Coordinate(curX, curY) };
                     box.Enabled = true;
                     box.Visible = true;
                     box.ReadOnly= true;
                     box.DoubleClick += Box_DoubleClick;
+                    box.BackColor = Color.Gray;
+                    box.ForeColor = Color.Black;
+                    box.Cursor = Cursors.Arrow;
 
                     row.Add(box);
 
@@ -164,7 +181,8 @@ namespace Trait_Editor
                     if (cell.Tag != null)
                     {
                         cell.Text = string.Empty;
-                        ((CellValue)cell.Tag).Display = string.Empty;
+                        ((CellValue)cell.Tag).Clear();
+                        cell.BackColor = Color.Gray;
                     }
                 }
             }

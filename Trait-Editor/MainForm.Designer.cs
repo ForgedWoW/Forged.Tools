@@ -46,10 +46,12 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackColor = System.Drawing.SystemColors.Desktop;
             this.ClientSize = new System.Drawing.Size(1284, 1261);
             this.Controls.Add(this.listTrees);
+            this.ForeColor = System.Drawing.SystemColors.ControlLight;
             this.Name = "MainForm";
-            this.Text = "text text text text";
+            this.Text = "Trait Editor";
             this.ResumeLayout(false);
 
         }

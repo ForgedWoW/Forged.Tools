@@ -17,37 +17,37 @@ namespace Trait_Editor.Utils
 {
     public static class DataAccess
     {
-        public static DB6Storage<SkillLineRecord> SkillLineStorage;
-        public static DB6Storage<SkillLineXTraitTreeRecord> SkillLineXTraitTreeStorage;
-        public static DB6Storage<SkillRaceClassInfoRecord> SkillRaceClassInfoStorage;
-        public static DB6Storage<TraitSystemRecord> TraitSystemStorage;
-        public static DB6Storage<TraitCondRecord> TraitCondStorage;
-        public static DB6Storage<TraitCostRecord> TraitCostStorage;
-        public static DB6Storage<TraitCurrencyRecord> TraitCurrencyStorage;
-        public static DB6Storage<TraitCurrencySourceRecord> TraitCurrencySourceStorage;
-        public static DB6Storage<TraitCurrencySourceLocaleRecord> TraitCurrencySourceLocaleStorage;
-        public static DB6Storage<TraitDefinitionRecord> TraitDefinitionStorage;
-        public static DB6Storage<TraitDefinitionEffectPointsRecord> TraitDefinitionEffectPointsStorage;
-        public static DB6Storage<TraitDefinitionLocaleRecord> TraitDefinitionLocaleStorage;
-        public static DB6Storage<TraitEdgeRecord> TraitEdgeStorage;
-        public static DB6Storage<TraitNodeRecord> TraitNodeStorage;
-        public static DB6Storage<TraitNodeEntryRecord> TraitNodeEntryStorage;
-        public static DB6Storage<TraitNodeEntryXTraitCondRecord> TraitNodeEntryXTraitCondStorage;
-        public static DB6Storage<TraitNodeEntryXTraitCostRecord> TraitNodeEntryXTraitCostStorage;
-        public static DB6Storage<TraitNodeGroupRecord> TraitNodeGroupStorage;
-        public static DB6Storage<TraitNodeGroupXTraitCondRecord> TraitNodeGroupXTraitCondStorage;
-        public static DB6Storage<TraitNodeGroupXTraitCostRecord> TraitNodeGroupXTraitCostStorage;
-        public static DB6Storage<TraitNodeGroupXTraitNodeRecord> TraitNodeGroupXTraitNodeStorage;
-        public static DB6Storage<TraitNodeXTraitCondRecord> TraitNodeXTraitCondStorage;
-        public static DB6Storage<TraitNodeXTraitCostRecord> TraitNodeXTraitCostStorage;
-        public static DB6Storage<TraitNodeXTraitNodeEntryRecord> TraitNodeXTraitNodeEntryStorage;
-        public static DB6Storage<TraitTreeRecord> TraitTreeStorage;
-        public static DB6Storage<TraitTreeLoadoutRecord> TraitTreeLoadoutStorage;
-        public static DB6Storage<TraitTreeLoadoutEntryRecord> TraitTreeLoadoutEntryStorage;
-        public static DB6Storage<TraitTreeXTraitCostRecord> TraitTreeXTraitCostStorage;
-        public static DB6Storage<TraitTreeXTraitCurrencyRecord> TraitTreeXTraitCurrencyStorage;
+        public static DB6Storage<SpecSetMemberRecord> SpecSetMemberStorage { get; private set; }
+        public static DB6Storage<SkillLineRecord> SkillLineStorage { get; private set; }
+        public static DB6Storage<SkillLineXTraitTreeRecord> SkillLineXTraitTreeStorage { get; private set; }
+        public static DB6Storage<SkillRaceClassInfoRecord> SkillRaceClassInfoStorage { get; private set; }
+        public static DB6Storage<TraitSystemRecord> TraitSystemStorage { get; private set; }
+        public static DB6Storage<TraitCondRecord> TraitCondStorage { get; private set; }
+        public static DB6Storage<TraitCostRecord> TraitCostStorage { get; private set; }
+        public static DB6Storage<TraitCurrencyRecord> TraitCurrencyStorage { get; private set; }
+        public static DB6Storage<TraitCurrencySourceRecord> TraitCurrencySourceStorage { get; private set; }
+        public static DB6Storage<TraitDefinitionRecord> TraitDefinitionStorage { get; private set; }
+        public static DB6Storage<TraitDefinitionEffectPointsRecord> TraitDefinitionEffectPointsStorage { get; private set; }
+        public static DB6Storage<TraitEdgeRecord> TraitEdgeStorage { get; private set; }
+        public static DB6Storage<TraitNodeRecord> TraitNodeStorage { get; private set; }
+        public static DB6Storage<TraitNodeEntryRecord> TraitNodeEntryStorage { get; private set; }
+        public static DB6Storage<TraitNodeEntryXTraitCondRecord> TraitNodeEntryXTraitCondStorage { get; private set; }
+        public static DB6Storage<TraitNodeEntryXTraitCostRecord> TraitNodeEntryXTraitCostStorage { get; private set; }
+        public static DB6Storage<TraitNodeGroupRecord> TraitNodeGroupStorage { get; private set; }
+        public static DB6Storage<TraitNodeGroupXTraitCondRecord> TraitNodeGroupXTraitCondStorage { get; private set; }
+        public static DB6Storage<TraitNodeGroupXTraitCostRecord> TraitNodeGroupXTraitCostStorage { get; private set; }
+        public static DB6Storage<TraitNodeGroupXTraitNodeRecord> TraitNodeGroupXTraitNodeStorage { get; private set; }
+        public static DB6Storage<TraitNodeXTraitCondRecord> TraitNodeXTraitCondStorage { get; private set; }
+        public static DB6Storage<TraitNodeXTraitCostRecord> TraitNodeXTraitCostStorage { get; private set; }
+        public static DB6Storage<TraitNodeXTraitNodeEntryRecord> TraitNodeXTraitNodeEntryStorage { get; private set; }
+        public static DB6Storage<TraitTreeRecord> TraitTreeStorage { get; private set; }
+        public static DB6Storage<TraitTreeLoadoutRecord> TraitTreeLoadoutStorage { get; private set; }
+        public static DB6Storage<TraitTreeLoadoutEntryRecord> TraitTreeLoadoutEntryStorage { get; private set; }
+        public static DB6Storage<TraitTreeXTraitCostRecord> TraitTreeXTraitCostStorage { get; private set; }
+        public static DB6Storage<TraitTreeXTraitCurrencyRecord> TraitTreeXTraitCurrencyStorage { get; private set; }
+        public static DB6Storage<SpellNameRecord> SpellNameStorage { get; private set; }
 
-        public static Dictionary<uint, List<SkillRaceClassInfoRecord>> SkillRaceClassInfoSorted;
+        public static Dictionary<uint, List<SkillRaceClassInfoRecord>> SkillRaceClassInfoSorted { get; private set; }
 
         static string _db2Path = string.Empty;
         static BitSet _availableDb2Locales;
@@ -72,10 +72,11 @@ namespace Trait_Editor.Utils
             if (!_availableDb2Locales[(int)Locale.enUS])
                 return;
 
+            SpecSetMemberStorage = ReadDB2<SpecSetMemberRecord>("SpecSetMember.db2", HotfixStatements.SEL_SPEC_SET_MEMBER);
             SkillLineStorage = ReadDB2<SkillLineRecord>("SkillLine.db2", HotfixStatements.SEL_SKILL_LINE, HotfixStatements.SEL_SKILL_LINE_LOCALE);
             SkillLineXTraitTreeStorage = ReadDB2<SkillLineXTraitTreeRecord>("SkillLineXTraitTree.db2", HotfixStatements.SEL_SKILL_LINE_X_TRAIT_TREE);
             SkillRaceClassInfoStorage = ReadDB2<SkillRaceClassInfoRecord>("SkillRaceClassInfo.db2", HotfixStatements.SEL_SKILL_RACE_CLASS_INFO);
-            CliDB.SpellNameStorage = ReadDB2<SpellNameRecord>("SpellName.db2", HotfixStatements.SEL_SPELL_NAME, HotfixStatements.SEL_SPELL_NAME_LOCALE);
+            SpellNameStorage = ReadDB2<SpellNameRecord>("SpellName.db2", HotfixStatements.SEL_SPELL_NAME, HotfixStatements.SEL_SPELL_NAME_LOCALE);
             TraitSystemStorage = ReadDB2<TraitSystemRecord>("TraitSystem.db2", HotfixStatements.SEL_TRAIT_COND);
             TraitCondStorage = ReadDB2<TraitCondRecord>("TraitCond.db2", HotfixStatements.SEL_TRAIT_COND);
             TraitCostStorage = ReadDB2<TraitCostRecord>("TraitCost.db2", HotfixStatements.SEL_TRAIT_COST);
