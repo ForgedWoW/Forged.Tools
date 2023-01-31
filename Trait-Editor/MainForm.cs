@@ -33,7 +33,7 @@ namespace Trait_Editor
 
         private void gridContainer_Paint(object? sender, PaintEventArgs e)
         {
-            Pen pen = new Pen(Color.White, 3);
+            Pen pen = new Pen(Color.White, 2);
             
             foreach (var row in _rows)
             {
@@ -95,41 +95,6 @@ namespace Trait_Editor
                 }
 
                 _gridContainer.Refresh();
-                //foreach (var group in TraitManager.TraitNodeGroupByTree[SelectedTree])
-                //{
-                //    if (TraitManager.TraitNodesByGroup.ContainsKey(group))
-                //    {
-                //        var test = TraitManager.TraitTreeLoadoutsByChrSpecialization[(uint)selected.SpecID];
-
-                //        foreach (var nodeId in TraitManager.TraitNodesByGroup[group])
-                //        {
-                //            var node = TraitManager.TraitNodes[nodeId];
-                //            var cell = GetCell(node.Data.PosX, node.Data.PosY);
-
-                //            if (cell != null)
-                //            {
-                //                // DataAccess.SkillLineStorage for info
-                //                AddCellData(cell, node);
-                //            }
-                //        }
-                //    }
-                //}
-
-                //uint groupId = uint.Parse(selected.Description.Replace("Group: ", ""));
-                //foreach (var nodeId in TraitManager.TraitNodesByGroup[groupId])
-                //{
-                //    if (TraitManager.TraitNodes.ContainsKey(nodeId))
-                //    {
-                //        var node = TraitManager.TraitNodes[nodeId];
-                //        var cell = GetCell(node.Data.PosX, node.Data.PosY);
-
-                //        if (cell != null)
-                //        {
-                //            // DataAccess.SkillLineStorage for info
-                //            AddCellData(cell, node);
-                //        }
-                //    }
-                //}
             }
         }
 

@@ -241,21 +241,15 @@ namespace Trait_Editor.Utils
             foreach (var traitTreeLoadoutRecord in DataAccess.TraitTreeLoadoutEntryStorage)
                 traitTreeLoadoutEntries.AddListItem(traitTreeLoadoutRecord.Value.TraitTreeLoadoutID, traitTreeLoadoutRecord.Value);
 
-            Dictionary<uint, List<uint>> treeSpecs = new Dictionary<uint, List<uint>>();
-
             foreach (var traitTreeLoadout in DataAccess.TraitTreeLoadoutStorage)
             {
-                treeSpecs.AddListItem(traitTreeLoadout.Value.TraitTreeID, traitTreeLoadout.Value.ChrSpecializationID);
-
                 if (traitTreeLoadoutEntries.ContainsKey(traitTreeLoadout.Value.Id))
                 {
-                    var entries = traitTreeLoadoutEntries[traitTreeLoadout.Value.Id].OrderBy(a => a.OrderIndex).ToList();
-
                     if (!TraitTreeLoadoutsByChrSpecialization.ContainsKey(traitTreeLoadout.Value.ChrSpecializationID))
                         TraitTreeLoadoutsByChrSpecialization.Add(traitTreeLoadout.Value.ChrSpecializationID, new List<TraitTreeLoadoutEntryRecord>());
 
                     // there should be only one loadout per spec, we take last one encountered
-                    TraitTreeLoadoutsByChrSpecialization[traitTreeLoadout.Value.ChrSpecializationID].AddRange(entries);
+                    TraitTreeLoadoutsByChrSpecialization[traitTreeLoadout.Value.ChrSpecializationID] = traitTreeLoadoutEntries[traitTreeLoadout.Value.Id];
                 }
             }
 
