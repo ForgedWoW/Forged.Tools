@@ -241,7 +241,7 @@ namespace Trait_Editor.Utils
             foreach (var traitTreeLoadoutRecord in DataAccess.TraitTreeLoadoutEntryStorage)
                 traitTreeLoadoutEntries.AddListItem(traitTreeLoadoutRecord.Value.TraitTreeLoadoutID, traitTreeLoadoutRecord.Value);
 
-            foreach (var traitTreeLoadout in DataAccess.TraitTreeLoadoutStorage)
+            foreach (var traitTreeLoadout in DataAccess.TraitTreeLoadoutStorage.OrderBy(a => a.Key))
             {
                 if (traitTreeLoadoutEntries.ContainsKey(traitTreeLoadout.Value.Id))
                 {

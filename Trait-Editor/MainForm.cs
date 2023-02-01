@@ -13,7 +13,7 @@ namespace Trait_Editor
         public TextBox SelectedCell;
 
         private ContainerControl _gridContainer;
-        private Dictionary<int, List<TextBox>> _rows = new();
+        private Dictionary<uint, TextBox> _nodes = new();
 
         public MainForm()
         {
@@ -22,7 +22,7 @@ namespace Trait_Editor
             DataAccess.LoadStores();
             TraitManager.Load();
 
-            BuildGrid();
+            BuildGridContainer();
             PopulateTrees();
             listTrees.SelectedIndexChanged += ListTrees_SelectedIndexChanged;
             listTrees.Anchor = AnchorStyles.Left | AnchorStyles.Top | AnchorStyles.Bottom;
@@ -34,26 +34,27 @@ namespace Trait_Editor
         private void gridContainer_Paint(object? sender, PaintEventArgs e)
         {
             Pen pen = new Pen(Color.White, 2);
-            
-            foreach (var row in _rows)
+
+            foreach (var cell in _nodes.Values)
             {
-                foreach (var cell in row.Value)
+                CellValue cellVal = (CellValue)cell.Tag;
+
+                if (cellVal.SpellID != 0)
                 {
-                    CellValue cellVal = (CellValue)cell.Tag;
+                    var node = TraitManager.TraitNodes[cellVal.TraitNodeID];
 
-                    if (cellVal.SpellID != 0)
+                    if (node.ParentNodes.Count > 0)
                     {
-                        var node = TraitManager.TraitNodes[cellVal.TraitNodeID];
+                        var p1 = new Point(cell.Location.X + (cell.Width / 2), cell.Location.Y + (cell.Height / 2));
 
-                        if (node.ParentNodes.Count > 0)
+                        foreach (var pnode in node.ParentNodes)
                         {
-                            var p1 = new Point(cell.Location.X + (cell.Width / 2), cell.Location.Y + (cell.Height / 2));
+                            //var pcell = GetCell(pnode.Key.Data.PosX, pnode.Key.Data.PosY);
+                            var pcell = GetCell(pnode.Key.Data.Id);
 
-                            foreach (var pnode in node.ParentNodes)
+                            if (pcell != null)
                             {
-                                var pcell = GetCell(pnode.Key.Data.PosX, pnode.Key.Data.PosY);
                                 var p2 = new Point(pcell.Location.X + (pcell.Width / 2), pcell.Location.Y + (pcell.Height / 2));
-
                                 e.Graphics.DrawLine(pen, p1, p2);
                             }
                         }
@@ -78,14 +79,15 @@ namespace Trait_Editor
                 SelectedTree = selected.TreeID;
                 var tree = TraitManager.TraitTrees[SelectedTree];
 
-                var def = DataAccess.TraitDefinitionStorage.Where(a => a.Value.SpellID == 108416).ToList().First().Key;
-                var dpNodeEntry = DataAccess.TraitNodeEntryStorage.Where(a => a.Value.TraitDefinitionID == def).First().Value.Id;
-                var dpNode = TraitManager.TraitNodes[DataAccess.TraitNodeXTraitNodeEntryStorage.Where(a => a.Value.TraitNodeEntryID == dpNodeEntry).First().Value.TraitNodeID];
+                //var def = DataAccess.TraitDefinitionStorage.Where(a => a.Value.SpellID == 108416).ToList().First().Key;
+                //var dpNodeEntry = DataAccess.TraitNodeEntryStorage.Where(a => a.Value.TraitDefinitionID == def).First().Value.Id;
+                //var dpNode = TraitManager.TraitNodes[DataAccess.TraitNodeXTraitNodeEntryStorage.Where(a => a.Value.TraitNodeEntryID == dpNodeEntry).First().Value.TraitNodeID];
 
                 foreach (var spec in TraitManager.TraitTreeLoadoutsByChrSpecialization[(uint)selected.SpecID])
                 {
                     var node = TraitManager.TraitNodes[spec.SelectedTraitNodeID];
-                    var cell = GetCell(node.Data.PosX, node.Data.PosY);
+                    var cell = CreateCell(node.Data.PosX, node.Data.PosY);
+                    _nodes[node.Data.Id] = cell;
 
                     if (cell != null)
                     {
@@ -142,19 +144,6 @@ namespace Trait_Editor
 
                 listTrees.Items.Add(item);
             }
-
-            //foreach (var group in TraitManager.TraitNodesByGroup)
-            //{
-            //    var item = new TreeListItem()
-            //    {
-            //        SpecID = 0,
-            //        Class = 0,
-            //        TreeID = 0
-            //    };
-            //    item.Description = $"Group: {group.Key}";
-
-            //    listTrees.Items.Add(item);
-            //}
         }
 
         private void Box_DoubleClick(object? sender, EventArgs e)
@@ -165,7 +154,7 @@ namespace Trait_Editor
             }
         }
 
-        private void BuildGrid()
+        private void BuildGridContainer()
         {
             _gridContainer = new ContainerControl();
             _gridContainer.Parent = this;
@@ -175,90 +164,41 @@ namespace Trait_Editor
             _gridContainer.Visible = true;
             _gridContainer.Enabled = true;
             _gridContainer.Anchor = AnchorStyles.Right | AnchorStyles.Left | AnchorStyles.Top | AnchorStyles.Bottom;
-
-            int curX = 0;
-            int curY = -300;
-
-            List<DataGridViewColumn> cols = new List<DataGridViewColumn>();
-
-            while (curX < 16900)
-            {
-                cols.Add(new DataGridViewColumn()
-                {
-                    Name = curX.ToString(),
-                    Tag = curX,
-                    CellTemplate = new DataGridViewTextBoxCell()
-                });
-
-                curX += 300;
-            }
-
-            int rowIndex = 0;
-            int columnIndex = 0;
-
-            while (curY < 7000)
-            {
-                List<TextBox> row = new();
-                _rows[rowIndex] = row;
-
-                curX = 0;
-                columnIndex = 0;
-                while (curX < 16900)
-                {
-                    TextBox box = new TextBox();
-                    box.Multiline = true;
-                    box.Parent = _gridContainer;
-                    box.Location = new Point(12 + (columnIndex * 52), 12 + (rowIndex * 52));
-                    box.Size = new Size(50, 50);
-                    box.Tag = new CellValue() { Coordinate = new Coordinate(curX, curY) };
-                    box.Enabled = true;
-                    box.Visible = false;
-                    box.ReadOnly= true;
-                    box.DoubleClick += Box_DoubleClick;
-                    box.BackColor = Color.Gray;
-                    box.ForeColor = Color.Black;
-                    box.Cursor = Cursors.Arrow;
-
-                    row.Add(box);
-
-                    curX += 300;
-                    columnIndex++;
-                }
-
-                curY += 300;
-                rowIndex++;
-            }
         }
 
         private void ClearCells()
         {
-            foreach (var row in _rows)
+            foreach (var node in _nodes)
             {
-                foreach (var cell in row.Value)
-                {
-                    if (cell.Tag != null)
-                    {
-                        cell.Text = string.Empty;
-                        ((CellValue)cell.Tag).Clear();
-                        cell.BackColor = Color.Gray;
-                        cell.Visible = false;
-                    }
-                }
+                node.Value.Dispose();
             }
+
+            _nodes.Clear();
+            _gridContainer.Controls.Clear();
         }
 
-        private TextBox GetCell(int x, int y)
+        private TextBox GetCell(uint nodeId)
         {
-            foreach (var row in _rows)
-            {
-                foreach (var cell in row.Value)
-                {
-                    if (((CellValue)cell.Tag).CompareCoordinate(x, y))
-                        return cell;
-                }
-            }
+            return _nodes.ContainsKey(nodeId) ? _nodes[nodeId] : null;
+        }
 
-            return null;
+        private TextBox CreateCell(int x, int y)
+        {
+            TextBox box = new TextBox();
+            box.Multiline = true;
+            box.Parent = _gridContainer;
+            box.Location = new Point(x != 0 ? x / 7 : x, y != 0 ? y / 7 : y); // dont divide xy for size if it is 0
+            box.Size = new Size(50, 50);
+            box.Tag = new CellValue() { Coordinate = new Coordinate(x, y) };
+            box.Enabled = true;
+            box.Visible = false;
+            box.ReadOnly = true;
+            box.DoubleClick += Box_DoubleClick;
+            box.BackColor = Color.Gray;
+            box.ForeColor = Color.Black;
+            box.Cursor = Cursors.Arrow;
+
+            return box;
         }
     }
 }
