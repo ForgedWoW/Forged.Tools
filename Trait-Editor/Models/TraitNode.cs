@@ -12,8 +12,8 @@ namespace Trait_Editor.Models
         public TraitNodeRecord Data = new();
         public List<TraitNodeEntry> Entries = new();
         public List<TraitNodeGroup> Groups = new();
-        public Dictionary<TraitNode, TraitEdgeType> ParentNodes = new();
         public List<TraitCondRecord> Conditions = new();
         public List<TraitCostRecord> Costs = new();
+        public List<Tuple<TraitNode, TraitEdgeType>> ParentNodes = new();
     }
 }

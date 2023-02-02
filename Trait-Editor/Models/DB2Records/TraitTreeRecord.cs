@@ -9,7 +9,7 @@ namespace Trait_Editor.Models.DB2Records
     public sealed class TraitTreeRecord
     {
         public uint Id;
-        public uint TraitSystemID;
+        public int TraitSystemID;
         public int Unused1000_1;
         public uint FirstTraitNodeID;
         public uint PlayerConditionID;

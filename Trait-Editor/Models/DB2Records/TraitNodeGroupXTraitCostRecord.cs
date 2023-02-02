@@ -9,7 +9,7 @@ namespace Trait_Editor.Models.DB2Records
     public sealed class TraitNodeGroupXTraitCostRecord
     {
         public uint Id;
-        public uint TraitNodeGroupID;
+        public int TraitNodeGroupID;
         public uint TraitCostID;
     }
 }

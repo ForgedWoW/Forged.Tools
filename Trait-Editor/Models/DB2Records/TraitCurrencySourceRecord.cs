@@ -11,7 +11,7 @@ namespace Trait_Editor.Models.DB2Records
     {
         public LocalizedString Requirement;
         public uint Id;
-        public uint TraitCurrencyID;
+        public int TraitCurrencyID;
         public int Amount;
         public uint QuestID;
         public uint AchievementID;

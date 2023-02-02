@@ -10,6 +10,6 @@ namespace Trait_Editor.Models.DB2Records
     {
         public uint Id;
         public uint TraitTreeID;
-        public uint ChrSpecializationID;
+        public int ChrSpecializationID;
     }
 }

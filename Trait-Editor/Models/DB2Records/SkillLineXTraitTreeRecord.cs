@@ -9,7 +9,7 @@ namespace Trait_Editor.Models.DB2Records
     public sealed class SkillLineXTraitTreeRecord
     {
         public uint Id;
-        public uint SkillLineID;
+        public int SkillLineID;
         public uint TraitTreeID;
         public int OrderIndex;
     }

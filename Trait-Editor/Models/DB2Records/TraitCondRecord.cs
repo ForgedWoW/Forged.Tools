@@ -14,7 +14,7 @@ namespace Trait_Editor.Models.DB2Records
         public int GrantedRanks;
         public uint QuestID;
         public uint AchievementID;
-        public uint SpecSetID;
+        public int SpecSetID;
         public uint TraitNodeGroupID;
         public uint TraitNodeID;
         public uint TraitCurrencyID;

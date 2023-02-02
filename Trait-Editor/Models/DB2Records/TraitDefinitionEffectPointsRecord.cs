@@ -9,7 +9,7 @@ namespace Trait_Editor.Models.DB2Records
     public sealed class TraitDefinitionEffectPointsRecord
     {
         public uint Id;
-        public uint TraitDefinitionID;
+        public int TraitDefinitionID;
         public int EffectIndex;
         public int OperationType;
         public uint CurveID;

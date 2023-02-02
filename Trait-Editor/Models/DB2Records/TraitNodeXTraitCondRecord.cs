@@ -10,6 +10,6 @@ namespace Trait_Editor.Models.DB2Records
     {
         public uint Id;
         public uint TraitCondID;
-        public uint TraitNodeID;
+        public int TraitNodeID;
     }
 }

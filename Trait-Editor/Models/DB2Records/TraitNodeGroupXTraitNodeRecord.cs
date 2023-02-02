@@ -9,8 +9,8 @@ namespace Trait_Editor.Models.DB2Records
     public sealed class TraitNodeGroupXTraitNodeRecord
     {
         public uint Id;
-        public uint TraitNodeGroupID;
-        public uint TraitNodeID;
+        public int TraitNodeGroupID;
+        public int TraitNodeID;
         public int Index;
     }
 }

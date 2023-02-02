@@ -10,7 +10,7 @@ namespace Trait_Editor.Models.DB2Records
     {
         public uint Id;
         public int Index;
-        public uint TraitTreeID;
+        public int TraitTreeID;
         public uint TraitCurrencyID;
     }
 }
