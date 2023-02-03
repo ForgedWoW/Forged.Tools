@@ -139,9 +139,20 @@ namespace Trait_Editor.Models
         Preservation = 1468
     }
 
-    public enum SpecSet
+    public enum ClassTraitCurrencyID
     {
-        None = 0,
-        Tank = 1,
+        Mage = 2517,
+        Evoker = 2629,
+        Warlock = 2665,
+        Deathknight = 2724,
+        Hunter = 2770,
+        Monk = 2778,
+        Shaman = 2786,
+        Paladin = 2795,
+        Druid = 2801,
+        Priest = 2805,
+        Warrior = 2896,
+        Rogue = 2900,
+        DemonHunter = 2904
     }
 }

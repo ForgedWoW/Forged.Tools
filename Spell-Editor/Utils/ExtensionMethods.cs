@@ -119,8 +119,13 @@ namespace Spell_Editor.Utils
 
         public static Image GetImage(this SpellIconRecord iconRecord)
         {
-            return Image.FromFile(Settings.Default.IconDir.Replace("{FullSpellEditorPath}", System.Reflection.Assembly.GetEntryAssembly().Location.Replace("Spell-Editor.dll", ""))
-                + iconRecord.TextureFilename + ".png");
+            var path = Settings.Default.IconDir.Replace("{FullSpellEditorPath}", System.Reflection.Assembly.GetEntryAssembly().Location.Replace("Spell-Editor.dll", ""))
+                + iconRecord.TextureFilename + ".png";
+
+            if (File.Exists(path))
+                return Image.FromFile(path);
+
+            return null;
         }
 
         public static void MakeNumberBox(this TextBox txtBox)

@@ -12,11 +12,11 @@ namespace Trait_Editor
 {
     public partial class MainForm : Form
     {
-        public uint SelectedTree = 0;
+        public SpecID SelectedSpec = SpecID.None;
         public TextBox SelectedCell;
 
         private ContainerControl _gridContainer;
-        private Dictionary<uint, TextBox> _nodes = new();
+        private Dictionary<uint, PictureBox> _nodes = new();
         private bool _building = false;
 
         public MainForm()
@@ -81,43 +81,47 @@ namespace Trait_Editor
             if (listTrees.SelectedItem == null)
                 return;
 
+            var selected = (TreeListItem)listTrees.SelectedItem;
+
+            if (SelectedSpec == selected.SpecID)
+                return;
+
             _building = true;
             ClearCells();
-            var selected = (TreeListItem)listTrees.SelectedItem;
-            SelectedTree = selected.TreeID;
+            uint spec = (uint)selected.SpecID;
+            SelectedSpec = selected.SpecID;
 
-            foreach (var node in TraitManager.TraitTrees[SelectedTree].Nodes)
-            {
-                if (_nodes.ContainsKey(node.Data.Id))
-                    continue;
+            var trees = TraitManager.GetTraitTreesBySpecID((int)spec);
+            List<TraitNode> genericNodes = new List<TraitNode>();
 
-                foreach (TraitNodeEntry entry in node.Entries)
-                    foreach (TraitCondRecord condition in entry.Conditions)
-                        if (TraitManager.IsSpecSetMember(condition.SpecSetID, (uint)selected.SpecID))
-                            CreateNode(node);
+            foreach (var tree in trees)
+                foreach (var node in tree.Nodes)
+                {
+                    if (_nodes.ContainsKey(node.Data.Id))
+                        continue;
 
-                foreach (TraitCondRecord condition in node.Conditions)
-                    if (TraitManager.IsSpecSetMember(condition.SpecSetID, (uint)selected.SpecID))
-                        foreach (TraitNodeEntry entry in node.Entries)
-                            CreateNode(node);
+                    foreach (TraitNodeEntry entry in node.Entries)
+                        foreach (TraitCondRecord condition in entry.Conditions)
+                            if (TraitManager.IsSpecSetMember(condition.SpecSetID, spec))
+                                CreateNode(node);
 
-                foreach (TraitNodeGroup group in node.Groups)
-                    foreach (TraitCondRecord condition in group.Conditions)
-                        if (TraitManager.IsSpecSetMember(condition.SpecSetID, (uint)selected.SpecID))
+                    foreach (TraitCondRecord condition in node.Conditions)
+                        if (TraitManager.IsSpecSetMember(condition.SpecSetID, spec))
                             foreach (TraitNodeEntry entry in node.Entries)
                                 CreateNode(node);
-            }
 
+                    foreach (TraitNodeGroup group in node.Groups)
+                    {
+                        foreach (TraitCondRecord condition in group.Conditions)
+                            if (TraitManager.IsSpecSetMember(condition.SpecSetID, spec))
+                                foreach (TraitNodeEntry entry in node.Entries)
+                                    CreateNode(node);
 
-            var loadoutEntries = TraitManager.TraitTreeLoadoutsByChrSpecialization[(int)selected.SpecID];
-
-            foreach (TraitTreeLoadoutEntryRecord loadoutEntry in loadoutEntries)
-            {
-                if (_nodes.ContainsKey(loadoutEntry.SelectedTraitNodeID) || !TraitManager.TraitNodes.ContainsKey(loadoutEntry.SelectedTraitNodeID))
-                    continue;
-
-                CreateNode(TraitManager.TraitNodes[loadoutEntry.SelectedTraitNodeID]);
-            }
+                        foreach (var cost in group.Costs)
+                            if (cost.TraitCurrencyID == (int)Enum.Parse<ClassTraitCurrencyID>(selected.Class.ToString()))
+                                CreateNode(node);
+                    }
+                }
 
             _building = false;
             _gridContainer.Refresh();
@@ -125,6 +129,9 @@ namespace Trait_Editor
 
         private void CreateNode(TraitNode node)
         {
+            if (_nodes.ContainsKey(node.Data.Id))
+                return;
+
             var cell = CreateCell(node.Data.PosX, node.Data.PosY);
             _nodes[node.Data.Id] = cell;
 
@@ -135,7 +142,7 @@ namespace Trait_Editor
             }
         }
 
-        private static void AddCellData(TextBox cell, TraitNode node)
+        private static void AddCellData(PictureBox cell, TraitNode node)
         {
             if (!string.IsNullOrEmpty(cell.Text))
                 return;
@@ -154,7 +161,20 @@ namespace Trait_Editor
 
                     if (string.IsNullOrWhiteSpace(display))
                     {
-                        display = DataAccess.SpellNameStorage[def.SpellID].Name[Locale.enUS];
+                        if (def.OverridesSpellID != 0)
+                            display = DataAccess.SpellNameStorage[def.OverridesSpellID].Name[Locale.enUS];
+                        else
+                            display = DataAccess.SpellNameStorage[def.SpellID].Name[Locale.enUS];
+                    }
+
+                    if (def.OverrideIcon != 0)
+                        cell.BackgroundImage = DataAccess.GetIcon(def.OverrideIcon);
+                    else
+                    {
+                        if (def.OverridesSpellID != 0)
+                            cell.BackgroundImage = DataAccess.GetIcon(def.OverridesSpellID);
+                        else
+                            cell.BackgroundImage = DataAccess.GetIcon(def.SpellID);
                     }
                 }
             }
@@ -162,8 +182,6 @@ namespace Trait_Editor
             cellVal.Display = display;
             cellVal.TraitNodeID = node.Data.Id;
             cell.Text = display;
-            cell.BackColor = Color.White;
-            cell.Visible = true;
         }
 
         private void PopulateTrees()
@@ -214,26 +232,22 @@ namespace Trait_Editor
             _gridContainer.Controls.Clear();
         }
 
-        private TextBox GetCell(uint nodeId)
+        private PictureBox GetCell(uint nodeId)
         {
             return _nodes.ContainsKey(nodeId) ? _nodes[nodeId] : null;
         }
 
-        private TextBox CreateCell(int x, int y)
+        private PictureBox CreateCell(int x, int y)
         {
-            TextBox box = new TextBox();
-            box.Multiline = true;
+            PictureBox box = new PictureBox();
             box.Parent = _gridContainer;
             box.Location = new Point(x != 0 ? x / 7 : x, y != 0 ? y / 7 : y); // dont divide xy for size if it is 0
             box.Size = new Size(50, 50);
             box.Tag = new CellValue() { Coordinate = new Coordinate(x, y) };
             box.Enabled = true;
-            box.Visible = false;
-            box.ReadOnly = true;
             box.DoubleClick += Box_DoubleClick;
-            box.BackColor = Color.Gray;
-            box.ForeColor = Color.Black;
             box.Cursor = Cursors.Arrow;
+            box.BackgroundImageLayout = ImageLayout.Stretch;
 
             return box;
         }

@@ -23,5 +23,8 @@
     <Setting Name="BuildNumber" Type="System.String" Scope="User">
       <Value Profile="(Default)">2147483647</Value>
     </Setting>
+    <Setting Name="IconDir" Type="System.String" Scope="User">
+      <Value Profile="(Default)">{FullTraitEditorPath}</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

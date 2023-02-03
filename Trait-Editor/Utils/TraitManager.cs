@@ -372,5 +372,15 @@ namespace Trait_Editor.Utils
             ClassSpecs[(int)SpecID.Devastation] = Class.Evoker;
             ClassSpecs[(int)SpecID.Preservation] = Class.Evoker;
         }
+
+        public static List<TraitTree> GetTraitTreesBySpecID(int specID)
+        {
+            ChrSpecializationRecord chrSpecializationEntry = DataAccess.ChrSpecializationStorage.LookupByKey(specID);
+
+            if (chrSpecializationEntry != null)
+                return _traitTreesBySkillLine.LookupByKey(_skillLinesByClass[chrSpecializationEntry.ClassID]);
+
+            return null;
+        }
     }
 }

@@ -17,10 +17,12 @@ namespace Trait_Editor.Utils
 {
     public static class DataAccess
     {
+        public static DB6Storage<ChrSpecializationRecord> ChrSpecializationStorage { get; private set; }
         public static DB6Storage<SpecSetMemberRecord> SpecSetMemberStorage { get; private set; }
         public static DB6Storage<SkillLineRecord> SkillLineStorage { get; private set; }
         public static DB6Storage<SkillLineXTraitTreeRecord> SkillLineXTraitTreeStorage { get; private set; }
         public static DB6Storage<SkillRaceClassInfoRecord> SkillRaceClassInfoStorage { get; private set; }
+        public static DB6Storage<SpellIconRecord> SpellIconStorage { get; private set; }
         public static DB6Storage<TraitSystemRecord> TraitSystemStorage { get; private set; }
         public static DB6Storage<TraitCondRecord> TraitCondStorage { get; private set; }
         public static DB6Storage<TraitCostRecord> TraitCostStorage { get; private set; }
@@ -47,7 +49,8 @@ namespace Trait_Editor.Utils
         public static DB6Storage<TraitTreeXTraitCurrencyRecord> TraitTreeXTraitCurrencyStorage { get; private set; }
         public static DB6Storage<SpellNameRecord> SpellNameStorage { get; private set; }
 
-        public static Dictionary<uint, List<SkillRaceClassInfoRecord>> SkillRaceClassInfoSorted { get; private set; }
+        public static Dictionary<uint, List<SkillRaceClassInfoRecord>> SkillRaceClassInfoSorted { get; private set; } = new();
+        public static Dictionary<uint, SpellMiscRecord> SpellMiscBySpellID { get; private set; } = new();
 
         static string _db2Path = string.Empty;
         static BitSet _availableDb2Locales;
@@ -72,6 +75,7 @@ namespace Trait_Editor.Utils
             if (!_availableDb2Locales[(int)Locale.enUS])
                 return;
 
+            ChrSpecializationStorage = ReadDB2<ChrSpecializationRecord>("ChrSpecialization.db2", HotfixStatements.SEL_CHR_SPECIALIZATION, HotfixStatements.SEL_CHR_SPECIALIZATION_LOCALE);
             SpecSetMemberStorage = ReadDB2<SpecSetMemberRecord>("SpecSetMember.db2", HotfixStatements.SEL_SPEC_SET_MEMBER);
             SkillLineStorage = ReadDB2<SkillLineRecord>("SkillLine.db2", HotfixStatements.SEL_SKILL_LINE, HotfixStatements.SEL_SKILL_LINE_LOCALE);
             SkillLineXTraitTreeStorage = ReadDB2<SkillLineXTraitTreeRecord>("SkillLineXTraitTree.db2", HotfixStatements.SEL_SKILL_LINE_X_TRAIT_TREE);
@@ -102,7 +106,6 @@ namespace Trait_Editor.Utils
             TraitTreeXTraitCostStorage = ReadDB2<TraitTreeXTraitCostRecord>("TraitTreeXTraitCost.db2", HotfixStatements.SEL_TRAIT_TREE_X_TRAIT_COST);
             TraitTreeXTraitCurrencyStorage = ReadDB2<TraitTreeXTraitCurrencyRecord>("TraitTreeXTraitCurrency.db2", HotfixStatements.SEL_TRAIT_TREE_X_TRAIT_CURRENCY);
 
-            SkillRaceClassInfoSorted = new();
             foreach (var entry in SkillRaceClassInfoStorage)
                 if (SkillLineStorage.ContainsKey(entry.Value.SkillID))
                 {
@@ -111,6 +114,25 @@ namespace Trait_Editor.Utils
 
                     SkillRaceClassInfoSorted[entry.Value.SkillID].Add(entry.Value);
                 }
+
+            // build and pre-order spell icons
+            SpellIconStorage = new DB6Storage<SpellIconRecord>();
+            var ordered = new List<SpellIconRecord>();
+            foreach (string line in File.ReadLines("IconIDs.csv"))
+            {
+                var split = line.Split(',');
+
+                if (uint.TryParse(split[0], out uint iconId))
+                    ordered.Add(new SpellIconRecord() { Id = iconId, TextureFilename = split[1] });
+            }
+
+            ordered.Sort((id1, id2) => id1.Id.CompareTo(id2.Id));
+            foreach (var item in ordered.OrderBy(i => i.Id))
+                SpellIconStorage.Add(item.Id, item);
+
+            var misc = ReadDB2<SpellMiscRecord>("SpellMisc.db2", HotfixStatements.SEL_SPELL_MISC);
+            foreach (var miscrec in misc)
+                SpellMiscBySpellID[miscrec.Value.SpellID] = miscrec.Value;
         }
 
         public static IOrderedEnumerable<KeyValuePair<uint, T>> ReadDB2Ordered<T>(string fileName, HotfixStatements preparedStatement, HotfixStatements preparedStatementLocale = 0) where T : new()
@@ -160,6 +182,22 @@ namespace Trait_Editor.Utils
                 return 0;
 
             return result.Read<uint>(0);
+        }
+
+        public static Image GetIcon(int iconId)
+        {
+            if (SpellIconStorage.ContainsKey((uint)iconId))
+                return SpellIconStorage[(uint)iconId].GetImage();
+
+            return null;
+        }
+
+        public static Image GetIcon(uint spellId)
+        {
+            if (SpellMiscBySpellID.ContainsKey(spellId) && SpellIconStorage.ContainsKey(SpellMiscBySpellID[spellId].SpellIconFileDataID))
+                return SpellIconStorage[SpellMiscBySpellID[spellId].SpellIconFileDataID].GetImage();
+
+            return null;
         }
     }
 }

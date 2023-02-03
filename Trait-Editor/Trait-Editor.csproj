@@ -29,6 +29,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="IconIDs.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

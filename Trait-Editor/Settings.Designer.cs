@@ -106,5 +106,17 @@ namespace Trait_Editor {
                 this["BuildNumber"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("{FullTraitEditorPath}")]
+        public string IconDir {
+            get {
+                return ((string)(this["IconDir"]));
+            }
+            set {
+                this["IconDir"] = value;
+            }
+        }
     }
 }
