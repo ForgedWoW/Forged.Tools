@@ -1,0 +1,53 @@
+﻿using Forged.Tools.Shared.Constants;
+using Forged.Tools.Shared.Dynamic;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Forged.Tools.Shared.Spells
+{
+    public class ProcFlagsInit : FlagsArray<int>
+    {
+        public ProcFlagsInit(ProcFlags procFlags = 0, ProcFlags2 procFlags2 = 0) : base(2)
+        {
+            _storage[0] = (int)procFlags;
+            _storage[1] = (int)procFlags2;
+        }
+
+        public ProcFlagsInit(params int[] flags) : base(flags) { }
+
+        public ProcFlagsInit Or(ProcFlags procFlags)
+        {
+            _storage[0] |= (int)procFlags;
+            return this;
+        }
+
+        public ProcFlagsInit Or(ProcFlags2 procFlags2)
+        {
+            _storage[1] |= (int)procFlags2;
+            return this;
+        }
+
+        public bool HasFlag(ProcFlags procFlags)
+        {
+            return (_storage[0] & (int)procFlags) != 0;
+        }
+
+        public bool HasFlag(ProcFlags2 procFlags)
+        {
+            return (_storage[1] & (int)procFlags) != 0;
+        }
+
+        public int GetProcFlags()
+        {
+            return _storage[0];
+        }
+
+        public int GetProcFlags2()
+        {
+            return _storage[1];
+        }
+    }
+}
