@@ -142,7 +142,7 @@ namespace Forged.Tools.Shared.Database
 
         public bool NextRow()
         {
-            if (_reader == null)
+            if (_reader == null || _reader.IsClosed)
                 return false;
 
             if (_reader.Read())

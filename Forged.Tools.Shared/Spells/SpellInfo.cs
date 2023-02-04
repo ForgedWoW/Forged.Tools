@@ -26,7 +26,7 @@ using System.Linq;
 
 namespace Forged.Tools.Shared.Spells
 {
-    public class SpellInfo
+    public sealed class SpellInfo
     {
         public SpellInfo()
         {

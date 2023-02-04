@@ -16,7 +16,7 @@
  */
 using System;
 
-public class RandomHelper
+public sealed class RandomHelper
 {
     private static readonly Random rand;
 
