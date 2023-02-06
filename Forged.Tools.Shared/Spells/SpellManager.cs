@@ -15,15 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-using Forged.Tools.Shared.Constants;
-using Forged.Tools.Shared.Database;
-using Forged.Tools.Shared.Dynamic;
 using Forged.Tools.Shared.DataStorage;
 using Forged.Tools.Shared.Spells;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
+using Framework.Constants;
+using Framework.Dynamic;
+using Game.DataStorage;
 
 namespace Forged.Tools.Shared.Entities
 {
@@ -121,7 +117,7 @@ namespace Forged.Tools.Shared.Entities
         }
 
         #region Loads
-        public void LoadSpellInfoStore()
+        public void LoadSpellInfoStore(BaseDataAccess dataAccess)
         {
             uint oldMSTime = Time.GetMSTime();
 
@@ -312,7 +308,7 @@ namespace Forged.Tools.Shared.Entities
                 //second key = id
 
 
-                mSpellInfoMap.Add(spellNameEntry.Id, new SpellInfo(spellNameEntry, data.Key.difficulty, data.Value));
+                mSpellInfoMap.Add(spellNameEntry.Id, new SpellInfo(spellNameEntry, data.Key.difficulty, data.Value, dataAccess));
             }
 
             Log.outInfo(LogFilter.ServerLoading, "Loaded SpellInfo store in {0} ms", Time.GetMSTimeDiffToNow(oldMSTime));

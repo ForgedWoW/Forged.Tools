@@ -1,15 +1,4 @@
-﻿using Forged.Tools.Shared.Constants;
-using Forged.Tools.Shared.Database;
-using Forged.Tools.Shared.Dynamic;
-using Forged.Tools.Shared.DataStorage;
-using Forged.Tools.Shared.Entities;
-using Forged.Tools.Shared.Spells;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Game.DataStorage;
 
 namespace Forged.Tools.TraitEditor.Utils
 {

@@ -1,17 +1,4 @@
-﻿using Forged.Tools.Shared.Constants;
-using Forged.Tools.Shared.DataStorage;
-using Forged.Tools.Shared.Entities;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-
-namespace Forged.Tools.SpellEditor
+﻿namespace Forged.Tools.SpellEditor
 {
     public partial class Loading : Form
     {

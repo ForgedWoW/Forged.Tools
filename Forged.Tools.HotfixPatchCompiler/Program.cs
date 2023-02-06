@@ -1,4 +1,4 @@
-using Forged.Tools.Shared.Database;
+using Framework.Database;
 
 namespace Forged.Tools.HotfixPatchCompiler
 {
@@ -18,13 +18,13 @@ namespace Forged.Tools.HotfixPatchCompiler
             {
                 Database = Settings.Default.HotfixDatabaseName,
                 Host = Settings.Default.HotfixDatabaseHost,
-                Port = Settings.Default.HotfixDatabasePort,
+                PortOrSocket = Settings.Default.HotfixDatabasePort,
                 Username = Settings.Default.HotfixDatabaseUser,
                 Password = Settings.Default.HotfixDatabasePassword
             });
             var result = DB.Hotfix.Query("SELECT ID FROM spell_effect LIMIT 1;");
 
-            if (result.IsNull())
+            if (result == null)
             {
                 MessageBox.Show("Unable to connect to the database. Please check your settings in Forged.Tools.SpellEditor.dll.config.", "Database Error");
                 Environment.Exit(0);

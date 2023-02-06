@@ -1,16 +1,7 @@
-﻿using Forged.Tools.Shared.Constants;
-using Forged.Tools.Shared.DataStorage;
-using Forged.Tools.Shared.Traits;
-using Forged.Tools.Shared.Traits.DB2Records;
+﻿using Forged.Tools.Shared.Traits;
 using Forged.Tools.Shared.Utils;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Security.Policy;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Linq;
+using Framework.Constants;
+using Game.DataStorage;
 
 namespace Forged.Tools.TraitEditor.Utils
 {
@@ -257,7 +248,7 @@ namespace Forged.Tools.TraitEditor.Utils
 
                 if (skillLineEntry.CategoryID == SkillCategory.Class)
                 {
-                    foreach (SkillRaceClassInfoRecord skillRaceClassInfo in DataAccess.SkillRaceClassInfoSorted[skillLineEntry.Id])
+                    foreach (SkillRaceClassInfoRecord skillRaceClassInfo in Program.DataAccess.SkillRaceClassInfoSorted[skillLineEntry.Id])
                         for (int i = 1; i < (int)Class.Max; ++i)
                             if ((skillRaceClassInfo.ClassMask & (1 << (i - 1))) != 0)
                                 _skillLinesByClass[i] = skillLineXTraitTreeEntry.SkillLineID;
@@ -270,7 +261,7 @@ namespace Forged.Tools.TraitEditor.Utils
                 }
             }
 
-            foreach (var (traitSystemId, traitTreeId) in traitTreesIdsByTraitSystem)
+            foreach (var (traitSystemId, traitTreeId) in traitTreesIdsByTraitSystem.KeyValueList)
             {
                 TraitTree tree = TraitTrees.LookupByKey(traitTreeId);
 
@@ -309,8 +300,8 @@ namespace Forged.Tools.TraitEditor.Utils
 
             foreach (var node in CliDB.TraitNodeXTraitNodeEntryStorage)
             {
-                var entry = CliDB.TraitNodeEntryStorage[node.Value.TraitNodeEntryID];
-                TraitDefinitionByNodeID[node.Value.TraitNodeID] = CliDB.TraitDefinitionStorage[entry.TraitDefinitionID];
+                var entry = CliDB.TraitNodeEntryStorage[(uint)node.Value.TraitNodeEntryID];
+                TraitDefinitionByNodeID[node.Value.TraitNodeID] = CliDB.TraitDefinitionStorage[(uint)entry.TraitDefinitionID];
             }
         }
 

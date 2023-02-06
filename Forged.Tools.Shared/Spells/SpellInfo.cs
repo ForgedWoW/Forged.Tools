@@ -15,14 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-using Forged.Tools.Shared.Constants;
-using Forged.Tools.Shared.Dynamic;
-using Forged.Tools.Shared.DataStorage;
-using Forged.Tools.Shared.Entities;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Forged.Tools.Shared.DataStorage;
+using Forged.Tools.Shared.Entities;
+using Framework.Constants;
+using Framework.Dynamic;
+using Game.DataStorage;
 
 namespace Forged.Tools.Shared.Spells
 {
@@ -153,7 +154,7 @@ namespace Forged.Tools.Shared.Spells
             _auraState = AuraStateType.None;
         }
 
-        public SpellInfo(SpellNameRecord spellName, Difficulty difficulty, SpellInfoLoadHelper data)
+        public SpellInfo(SpellNameRecord spellName, Difficulty difficulty, SpellInfoLoadHelper data, BaseDataAccess dataAccess)
         {
             Id = spellName.Id;
             Difficulty = difficulty;
@@ -230,7 +231,7 @@ namespace Forged.Tools.Shared.Spells
                 if (_ppm != null)
                 {
                     ProcBasePPM = _ppm.BaseProcRate;
-                    ProcPPMMods = CliDB.GetSpellProcsPerMinuteMods(_ppm.Id);
+                    ProcPPMMods = dataAccess.SpellProcsPerMinuteMods.LookupByKey(_ppm.Id);
                 }
             }
 

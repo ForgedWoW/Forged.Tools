@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Forged.Tools.Shared.Traits
+﻿namespace Forged.Tools.Shared.Traits
 {
     public enum TraitCombatConfigFlags
     {
@@ -30,29 +24,11 @@ namespace Forged.Tools.Shared.Traits
         Increased = 3
     }
 
-    public enum TraitConfigType
-    {
-        Invalid = 0,
-        Combat = 1,
-        Profession = 2,
-        Generic = 3
-    }
-
     public enum TraitCurrencyType
     {
         Gold = 0,
         CurrencyTypesBased = 1,
         TraitSourced = 2
-    }
-
-    public enum TraitEdgeType
-    {
-        VisualOnly = 0,
-        DeprecatedRankConnection = 1,
-        SufficientForAvailability = 2,
-        RequiredForAvailability = 3,
-        MutuallyExclusive = 4,
-        DeprecatedSelectionOption = 5
     }
 
     public enum TraitNodeEntryType

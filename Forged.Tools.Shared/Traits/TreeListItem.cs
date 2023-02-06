@@ -1,9 +1,4 @@
-﻿using Forged.Tools.Shared.Constants;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Framework.Constants;
 
 namespace Forged.Tools.Shared.Traits
 {
@@ -12,6 +7,6 @@ namespace Forged.Tools.Shared.Traits
         public string Description { get; set; }
         public Class Class { get; set; }
         public SpecID SpecID { get; set; }
-        public uint TreeID { get; set; }
+        public int TreeID { get; set; }
     }
 }

@@ -1,6 +1,6 @@
-using Forged.Tools.Shared.Database;
 using Forged.Tools.HotfixPatchCompiler.Models;
 using Forged.Tools.HotfixPatchCompiler.Utils;
+using Framework.Database;
 using System.Text;
 using static Forged.Tools.HotfixPatchCompiler.Enums;
 

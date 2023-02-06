@@ -1,19 +1,14 @@
-using Forged.Tools.Shared.Constants;
-using Forged.Tools.Shared.GameMath;
-using Forged.Tools.Shared.Entities;
-using System.Data;
-using System.Xml.Linq;
 using Forged.Tools.TraitEditor.Utils;
 using Forged.Tools.Shared.Traits;
-using Forged.Tools.Shared.Traits.DB2Records;
-using Forged.Tools.Shared.DataStorage;
+using Game.DataStorage;
+using Framework.Constants;
 
 namespace Forged.Tools.TraitEditor
 {
     public partial class MainForm : Form
     {
         public SpecID SelectedSpec = SpecID.None;
-        public TextBox SelectedCell;
+        public PictureBox SelectedCell;
 
         private ContainerControl _gridContainer;
         private Dictionary<uint, PictureBox> _nodes = new();
@@ -23,13 +18,12 @@ namespace Forged.Tools.TraitEditor
         {
             InitializeComponent();
 
-            DataAccess.LoadStores();
+            Program.DataAccess.LoadStores();
             TraitManager.Load();
 
             BuildGridContainer();
             PopulateTrees();
             listTrees.SelectedIndexChanged += ListTrees_SelectedIndexChanged;
-            listTrees.Anchor = AnchorStyles.Left | AnchorStyles.Top | AnchorStyles.Bottom;
 
             FormClosed += MainForm_FormClosed;
             _gridContainer.Paint += gridContainer_Paint;
@@ -168,13 +162,13 @@ namespace Forged.Tools.TraitEditor
                     }
 
                     if (def.OverrideIcon != 0)
-                        cell.BackgroundImage = DataAccess.GetIcon(def.OverrideIcon);
+                        cell.BackgroundImage = Program.DataAccess.GetIcon(def.OverrideIcon);
                     else
                     {
                         if (def.OverridesSpellID != 0)
-                            cell.BackgroundImage = DataAccess.GetIcon(def.OverridesSpellID);
+                            cell.BackgroundImage = Program.DataAccess.GetIcon(def.OverridesSpellID);
                         else
-                            cell.BackgroundImage = DataAccess.GetIcon(def.SpellID);
+                            cell.BackgroundImage = Program.DataAccess.GetIcon(def.SpellID);
                     }
                 }
             }
@@ -201,11 +195,15 @@ namespace Forged.Tools.TraitEditor
             }
         }
 
-        private void Box_DoubleClick(object? sender, EventArgs e)
+        private void Box_MouseClick(object? sender, MouseEventArgs e)
         {
             if (sender != null)
             {
-                SelectedCell = (TextBox)sender;
+                SelectedCell = (PictureBox)sender;
+                CellValue val = (CellValue)SelectedCell.Tag;
+
+                lblTraitId.Text = val.TraitNode.Data.Id.ToString();
+                numSpellId.Value = val.SpellID;
             }
         }
 
@@ -213,12 +211,21 @@ namespace Forged.Tools.TraitEditor
         {
             _gridContainer = new ContainerControl();
             _gridContainer.Parent = this;
-            _gridContainer.Location = new Point(268, 12);
-            _gridContainer.Size = new Size(1004, 1237);
+            _gridContainer.Location = new Point(586, 12);
+            _gridContainer.Size = new Size(1480, 1250);
             _gridContainer.AutoScroll = true;
             _gridContainer.Visible = true;
             _gridContainer.Enabled = true;
             _gridContainer.Anchor = AnchorStyles.Right | AnchorStyles.Left | AnchorStyles.Top | AnchorStyles.Bottom;
+            _gridContainer.MouseDoubleClick += gridContainer_MouseDoubleClick;
+        }
+
+        private void gridContainer_MouseDoubleClick(object? sender, MouseEventArgs e)
+        {
+            if (sender != null) 
+            { 
+                
+            }
         }
 
         private void ClearCells()
@@ -245,7 +252,7 @@ namespace Forged.Tools.TraitEditor
             box.Size = new Size(50, 50);
             box.Tag = new CellValue();
             box.Enabled = true;
-            box.DoubleClick += Box_DoubleClick;
+            box.MouseClick += Box_MouseClick;
             box.Cursor = Cursors.Arrow;
             box.BackgroundImageLayout = ImageLayout.Stretch;
 

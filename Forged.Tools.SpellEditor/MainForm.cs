@@ -1,13 +1,12 @@
-using Forged.Tools.Shared.Constants;
-using Forged.Tools.Shared.Database;
-using Forged.Tools.Shared.Dynamic;
-using Forged.Tools.Shared.DataStorage;
-using Forged.Tools.Shared.Entities;
-using Forged.Tools.Shared.Spells;
 using Forged.Tools.SpellEditor.Models;
 using Forged.Tools.SpellEditor.Utils;
-using System.Collections;
 using System.Data;
+using Game.DataStorage;
+using Framework.Constants;
+using Forged.Tools.Shared.Spells;
+using Forged.Tools.Shared.Entities;
+using Framework.Database;
+using Framework.Dynamic;
 
 namespace Forged.Tools.SpellEditor
 {
@@ -59,9 +58,9 @@ namespace Forged.Tools.SpellEditor
             txtWidth.MakeNumberBox();
             txtLaunchDelay.MakeNumberBox();
 
-            DataAccess.LoadStores();
+            Program.DataAccess.LoadStores();
             _iconFolder = Settings.Default.IconDir.Replace("{FullSpellEditorPath}", System.Reflection.Assembly.GetEntryAssembly().Location.Replace("Forged.Tools.SpellEditor.dll", ""));
-            SpellManager.Instance.LoadSpellInfoStore();
+            SpellManager.Instance.LoadSpellInfoStore(Program.DataAccess);
 
             listSpells.PopulateSpellList(numCurentMin, numCurentMax, cmbIndexing.SelectedIndex, _currentNameSearch, ref _maxSpellSearch);
             GenerateDefaultSpellInfo();
@@ -276,7 +275,7 @@ namespace Forged.Tools.SpellEditor
                 if (!CliDB.SpellNameStorage.ContainsKey(spellId))
                     return;
 
-                CurrentSpell = DataAccess.GetSpellInfo(spellId);
+                CurrentSpell = Program.DataAccess.GetSpellInfo(spellId);
                 LoadCurrentSpell();
             }
         }
@@ -457,8 +456,8 @@ namespace Forged.Tools.SpellEditor
             // proc info
             if (CurrentSpell.SpellInfo.ProcFlags != null)
             {
-                int flags = CurrentSpell.SpellInfo.ProcFlags.GetProcFlags();
-                int flags2 = CurrentSpell.SpellInfo.ProcFlags.GetProcFlags2();
+                int flags = CurrentSpell.SpellInfo.ProcFlags[0];
+                int flags2 = CurrentSpell.SpellInfo.ProcFlags[1];
 
                 if (flags > 0)
                     listProcFlags.SelectedItems.AddSelectedBitEnum(flags, typeof(ProcFlags));
@@ -737,7 +736,7 @@ namespace Forged.Tools.SpellEditor
                 if (!CliDB.SpellNameStorage.ContainsKey(spellId))
                     return;
 
-                CurrentSpell = DataAccess.GetSpellInfo(spellId);
+                CurrentSpell = Program.DataAccess.GetSpellInfo(spellId);
                 LoadCurrentSpell();
                 e.Handled = e.SuppressKeyPress = true;
             }
@@ -987,7 +986,7 @@ namespace Forged.Tools.SpellEditor
         {
             if (CurrentSpell != null && CurrentSpell.SpellInfo.IconFileDataId > 0)
             {
-                var iconRecord = CliDB.SpellIconStorage[CurrentSpell.SpellInfo.IconFileDataId];
+                var iconRecord = Program.DataAccess.SpellIconStorage[CurrentSpell.SpellInfo.IconFileDataId];
                 picCurIcon.BackgroundImage = iconRecord.GetImage();
                 lblCurIcon.Text = $"{iconRecord.TextureFilename.Split('/').Last()} - {iconRecord.Id}";
             }
@@ -1011,7 +1010,7 @@ namespace Forged.Tools.SpellEditor
         {
             if (CurrentSpell != null && CurrentSpell.SpellInfo.ActiveIconFileDataId > 0)
             {
-                var iconRecord = CliDB.SpellIconStorage[CurrentSpell.SpellInfo.ActiveIconFileDataId];
+                var iconRecord = Program.DataAccess.SpellIconStorage[CurrentSpell.SpellInfo.ActiveIconFileDataId];
                 picActiveIcon.BackgroundImage = iconRecord.GetImage();
                 lblActiveIcon.Text = $"{iconRecord.TextureFilename.Split('/').Last()} - {iconRecord.Id}";
             }

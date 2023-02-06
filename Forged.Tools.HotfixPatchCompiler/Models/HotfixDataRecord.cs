@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static Forged.Tools.HotfixPatchCompiler.Enums;
+﻿using static Forged.Tools.HotfixPatchCompiler.Enums;
 
 namespace Forged.Tools.HotfixPatchCompiler.Models
 {

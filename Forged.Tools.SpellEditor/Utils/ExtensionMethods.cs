@@ -1,43 +1,37 @@
-﻿using Forged.Tools.Shared.Constants;
-using Forged.Tools.Shared.Database;
-using Forged.Tools.Shared.Dynamic;
-using Forged.Tools.Shared.DataStorage;
-using Forged.Tools.Shared.Entities;
+﻿using Game.DataStorage;
+using Framework.Constants;
 using Forged.Tools.Shared.Spells;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Framework.Dynamic;
+using Framework.Database;
+using Forged.Tools.SpellEditor.Models;
 
 namespace Forged.Tools.SpellEditor.Utils
 {
     public static class ExtensionMethods
     {
-        public static void AddEnumNames(this ListBox.ObjectCollection listValues, Type enumType)
+        public static void AddEnumNames(this ListBox.ObjectCollection listValues, System.Type enumType)
         {
-            foreach (string name in Enum.GetNames(enumType).AsSpan())
+            foreach (string name in System.Enum.GetNames(enumType).AsSpan())
                 listValues.Add(name);
         }
 
-        public static void AddEnumNames(this ComboBox.ObjectCollection listValues, Type enumType)
+        public static void AddEnumNames(this ComboBox.ObjectCollection listValues, System.Type enumType)
         {
-            foreach (string name in Enum.GetNames(enumType).AsSpan())
+            foreach (string name in System.Enum.GetNames(enumType).AsSpan())
                 listValues.Add(name);
         }
 
         public static void AddSelectedBitEnum<T>(this ListBox.SelectedObjectCollection listValues, T toMatch)
         {
-            foreach (string attr in Enum.GetNames(typeof(T)).AsSpan())
-                if ((Convert.ToInt64(toMatch) & Convert.ToInt64((T)Enum.Parse(typeof(T), attr))) != 0)
+            foreach (string attr in System.Enum.GetNames(typeof(T)).AsSpan())
+                if ((Convert.ToInt64(toMatch) & Convert.ToInt64((T)System.Enum.Parse(typeof(T), attr))) != 0)
                     listValues.Add(attr);
         }
 
         public static void AddSelectedIntEnum<T>(this ListBox.SelectedObjectCollection listValues, T toMatch)
         {
-            foreach (string attr in Enum.GetNames(typeof(T)).AsSpan())
-                if (Convert.ToInt32(toMatch).ShiftContains(Convert.ToInt32((T)Enum.Parse(typeof(T), attr))))
+            foreach (string attr in System.Enum.GetNames(typeof(T)).AsSpan())
+                if (Convert.ToInt32(toMatch).ShiftContains(Convert.ToInt32((T)System.Enum.Parse(typeof(T), attr))))
                     listValues.Add(attr);
         }
 
@@ -47,7 +41,7 @@ namespace Forged.Tools.SpellEditor.Utils
 
             for (var i = listValues.Count - 1; i >= 0; i--)
             {
-                var value = Convert.ToInt64((T)Enum.Parse(typeof(T), listValues[i].ToString()));
+                var value = Convert.ToInt64((T)System.Enum.Parse(typeof(T), listValues[i].ToString()));
 
                 if ((retVal & value) == 0)
                     retVal |= value;
@@ -62,7 +56,7 @@ namespace Forged.Tools.SpellEditor.Utils
 
             for (var i = listValues.Count - 1; i >= 0; i--)
             {
-                var value = Convert.ToInt32((T)Enum.Parse(typeof(T), listValues[i].ToString()));
+                var value = Convert.ToInt32((T)System.Enum.Parse(typeof(T), listValues[i].ToString()));
 
                 if (!retVal.ShiftContains(value))
                     retVal |= (1 << value);
@@ -71,17 +65,17 @@ namespace Forged.Tools.SpellEditor.Utils
             return retVal;
         }
 
-        public static void AddSelectedBitEnum(this ListBox.SelectedObjectCollection listValues, long toMatch, Type enumType)
+        public static void AddSelectedBitEnum(this ListBox.SelectedObjectCollection listValues, long toMatch, System.Type enumType)
         {
-            foreach (string attr in Enum.GetNames(enumType).AsSpan())
-                if ((toMatch & Convert.ToInt64(Enum.Parse(enumType, attr))) != 0)
+            foreach (string attr in System.Enum.GetNames(enumType).AsSpan())
+                if ((toMatch & Convert.ToInt64(System.Enum.Parse(enumType, attr))) != 0)
                     listValues.Add(attr);
         }
 
-        public static void AddSelectedIntEnum(this ListBox.SelectedObjectCollection listValues, int toMatch, Type enumType)
+        public static void AddSelectedIntEnum(this ListBox.SelectedObjectCollection listValues, int toMatch, System.Type enumType)
         {
-            foreach (string attr in Enum.GetNames(enumType).AsSpan())
-                if (toMatch.ShiftContains(Convert.ToInt32(Enum.Parse(enumType, attr))))
+            foreach (string attr in System.Enum.GetNames(enumType).AsSpan())
+                if (toMatch.ShiftContains(Convert.ToInt32(System.Enum.Parse(enumType, attr))))
                     listValues.Add(attr);
         }
 
@@ -101,8 +95,8 @@ namespace Forged.Tools.SpellEditor.Utils
         {
             Int64 ret = 0;
 
-            foreach (string attr in Enum.GetNames(typeof(T)).AsSpan())
-                ret |= Convert.ToInt64((T)Enum.Parse(typeof(T), attr));
+            foreach (string attr in System.Enum.GetNames(typeof(T)).AsSpan())
+                ret |= Convert.ToInt64((T)System.Enum.Parse(typeof(T), attr));
 
             return ret;
         }
@@ -111,8 +105,8 @@ namespace Forged.Tools.SpellEditor.Utils
         {
             int ret = 0;
 
-            foreach (string attr in Enum.GetNames(typeof(T)).AsSpan())
-                ret |= (1 << Convert.ToInt32((T)Enum.Parse(typeof(T), attr)));
+            foreach (string attr in System.Enum.GetNames(typeof(T)).AsSpan())
+                ret |= (1 << Convert.ToInt32((T)System.Enum.Parse(typeof(T), attr)));
 
             return ret;
         }
@@ -370,9 +364,9 @@ namespace Forged.Tools.SpellEditor.Utils
             KeyValuePair<uint, SpellIconRecord>[] iconStorage;
 
             if (!string.IsNullOrEmpty(iconSearch))
-                iconStorage = CliDB.SpellIconStorage.Where(a => a.Value.TextureFilename.Split('/').Last().Contains(iconSearch)).ToArray();
+                iconStorage = Program.DataAccess.SpellIconStorage.Where(a => a.Value.TextureFilename.Split('/').Last().Contains(iconSearch)).ToArray();
             else
-                iconStorage = CliDB.SpellIconStorage.ToArray();
+                iconStorage = Program.DataAccess.SpellIconStorage.ToArray();
 
             int iconPageLength = Settings.Default.IconPageLength;
             var maxPages = 1;
@@ -500,16 +494,16 @@ namespace Forged.Tools.SpellEditor.Utils
                 {
                     // combo boxes
                     case "SpellEffect":
-                        ret.Effect = (SpellEffectName)Enum.Parse(typeof(SpellEffectName), (string)((ComboBox)c).SelectedItem);
+                        ret.Effect = (SpellEffectName)System.Enum.Parse(typeof(SpellEffectName), (string)((ComboBox)c).SelectedItem);
                         break;
                     case "EffMechanic":
-                        ret.Mechanic = (Mechanics)Enum.Parse(typeof(Mechanics), (string)((ComboBox)c).SelectedItem);
+                        ret.Mechanic = (Mechanics)System.Enum.Parse(typeof(Mechanics), (string)((ComboBox)c).SelectedItem);
                         break;
                     case "TargetA":
-                        ret.TargetA = new SpellImplicitTargetInfo((Targets)Enum.Parse(typeof(Targets), (string)((ComboBox)c).SelectedItem));
+                        ret.TargetA = new SpellImplicitTargetInfo((Targets)System.Enum.Parse(typeof(Targets), (string)((ComboBox)c).SelectedItem));
                         break;
                     case "TargetB":
-                        ret.TargetB = new SpellImplicitTargetInfo((Targets)Enum.Parse(typeof(Targets), (string)((ComboBox)c).SelectedItem));
+                        ret.TargetB = new SpellImplicitTargetInfo((Targets)System.Enum.Parse(typeof(Targets), (string)((ComboBox)c).SelectedItem));
                         break;
                     case "RadiusMin":
                         ret.RadiusEntry = CliDB.SpellRadiusStorage[radiusMap.ReverseLookup(((ComboBox)c).SelectedIndex)];
@@ -518,7 +512,7 @@ namespace Forged.Tools.SpellEditor.Utils
                         ret.MaxRadiusEntry = CliDB.SpellRadiusStorage[radiusMap.ReverseLookup(((ComboBox)c).SelectedIndex)];
                         break;
                     case "ApplyAura":
-                        ret.ApplyAuraName = (AuraType)Enum.Parse(typeof(AuraType), (string)((ComboBox)c).SelectedItem);
+                        ret.ApplyAuraName = (AuraType)System.Enum.Parse(typeof(AuraType), (string)((ComboBox)c).SelectedItem);
                         break;
 
                     // numeric
@@ -551,7 +545,7 @@ namespace Forged.Tools.SpellEditor.Utils
                         ret.Id = (uint)tblId.Value;
 
                         // throw if id = 0 or it is a new effect and exists in the effect cache or spell_effect table
-                        if (ret.Id == 0 || (tblId.Enabled && (CliDB.SpellEffectStorage.ContainsKey(ret.Id) || DataAccess.GetHotfixSpellEffectIDs().Contains(ret.Id))))
+                        if (ret.Id == 0 || (tblId.Enabled && (CliDB.SpellEffectStorage.ContainsKey(ret.Id) || Program.DataAccess.GetHotfixSpellEffectIDs().Contains(ret.Id))))
                             throw new Exception($"The Effect Table ID for spell effect {ret.EffectIndex} already exists.");
 
                         break;
@@ -622,7 +616,7 @@ namespace Forged.Tools.SpellEditor.Utils
                 {
                     // combo boxes
                     case "PowerType":
-                        ret.PowerType = (PowerType)Enum.Parse(typeof(PowerType), (string)((ComboBox)c).SelectedItem);
+                        ret.PowerType = (PowerType)System.Enum.Parse(typeof(PowerType), (string)((ComboBox)c).SelectedItem);
                         break;
 
                     // numeric
@@ -740,7 +734,7 @@ namespace Forged.Tools.SpellEditor.Utils
 
             if (scale.Id == 0)
             {
-                scale.Id = Helpers.SelectGreater(CliDB.SpellScalingStorage.OrderByDescending(a => a.Key).First().Key, DataAccess.GetLatestID("spell_scaling")) + 1;
+                scale.Id = Helpers.SelectGreater(CliDB.SpellScalingStorage.OrderByDescending(a => a.Key).First().Key, Program.DataAccess.GetLatestID("spell_scaling")) + 1;
                 spellInfo.Scaling.Id = scale.Id;
             }
 
@@ -753,8 +747,8 @@ namespace Forged.Tools.SpellEditor.Utils
             aurOptions.Id = spellInfo.AuraOptionsId;
             aurOptions.SpellID = spellInfo.Id;
             aurOptions.CumulativeAura = (ushort)spellInfo.StackAmount;
-            aurOptions.ProcTypeMask[0] = spellInfo.ProcFlags[0];
-            aurOptions.ProcTypeMask[1] = spellInfo.ProcFlags[1];
+            aurOptions.ProcTypeMask[0] = spellInfo.ProcFlags.GetProcFlags();
+            aurOptions.ProcTypeMask[1] = spellInfo.ProcFlags.GetProcFlags2();
             aurOptions.ProcCategoryRecovery = spellInfo.ProcCooldown;
             aurOptions.DifficultyID = (byte)spellInfo.Difficulty;
             aurOptions.ProcChance = (byte)spellInfo.ProcChance;
@@ -763,7 +757,7 @@ namespace Forged.Tools.SpellEditor.Utils
 
             if (aurOptions.Id == 0)
             {
-                aurOptions.Id = Helpers.SelectGreater(CliDB.SpellAuraOptionsStorage.OrderByDescending(a => a.Key).First().Key, DataAccess.GetLatestID("spell_aura_options")) + 1;
+                aurOptions.Id = Helpers.SelectGreater(CliDB.SpellAuraOptionsStorage.OrderByDescending(a => a.Key).First().Key, Program.DataAccess.GetLatestID("spell_aura_options")) + 1;
                 spellInfo.AuraOptionsId = aurOptions.Id;
             }
 
@@ -787,7 +781,7 @@ namespace Forged.Tools.SpellEditor.Utils
 
             if (aura.Id == 0)
             {
-                aura.Id = Helpers.SelectGreater(CliDB.SpellAuraRestrictionsStorage.OrderByDescending(a => a.Key).First().Key, DataAccess.GetLatestID("spell_aura_restrictions")) + 1;
+                aura.Id = Helpers.SelectGreater(CliDB.SpellAuraRestrictionsStorage.OrderByDescending(a => a.Key).First().Key, Program.DataAccess.GetLatestID("spell_aura_restrictions")) + 1;
                 spellInfo.AuraRestrictionsId = aura.Id;
             }
 
@@ -808,7 +802,7 @@ namespace Forged.Tools.SpellEditor.Utils
 
             if (req.Id == 0)
             {
-                req.Id = Helpers.SelectGreater(CliDB.SpellCastingRequirementsStorage.OrderByDescending(a => a.Key).First().Key, DataAccess.GetLatestID("spell_casting_requirements")) + 1;
+                req.Id = Helpers.SelectGreater(CliDB.SpellCastingRequirementsStorage.OrderByDescending(a => a.Key).First().Key, Program.DataAccess.GetLatestID("spell_casting_requirements")) + 1;
                 spellInfo.SpellCastingRequirements.Id = req.Id;
             }
 
@@ -833,7 +827,7 @@ namespace Forged.Tools.SpellEditor.Utils
 
             if (cat.Id == 0)
             {
-                cat.Id = Helpers.SelectGreater(CliDB.SpellCategoriesStorage.OrderByDescending(a => a.Key).First().Key, DataAccess.GetLatestID("spell_categories")) + 1;
+                cat.Id = Helpers.SelectGreater(CliDB.SpellCategoriesStorage.OrderByDescending(a => a.Key).First().Key, Program.DataAccess.GetLatestID("spell_categories")) + 1;
                 spellInfo.SpellCategoriesId = cat.Id;
             }
 
@@ -851,7 +845,7 @@ namespace Forged.Tools.SpellEditor.Utils
 
             if (options.Id == 0)
             {
-                options.Id = Helpers.SelectGreater(CliDB.SpellClassOptionsStorage.OrderByDescending(a => a.Key).First().Key, DataAccess.GetLatestID("spell_class_options")) + 1;
+                options.Id = Helpers.SelectGreater(CliDB.SpellClassOptionsStorage.OrderByDescending(a => a.Key).First().Key, Program.DataAccess.GetLatestID("spell_class_options")) + 1;
                 spellInfo.ClassOptionsId = options.Id;
             }
 
@@ -870,7 +864,7 @@ namespace Forged.Tools.SpellEditor.Utils
 
             if (cdr.Id == 0)
             {
-                cdr.Id = Helpers.SelectGreater(CliDB.SpellCooldownsStorage.OrderByDescending(a => a.Key).First().Key, DataAccess.GetLatestID("spell_cooldowns")) + 1;
+                cdr.Id = Helpers.SelectGreater(CliDB.SpellCooldownsStorage.OrderByDescending(a => a.Key).First().Key, Program.DataAccess.GetLatestID("spell_cooldowns")) + 1;
                 spellInfo.SpellCooldownsId = cdr.Id;
             }
 
@@ -888,7 +882,7 @@ namespace Forged.Tools.SpellEditor.Utils
 
             if (equip.Id == 0)
             {
-                equip.Id = Helpers.SelectGreater(CliDB.SpellEquippedItemsStorage.OrderByDescending(a => a.Key).First().Key, DataAccess.GetLatestID("spell_equipped_items")) + 1;
+                equip.Id = Helpers.SelectGreater(CliDB.SpellEquippedItemsStorage.OrderByDescending(a => a.Key).First().Key, Program.DataAccess.GetLatestID("spell_equipped_items")) + 1;
                 spellInfo.SpellEquippedItemsId = equip.Id;
             }
 
@@ -909,7 +903,7 @@ namespace Forged.Tools.SpellEditor.Utils
 
             if (sir.Id == 0)
             {
-                sir.Id = Helpers.SelectGreater(CliDB.SpellInterruptsStorage.OrderByDescending(a => a.Key).First().Key, DataAccess.GetLatestID("spell_interrupts")) + 1;
+                sir.Id = Helpers.SelectGreater(CliDB.SpellInterruptsStorage.OrderByDescending(a => a.Key).First().Key, Program.DataAccess.GetLatestID("spell_interrupts")) + 1;
                 spellInfo.SpellInterruptsId = sir.Id;
             }
 
@@ -936,7 +930,7 @@ namespace Forged.Tools.SpellEditor.Utils
                     var lblStmt = new PreparedStatement(DataAccess.SELECT_LATEST_SPECIFIC_SPELL_LABEL);
                     lblStmt.AddValue(0, newLabel.LabelID);
                     lblStmt.AddValue(1, newLabel.SpellID);
-                    var dbLbl = DataAccess.GetHotfixValue(lblStmt);
+                    var dbLbl = Program.DataAccess.GetHotfixValue(lblStmt);
 
                     if (dbLbl > 0)
                         newLabel.Id = dbLbl;
@@ -945,7 +939,7 @@ namespace Forged.Tools.SpellEditor.Utils
                 if (newLabel.Id == 0)
                 {
                     if (curMax == 0)
-                        curMax = Helpers.SelectGreater(CliDB.SpellLabelStorage.OrderByDescending(a => a.Key).First().Key, DataAccess.GetLatestID("spell_label"));
+                        curMax = Helpers.SelectGreater(CliDB.SpellLabelStorage.OrderByDescending(a => a.Key).First().Key, Program.DataAccess.GetLatestID("spell_label"));
 
                     curMax++;
                     newLabel.Id = curMax;
@@ -970,7 +964,7 @@ namespace Forged.Tools.SpellEditor.Utils
 
             if (sl.Id == 0)
             {
-                sl.Id = Helpers.SelectGreater(CliDB.SpellLevelsStorage.OrderByDescending(a => a.Key).First().Key, DataAccess.GetLatestID("spell_levels")) + 1;
+                sl.Id = Helpers.SelectGreater(CliDB.SpellLevelsStorage.OrderByDescending(a => a.Key).First().Key, Program.DataAccess.GetLatestID("spell_levels")) + 1;
                 spellInfo.SpellLevelsId = sl.Id;
             }
 
@@ -989,7 +983,7 @@ namespace Forged.Tools.SpellEditor.Utils
 
             if (sr.Id == 0)
             {
-                sr.Id = Helpers.SelectGreater(CliDB.SpellReagentsStorage.OrderByDescending(a => a.Key).First().Key, DataAccess.GetLatestID("spell_reagents")) + 1;
+                sr.Id = Helpers.SelectGreater(CliDB.SpellReagentsStorage.OrderByDescending(a => a.Key).First().Key, Program.DataAccess.GetLatestID("spell_reagents")) + 1;
                 spellInfo.SpellReagentsId = sr.Id;
             }
 
@@ -1009,7 +1003,7 @@ namespace Forged.Tools.SpellEditor.Utils
 
             if (sr.Id == 0)
             {
-                sr.Id = Helpers.SelectGreater(CliDB.SpellShapeshiftStorage.OrderByDescending(a => a.Key).First().Key, DataAccess.GetLatestID("spell_shapeshift")) + 1;
+                sr.Id = Helpers.SelectGreater(CliDB.SpellShapeshiftStorage.OrderByDescending(a => a.Key).First().Key, Program.DataAccess.GetLatestID("spell_shapeshift")) + 1;
                 spellInfo.ShapeshiftRecordId = sr.Id;
             }
 
@@ -1031,7 +1025,7 @@ namespace Forged.Tools.SpellEditor.Utils
 
             if (tr.Id == 0)
             {
-                tr.Id = Helpers.SelectGreater(CliDB.SpellTargetRestrictionsStorage.OrderByDescending(a => a.Key).First().Key, DataAccess.GetLatestID("spell_target_restrictions")) + 1;
+                tr.Id = Helpers.SelectGreater(CliDB.SpellTargetRestrictionsStorage.OrderByDescending(a => a.Key).First().Key, Program.DataAccess.GetLatestID("spell_target_restrictions")) + 1;
                 spellInfo.TargetRestrictionsId = tr.Id;
             }
 
@@ -1050,7 +1044,7 @@ namespace Forged.Tools.SpellEditor.Utils
 
             if (tr.Id == 0)
             {
-                tr.Id = Helpers.SelectGreater(CliDB.SpellTotemsStorage.OrderByDescending(a => a.Key).First().Key, DataAccess.GetLatestID("spell_totems")) + 1;
+                tr.Id = Helpers.SelectGreater(CliDB.SpellTotemsStorage.OrderByDescending(a => a.Key).First().Key, Program.DataAccess.GetLatestID("spell_totems")) + 1;
                 spellInfo.TotemRecordID = tr.Id;
             }
 
@@ -1060,6 +1054,135 @@ namespace Forged.Tools.SpellEditor.Utils
         public static bool ShiftContains(this int left, int right)
         {
             return (left & (1 << right)) != 0;
+        }
+
+        public static SpellCastingRequirementsRecord Copy(this SpellCastingRequirementsRecord obj)
+        {
+            SpellCastingRequirementsRecord ret = new SpellCastingRequirementsRecord();
+            ret.Id = obj.Id;
+            ret.SpellID = obj.SpellID;
+            ret.FacingCasterFlags = obj.FacingCasterFlags;
+            ret.MinFactionID = obj.MinFactionID;
+            ret.MinReputation = obj.MinReputation;
+            ret.RequiredAreasID = obj.RequiredAreasID;
+            ret.RequiredAuraVision = obj.RequiredAuraVision;
+            ret.RequiresSpellFocus = obj.RequiresSpellFocus;
+            return ret;
+        }
+
+        public static SpellPowerRecord Copy(this SpellPowerRecord obj)
+        {
+            SpellPowerRecord ret = new SpellPowerRecord();
+            ret.Id = obj.Id;
+            ret.OrderIndex = obj.OrderIndex;
+            ret.ManaCost = obj.ManaCost;
+            ret.ManaCostPerLevel = obj.ManaCostPerLevel;
+            ret.ManaPerSecond = obj.ManaPerSecond;
+            ret.PowerDisplayID = obj.PowerDisplayID;
+            ret.AltPowerBarID = obj.AltPowerBarID;
+            ret.PowerCostPct = obj.PowerCostPct;
+            ret.PowerCostMaxPct = obj.PowerCostMaxPct;
+            ret.PowerPctPerSecond = obj.PowerPctPerSecond;
+            ret.PowerType = obj.PowerType;
+            ret.RequiredAuraSpellID = obj.RequiredAuraSpellID;
+            ret.OptionalCost = obj.OptionalCost;
+            ret.SpellID = obj.SpellID;
+            return ret;
+        }
+
+        public static SpellReagentsCurrencyRecord Copy(this SpellReagentsCurrencyRecord obj)
+        {
+            return new SpellReagentsCurrencyRecord()
+            {
+                Id = obj.Id,
+                CurrencyTypesID = obj.CurrencyTypesID,
+                CurrencyCount = obj.CurrencyCount,
+                SpellID = obj.SpellID
+            };
+        }
+
+        public static SpellReagentsCurrencyRecordMod Copy(this SpellReagentsCurrencyRecord obj, bool keepRecord)
+        {
+            return new SpellReagentsCurrencyRecordMod()
+            {
+                Id = obj.Id,
+                CurrencyTypesID = obj.CurrencyTypesID,
+                CurrencyCount = obj.CurrencyCount,
+                SpellID = obj.SpellID,
+                KeepRecord = keepRecord
+            };
+        }
+
+        public static SpellReagentsCurrencyRecord ToBaseRecord(this SpellReagentsCurrencyRecordMod obj)
+        {
+            return new SpellReagentsCurrencyRecord()
+            {
+                Id = obj.Id,
+                CurrencyTypesID = obj.CurrencyTypesID,
+                CurrencyCount = obj.CurrencyCount,
+                SpellID = obj.SpellID
+            };
+        }
+
+        public static SpellXSpellVisualRecordMod Copy(this SpellXSpellVisualRecord obj, bool keepRecord)
+        {
+            SpellXSpellVisualRecordMod ret = new SpellXSpellVisualRecordMod();
+
+            ret.Id = obj.Id;
+            ret.DifficultyID = obj.DifficultyID;
+            ret.SpellVisualID = obj.SpellVisualID;
+            ret.Probability = obj.Probability;
+            ret.Priority = obj.Priority;
+            ret.SpellIconFileID = obj.SpellIconFileID;
+            ret.ActiveIconFileID = obj.ActiveIconFileID;
+            ret.ViewerUnitConditionID = obj.ViewerUnitConditionID;
+            ret.ViewerPlayerConditionID = obj.ViewerPlayerConditionID;
+            ret.CasterUnitConditionID = obj.CasterUnitConditionID;
+            ret.CasterPlayerConditionID = obj.CasterPlayerConditionID;
+            ret.SpellID = obj.SpellID;
+            ret.KeepRecord = keepRecord;
+
+            return ret;
+        }
+
+        public static SpellXSpellVisualRecord Copy(this SpellXSpellVisualRecord obj)
+        {
+            SpellXSpellVisualRecord ret = new SpellXSpellVisualRecord();
+
+            ret.Id = obj.Id;
+            ret.DifficultyID = obj.DifficultyID;
+            ret.SpellVisualID = obj.SpellVisualID;
+            ret.Probability = obj.Probability;
+            ret.Priority = obj.Priority;
+            ret.SpellIconFileID = obj.SpellIconFileID;
+            ret.ActiveIconFileID = obj.ActiveIconFileID;
+            ret.ViewerUnitConditionID = obj.ViewerUnitConditionID;
+            ret.ViewerPlayerConditionID = obj.ViewerPlayerConditionID;
+            ret.CasterUnitConditionID = obj.CasterUnitConditionID;
+            ret.CasterPlayerConditionID = obj.CasterPlayerConditionID;
+            ret.SpellID = obj.SpellID;
+
+            return ret;
+        }
+
+        public static SpellXSpellVisualRecord ToBaseRecord(this SpellXSpellVisualRecordMod obj)
+        {
+            SpellXSpellVisualRecord ret = new SpellXSpellVisualRecord();
+
+            ret.Id = obj.Id;
+            ret.DifficultyID = obj.DifficultyID;
+            ret.SpellVisualID = obj.SpellVisualID;
+            ret.Probability = obj.Probability;
+            ret.Priority = obj.Priority;
+            ret.SpellIconFileID = obj.SpellIconFileID;
+            ret.ActiveIconFileID = obj.ActiveIconFileID;
+            ret.ViewerUnitConditionID = obj.ViewerUnitConditionID;
+            ret.ViewerPlayerConditionID = obj.ViewerPlayerConditionID;
+            ret.CasterUnitConditionID = obj.CasterUnitConditionID;
+            ret.CasterPlayerConditionID = obj.CasterPlayerConditionID;
+            ret.SpellID = obj.SpellID;
+
+            return ret;
         }
     }
 }
