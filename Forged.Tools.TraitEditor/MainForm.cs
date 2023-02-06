@@ -85,25 +85,25 @@ namespace Forged.Tools.TraitEditor
             uint spec = (uint)selected.SpecID;
             SelectedSpec = selected.SpecID;
 
-            var trees = TraitManager.GetTraitTreesBySpecID((int)spec);
-            List<TraitNode> genericNodes = new List<TraitNode>();
-
-            foreach (var tree in trees)
+            foreach (var tree in TraitManager.GetTraitTreesBySpecID((int)spec))
                 foreach (var node in tree.Nodes)
                 {
                     if (_nodes.ContainsKey(node.Data.Id))
                         continue;
 
+                    // load spec nodes by entry
                     foreach (TraitNodeEntry entry in node.Entries)
                         foreach (TraitCondRecord condition in entry.Conditions)
                             if (TraitManager.IsSpecSetMember(condition.SpecSetID, spec))
                                 CreateNode(node);
 
+                    // load spec nodes by condition
                     foreach (TraitCondRecord condition in node.Conditions)
                         if (TraitManager.IsSpecSetMember(condition.SpecSetID, spec))
                             foreach (TraitNodeEntry entry in node.Entries)
                                 CreateNode(node);
 
+                    // load class and spec nodes by group
                     foreach (TraitNodeGroup group in node.Groups)
                     {
                         foreach (TraitCondRecord condition in group.Conditions)
@@ -111,6 +111,7 @@ namespace Forged.Tools.TraitEditor
                                 foreach (TraitNodeEntry entry in node.Entries)
                                     CreateNode(node);
 
+                        // load class nodes
                         foreach (var cost in group.Costs)
                             if (cost.TraitCurrencyID == (int)Enum.Parse<ClassTraitCurrencyID>(selected.Class.ToString()))
                                 CreateNode(node);
@@ -141,41 +142,54 @@ namespace Forged.Tools.TraitEditor
             if (!string.IsNullOrEmpty(cell.Text))
                 return;
 
-            string display = string.Empty;
             CellValue cellVal = (CellValue)cell.Tag; 
 
             if (TraitManager.TraitDefinitionByNodeID.ContainsKey(node.Data.Id))
             {
-                var def = TraitManager.TraitDefinitionByNodeID[(int)node.Data.Id];
-
-                if (def.SpellID != 0)
+                // entry 1
+                if (node.Entries.Count > 0 && CliDB.TraitDefinitionStorage.TryGetValue((uint)node.Entries[0].Data.TraitDefinitionID, out var def))
                 {
-                    cellVal.SpellID = def.SpellID;
-                    display = def.OverrideName[Locale.enUS];
-
-                    if (string.IsNullOrWhiteSpace(display))
+                    if (def.VisibleSpellID != 0)
                     {
-                        if (def.OverridesSpellID != 0)
-                            display = CliDB.SpellNameStorage[def.OverridesSpellID].Name[Locale.enUS];
+                        cellVal.SpellID = def.VisibleSpellID;
+
+                        if (def.OverrideIcon != 0)
+                            cell.BackgroundImage = Program.DataAccess.GetIcon(def.OverrideIcon).ResizeImage(50, 50);
                         else
-                            display = CliDB.SpellNameStorage[def.SpellID].Name[Locale.enUS];
+                            cell.BackgroundImage = Program.DataAccess.GetIcon(def.VisibleSpellID).ResizeImage(50, 50);
                     }
-
-                    if (def.OverrideIcon != 0)
-                        cell.BackgroundImage = Program.DataAccess.GetIcon(def.OverrideIcon);
-                    else
+                    else if (def.SpellID != 0)
                     {
-                        if (def.OverridesSpellID != 0)
-                            cell.BackgroundImage = Program.DataAccess.GetIcon(def.OverridesSpellID);
+                        cellVal.SpellID = def.SpellID;
+
+                        if (def.OverrideIcon != 0)
+                            cell.BackgroundImage = Program.DataAccess.GetIcon(def.OverrideIcon).ResizeImage(50, 50);
                         else
-                            cell.BackgroundImage = Program.DataAccess.GetIcon(def.SpellID);
+                            cell.BackgroundImage = Program.DataAccess.GetIcon(def.SpellID).ResizeImage(50, 50);
+                    }
+                }
+
+                // entry 2
+                if (node.Entries.Count > 1 && CliDB.TraitDefinitionStorage.TryGetValue((uint)node.Entries[1].Data.TraitDefinitionID, out var def2))
+                {
+                    if (def2.VisibleSpellID != 0)
+                    {
+                        if (def2.OverrideIcon != 0)
+                            cell.Image = Program.DataAccess.GetIcon(def2.OverrideIcon).ResizeImage(50, 50).Half();
+                        else
+                            cell.Image = Program.DataAccess.GetIcon(def2.VisibleSpellID).ResizeImage(50, 50).Half();
+                    }
+                    else if (def2.SpellID != 0)
+                    {
+                        if (def2.OverrideIcon != 0)
+                            cell.Image = Program.DataAccess.GetIcon(def2.OverrideIcon).ResizeImage(50, 50).Half();
+                        else
+                            cell.Image = Program.DataAccess.GetIcon(def2.SpellID).ResizeImage(50, 50).Half();
                     }
                 }
             }
 
-            cellVal.Display = display;
             cellVal.TraitNode = node;
-            cell.Text = display;
         }
 
         private void PopulateTrees()
@@ -197,14 +211,92 @@ namespace Forged.Tools.TraitEditor
 
         private void Box_MouseClick(object? sender, MouseEventArgs e)
         {
-            if (sender != null)
-            {
-                SelectedCell = (PictureBox)sender;
-                CellValue val = (CellValue)SelectedCell.Tag;
+            if (sender == null)
+                return;
 
-                lblTraitId.Text = val.TraitNode.Data.Id.ToString();
-                numSpellId.Value = val.SpellID;
+            ClearNodeInfo();
+
+            SelectedCell = (PictureBox)sender;
+            CellValue val = (CellValue)SelectedCell.Tag;
+            lblTraitId.Text = val.TraitNode.Data.Id.ToString();
+
+            // entry 1
+            if (val.TraitNode.Entries.Count > 0 && CliDB.TraitDefinitionStorage.TryGetValue((uint)val.TraitNode.Entries[0].Data.TraitDefinitionID, out var def))
+            {
+                if (def.SpellID != 0)
+                {
+                    numSpellId1.Value = def.SpellID;
+                    lblSpellName1.Text = CliDB.SpellNameStorage.ContainsKey(def.SpellID) ? CliDB.SpellNameStorage[def.SpellID].Name[Locale.enUS] : string.Empty;
+                }
+
+                if (def.OverridesSpellID != 0)
+                {
+                    numOverrideSpellId1.Value = def.OverridesSpellID;
+                    lblOverrideSpellName1.Text = CliDB.SpellNameStorage.ContainsKey(def.OverridesSpellID) ? CliDB.SpellNameStorage[def.OverridesSpellID].Name[Locale.enUS] : string.Empty;
+                }
+
+                if (def.VisibleSpellID != 0)
+                {
+                    numVisibleSpellId1.Value = def.VisibleSpellID;
+                    lblVisibleSpellName1.Text = CliDB.SpellNameStorage.ContainsKey(def.VisibleSpellID) ? CliDB.SpellNameStorage[def.VisibleSpellID].Name[Locale.enUS] : string.Empty;
+                }
+
+                txtOverrideName1.Text = def.OverrideName[Locale.enUS];
+                txtOverrideSubtext1.Text = def.OverrideSubtext[Locale.enUS];
+                txtOverrideDesc1.Text = def.OverrideDescription[Locale.enUS];
             }
+
+            if (val.TraitNode.Entries.Count > 1 && CliDB.TraitDefinitionStorage.TryGetValue((uint)val.TraitNode.Entries[1].Data.TraitDefinitionID, out var def2))
+            {
+                if (def2.SpellID != 0)
+                {
+                    numSpellId2.Value = def2.SpellID;
+                    lblSpellName2.Text = CliDB.SpellNameStorage.ContainsKey(def2.SpellID) ? CliDB.SpellNameStorage[def2.SpellID].Name[Locale.enUS] : string.Empty;
+                }
+
+                if (def2.OverridesSpellID != 0)
+                {
+                    numOverrideSpellId2.Value = def2.OverridesSpellID;
+                    lblOverrideSpellName2.Text = CliDB.SpellNameStorage.ContainsKey(def2.OverridesSpellID) ? CliDB.SpellNameStorage[def2.OverridesSpellID].Name[Locale.enUS] : string.Empty;
+                }
+
+                if (def2.VisibleSpellID != 0)
+                {
+                    numVisibleSpellId2.Value = def2.VisibleSpellID;
+                    lblVisibleSpellName2.Text = CliDB.SpellNameStorage.ContainsKey(def2.VisibleSpellID) ? CliDB.SpellNameStorage[def2.VisibleSpellID].Name[Locale.enUS] : string.Empty;
+                }
+
+                txtOverrideName2.Text = def2.OverrideName[Locale.enUS];
+                txtOverrideSubtext2.Text = def2.OverrideSubtext[Locale.enUS];
+                txtOverrideDesc2.Text = def2.OverrideDescription[Locale.enUS];
+            }
+        }
+
+        private void ClearNodeInfo()
+        {
+            lblTraitId.Text = string.Empty;
+
+            // entry 1
+            numSpellId1.Value = 0;
+            lblSpellName1.Text = string.Empty;
+            numOverrideSpellId1.Value = 0;
+            lblOverrideSpellName1.Text = string.Empty;
+            numVisibleSpellId1.Value = 0;
+            lblVisibleSpellName1.Text = string.Empty;
+            txtOverrideName1.Text = string.Empty;
+            txtOverrideSubtext1.Text = string.Empty;
+            txtOverrideDesc1.Text = string.Empty;
+
+            // entry 2
+            numSpellId2.Value = 0;
+            lblSpellName2.Text = string.Empty;
+            numOverrideSpellId2.Value = 0;
+            lblOverrideSpellName2.Text = string.Empty;
+            numVisibleSpellId2.Value = 0;
+            lblVisibleSpellName2.Text = string.Empty;
+            txtOverrideName2.Text = string.Empty;
+            txtOverrideSubtext2.Text = string.Empty;
+            txtOverrideDesc2.Text = string.Empty;
         }
 
         private void BuildGridContainer()

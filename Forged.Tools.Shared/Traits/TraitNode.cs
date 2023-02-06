@@ -11,5 +11,6 @@ namespace Forged.Tools.Shared.Traits
         public List<TraitCondRecord> Conditions = new();
         public List<TraitCostRecord> Costs = new();
         public List<Tuple<TraitNode, TraitEdgeType>> ParentNodes = new();
+        public bool IsDirty = false;
     }
 }
