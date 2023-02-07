@@ -1,4 +1,6 @@
-﻿namespace Forged.Tools.SpellEditor
+﻿using Forged.Tools.Shared.Forms;
+
+namespace Forged.Tools.SpellEditor
 {
     partial class MainForm
     {
@@ -134,7 +136,7 @@
             this.cmbPowerType4 = new System.Windows.Forms.ComboBox();
             this.numericUpDown34 = new System.Windows.Forms.NumericUpDown();
             this.groupCooldown = new System.Windows.Forms.GroupBox();
-            this.mlcmbEditCat = new Forged.Tools.SpellEditor.Models.MultiLineComboBox();
+            this.mlcmbEditCat = new MultiLineComboBox();
             this.numStartCooldownTime = new System.Windows.Forms.NumericUpDown();
             this.label205 = new System.Windows.Forms.Label();
             this.label138 = new System.Windows.Forms.Label();
@@ -179,8 +181,8 @@
             this.label197 = new System.Windows.Forms.Label();
             this.txtSpeed = new System.Windows.Forms.TextBox();
             this.label137 = new System.Windows.Forms.Label();
-            this.mlcmbRange = new Forged.Tools.SpellEditor.Models.MultiLineComboBox();
-            this.mlcmbDuration = new Forged.Tools.SpellEditor.Models.MultiLineComboBox();
+            this.mlcmbRange = new MultiLineComboBox();
+            this.mlcmbDuration = new MultiLineComboBox();
             this.label74 = new System.Windows.Forms.Label();
             this.label71 = new System.Windows.Forms.Label();
             this.label73 = new System.Windows.Forms.Label();
@@ -294,7 +296,7 @@
             this.label133 = new System.Windows.Forms.Label();
             this.label132 = new System.Windows.Forms.Label();
             this.tabProcInfo = new System.Windows.Forms.TabPage();
-            this.mlcmbPPM = new Forged.Tools.SpellEditor.Models.MultiLineComboBox();
+            this.mlcmbPPM = new MultiLineComboBox();
             this.lblPPM = new System.Windows.Forms.Label();
             this.label67 = new System.Windows.Forms.Label();
             this.numProcCharges = new System.Windows.Forms.NumericUpDown();
@@ -6581,8 +6583,8 @@
         private Label label73;
         private ComboBox cmbCastTime;
         private Label label74;
-        private Models.MultiLineComboBox mlcmbDuration;
-        private Models.MultiLineComboBox mlcmbRange;
+        private MultiLineComboBox mlcmbDuration;
+        private MultiLineComboBox mlcmbRange;
         private NumericUpDown numIdSearch;
         private Label label75;
         private Label label76;
@@ -6894,8 +6896,8 @@
         private NumericUpDown numericUpDown22;
         private Label label212;
         private NumericUpDown numEffTableID;
-        private Models.MultiLineComboBox mlcmbEditCat;
+        private MultiLineComboBox mlcmbEditCat;
         private Button btnDeleteSpell;
-        private Models.MultiLineComboBox mlcmbPPM;
+        private MultiLineComboBox mlcmbPPM;
     }
 }

@@ -8,11 +8,37 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="MySqlConnector" Version="2.2.5" />
+    <COMReference Include="{215d64d2-031c-33c7-96e3-61794cd1ee61}">
+      <WrapperTool>tlbimp</WrapperTool>
+      <VersionMinor>0</VersionMinor>
+      <VersionMajor>2</VersionMajor>
+      <Guid>215d64d2-031c-33c7-96e3-61794cd1ee61</Guid>
+    </COMReference>
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="MySqlConnector" Version="2.2.5" />
+    <PackageReference Include="System.Drawing.Common" Version="7.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\ForgedCore\Source\Framework\Framework.csproj" />
     <ProjectReference Include="..\..\ForgedCore\Source\Game\Game.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="System.Windows.Forms">
+      <HintPath>System.Windows.Forms.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Windows.Forms.Design">
+      <HintPath>System.Windows.Forms.Design.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Windows.Forms.Design.Editors">
+      <HintPath>System.Windows.Forms.Design.Editors.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Windows.Forms.Primitives">
+      <HintPath>System.Windows.Forms.Primitives.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
   <ItemGroup>

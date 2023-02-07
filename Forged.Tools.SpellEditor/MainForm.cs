@@ -7,6 +7,7 @@ using Forged.Tools.Shared.Spells;
 using Forged.Tools.Shared.Entities;
 using Framework.Database;
 using Framework.Dynamic;
+using Forged.Tools.Shared.Forms;
 
 namespace Forged.Tools.SpellEditor
 {
