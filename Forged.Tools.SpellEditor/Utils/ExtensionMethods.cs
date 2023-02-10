@@ -4,6 +4,7 @@ using Forged.Tools.Shared.Spells;
 using Framework.Dynamic;
 using Framework.Database;
 using Forged.Tools.SpellEditor.Models;
+using Framework.Configuration;
 
 namespace Forged.Tools.SpellEditor.Utils
 {
@@ -113,7 +114,7 @@ namespace Forged.Tools.SpellEditor.Utils
 
         public static Image GetImage(this SpellIconRecord iconRecord)
         {
-            var path = Settings.Default.IconDir.Replace("{FullSpellEditorPath}", System.Reflection.Assembly.GetEntryAssembly().Location.Replace("Forged.Tools.SpellEditor.dll", ""))
+            var path = ConfigMgr.GetDefaultValue("Tools.IconDir", "{FullSpellEditorPath}").Replace("{FullSpellEditorPath}", System.Reflection.Assembly.GetEntryAssembly().Location.Replace("Forged.Tools.SpellEditor.dll", ""))
                 + iconRecord.TextureFilename + ".png";
 
             if (File.Exists(path))
@@ -368,7 +369,7 @@ namespace Forged.Tools.SpellEditor.Utils
             else
                 iconStorage = Program.DataAccess.SpellIconStorage.ToArray();
 
-            int iconPageLength = Settings.Default.IconPageLength;
+            int iconPageLength = ConfigMgr.GetDefaultValue("Tools.IconPageLength", 100);
             var maxPages = 1;
             if (iconStorage.Length > iconPageLength)
                 maxPages = iconStorage.Length / iconPageLength;
@@ -1019,7 +1020,7 @@ namespace Forged.Tools.SpellEditor.Utils
             tr.MaxTargets = (byte)spellInfo.MaxAffectedTargets;
             tr.MaxTargetLevel = spellInfo.MaxTargetLevel;
             tr.TargetCreatureType = (ushort)spellInfo.TargetCreatureType;
-            tr.Targets = (int)spellInfo.Targets;
+            tr.Targets = (uint)spellInfo.Targets;
             tr.Width = spellInfo.Width;
             tr.SpellID = spellInfo.Id;
 

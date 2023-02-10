@@ -8,6 +8,7 @@ using Forged.Tools.Shared.Entities;
 using Framework.Database;
 using Framework.Dynamic;
 using Forged.Tools.Shared.Forms;
+using Framework.Configuration;
 
 namespace Forged.Tools.SpellEditor
 {
@@ -60,7 +61,7 @@ namespace Forged.Tools.SpellEditor
             txtLaunchDelay.MakeNumberBox();
 
             Program.DataAccess.LoadStores();
-            _iconFolder = Settings.Default.IconDir.Replace("{FullSpellEditorPath}", System.Reflection.Assembly.GetEntryAssembly().Location.Replace("Forged.Tools.SpellEditor.dll", ""));
+            _iconFolder = ConfigMgr.GetDefaultValue("Tools.IconDir", "{FullSpellEditorPath}").Replace("{FullSpellEditorPath}", System.Reflection.Assembly.GetEntryAssembly().Location.Replace("Forged.Tools.SpellEditor.dll", ""));
             SpellManager.Instance.LoadSpellInfoStore(Program.DataAccess);
 
             listSpells.PopulateSpellList(numCurentMin, numCurentMax, cmbIndexing.SelectedIndex, _currentNameSearch, ref _maxSpellSearch);

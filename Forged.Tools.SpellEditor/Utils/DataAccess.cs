@@ -6,6 +6,7 @@ using Game.DataStorage;
 using System.Collections;
 using Forged.Tools.Shared.Entities;
 using Forged.Tools.Shared.DataStorage;
+using Framework.Configuration;
 
 namespace Forged.Tools.SpellEditor.Utils
 {
@@ -79,9 +80,13 @@ namespace Forged.Tools.SpellEditor.Utils
 
         public DataAccess()
         {
-            _db2Path = Settings.Default.DB2ParentDir.Replace("{FullSpellEditorPath}", System.Reflection.Assembly.GetEntryAssembly().Location.Replace("\\Forged.Tools.SpellEditor.dll", "\\dbc"));
-            
+            _db2Path = ConfigMgr.GetDefaultValue("DataDir", "{FullSpellEditorPath}").Replace("{FullSpellEditorPath}", System.Reflection.Assembly.GetEntryAssembly().Location.Replace("\\Forged.Tools.SpellEditor.dll", "\\dbc"));
+
+            if (!_db2Path.EndsWith("\\dbc"))
+                _db2Path += "\\dbc";
+
             _availableDb2Locales = new((int)Locale.Total);
+
             foreach (var dir in Directory.GetDirectories(_db2Path).AsSpan())
             {
                 Locale locale = Path.GetFileName(dir).ToEnum<Locale>();
