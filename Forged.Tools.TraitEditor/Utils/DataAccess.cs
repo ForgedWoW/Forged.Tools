@@ -3,6 +3,7 @@ using Game.DataStorage;
 using Framework.Constants;
 using Framework.Database;
 using Forged.Tools.Shared.DataStorage;
+using Forged.Tools.Shared.Utils;
 
 namespace Forged.Tools.TraitEditor.Utils
 {
@@ -36,37 +37,37 @@ namespace Forged.Tools.TraitEditor.Utils
             if (!_availableDb2Locales[(int)Locale.enUS])
                 return;
 
-            CliDB.ChrSpecializationStorage = CliDB.ReadDB2<ChrSpecializationRecord>(_availableDb2Locales, _db2Path, Locale.enUS, "ChrSpecialization.db2", HotfixStatements.SEL_CHR_SPECIALIZATION, HotfixStatements.SEL_CHR_SPECIALIZATION_LOCALE);
-            CliDB.SpecSetMemberStorage = CliDB.ReadDB2<SpecSetMemberRecord>(_availableDb2Locales, _db2Path, Locale.enUS, "SpecSetMember.db2", HotfixStatements.SEL_SPEC_SET_MEMBER);
-            CliDB.SkillLineStorage = CliDB.ReadDB2<SkillLineRecord>(_availableDb2Locales, _db2Path, Locale.enUS, "SkillLine.db2", HotfixStatements.SEL_SKILL_LINE, HotfixStatements.SEL_SKILL_LINE_LOCALE);
-            CliDB.SkillLineXTraitTreeStorage = CliDB.ReadDB2<SkillLineXTraitTreeRecord>(_availableDb2Locales, _db2Path, Locale.enUS, "SkillLineXTraitTree.db2", HotfixStatements.SEL_SKILL_LINE_X_TRAIT_TREE);
-            CliDB.SkillRaceClassInfoStorage = CliDB.ReadDB2<SkillRaceClassInfoRecord>(_availableDb2Locales, _db2Path, Locale.enUS, "SkillRaceClassInfo.db2", HotfixStatements.SEL_SKILL_RACE_CLASS_INFO);
-            CliDB.SpellNameStorage = CliDB.ReadDB2<SpellNameRecord>(_availableDb2Locales, _db2Path, Locale.enUS, "SpellName.db2", HotfixStatements.SEL_SPELL_NAME, HotfixStatements.SEL_SPELL_NAME_LOCALE);
-            CliDB.TraitCondStorage = CliDB.ReadDB2<TraitCondRecord>(_availableDb2Locales, _db2Path, Locale.enUS, "TraitCond.db2", HotfixStatements.SEL_TRAIT_COND);
-            CliDB.TraitCostStorage = CliDB.ReadDB2<TraitCostRecord>(_availableDb2Locales, _db2Path, Locale.enUS, "TraitCost.db2", HotfixStatements.SEL_TRAIT_COST);
-            CliDB.TraitCurrencyStorage = CliDB.ReadDB2<TraitCurrencyRecord>(_availableDb2Locales, _db2Path, Locale.enUS, "TraitCurrency.db2", HotfixStatements.SEL_TRAIT_CURRENCY);
-            CliDB.TraitCurrencySourceStorage = CliDB.ReadDB2<TraitCurrencySourceRecord>(_availableDb2Locales, _db2Path, Locale.enUS, "TraitCurrencySource.db2", HotfixStatements.SEL_TRAIT_CURRENCY_SOURCE); //, HotfixStatements.SEL_TRAIT_CURRENCY_SOURCE_LOCALE);
-            CliDB.TraitDefinitionStorage = CliDB.ReadDB2<TraitDefinitionRecord>(_availableDb2Locales, _db2Path, Locale.enUS, "TraitDefinition.db2", HotfixStatements.SEL_TRAIT_DEFINITION); //, HotfixStatements.SEL_TRAIT_DEFINITION_LOCALE);
-            CliDB.TraitDefinitionEffectPointsStorage = CliDB.ReadDB2<TraitDefinitionEffectPointsRecord>(_availableDb2Locales, _db2Path, Locale.enUS, "TraitDefinitionEffectPoints.db2", HotfixStatements.SEL_TRAIT_DEFINITION_EFFECT_POINTS);
-            CliDB.TraitEdgeStorage = CliDB.ReadDB2<TraitEdgeRecord>(_availableDb2Locales, _db2Path, Locale.enUS, "TraitEdge.db2", HotfixStatements.SEL_TRAIT_EDGE);
-            CliDB.TraitNodeStorage = CliDB.ReadDB2<TraitNodeRecord>(_availableDb2Locales, _db2Path, Locale.enUS, "TraitNode.db2", HotfixStatements.SEL_TRAIT_NODE);
-            CliDB.TraitNodeEntryStorage = CliDB.ReadDB2<TraitNodeEntryRecord>(_availableDb2Locales, _db2Path, Locale.enUS, "TraitNodeEntry.db2", HotfixStatements.SEL_TRAIT_NODE_ENTRY);
-            CliDB.TraitNodeEntryXTraitCondStorage = CliDB.ReadDB2<TraitNodeEntryXTraitCondRecord>(_availableDb2Locales, _db2Path, Locale.enUS, "TraitNodeEntryXTraitCond.db2", HotfixStatements.SEL_TRAIT_NODE_ENTRY_X_TRAIT_COND);
-            CliDB.TraitNodeEntryXTraitCostStorage = CliDB.ReadDB2<TraitNodeEntryXTraitCostRecord>(_availableDb2Locales, _db2Path, Locale.enUS, "TraitNodeEntryXTraitCost.db2", HotfixStatements.SEL_TRAIT_NODE_ENTRY_X_TRAIT_COST);
-            CliDB.TraitNodeGroupStorage = CliDB.ReadDB2<TraitNodeGroupRecord>(_availableDb2Locales, _db2Path, Locale.enUS, "TraitNodeGroup.db2", HotfixStatements.SEL_TRAIT_NODE_GROUP);
-            CliDB.TraitNodeGroupXTraitCondStorage = CliDB.ReadDB2<TraitNodeGroupXTraitCondRecord>(_availableDb2Locales, _db2Path, Locale.enUS, "TraitNodeGroupXTraitCond.db2", HotfixStatements.SEL_TRAIT_NODE_GROUP_X_TRAIT_COND);
-            CliDB.TraitNodeGroupXTraitCostStorage = CliDB.ReadDB2<TraitNodeGroupXTraitCostRecord>(_availableDb2Locales, _db2Path, Locale.enUS, "TraitNodeGroupXTraitCost.db2", HotfixStatements.SEL_TRAIT_NODE_GROUP_X_TRAIT_COST);
-            CliDB.TraitNodeGroupXTraitNodeStorage = CliDB.ReadDB2<TraitNodeGroupXTraitNodeRecord>(_availableDb2Locales, _db2Path, Locale.enUS, "TraitNodeGroupXTraitNode.db2", HotfixStatements.SEL_TRAIT_NODE_GROUP_X_TRAIT_NODE);
-            CliDB.TraitNodeXTraitCondStorage = CliDB.ReadDB2<TraitNodeXTraitCondRecord>(_availableDb2Locales, _db2Path, Locale.enUS, "TraitNodeXTraitCond.db2", HotfixStatements.SEL_TRAIT_NODE_X_TRAIT_COND);
-            CliDB.TraitNodeXTraitCostStorage = CliDB.ReadDB2<TraitNodeXTraitCostRecord>(_availableDb2Locales, _db2Path, Locale.enUS, "TraitNodeXTraitCost.db2", HotfixStatements.SEL_TRAIT_NODE_X_TRAIT_COST);
-            CliDB.TraitNodeXTraitNodeEntryStorage = CliDB.ReadDB2<TraitNodeXTraitNodeEntryRecord>(_availableDb2Locales, _db2Path, Locale.enUS, "TraitNodeXTraitNodeEntry.db2", HotfixStatements.SEL_TRAIT_NODE_X_TRAIT_NODE_ENTRY);
-            CliDB.TraitTreeStorage = CliDB.ReadDB2<TraitTreeRecord>(_availableDb2Locales, _db2Path, Locale.enUS, "TraitTree.db2", HotfixStatements.SEL_TRAIT_TREE);
-            CliDB.TraitTreeLoadoutStorage = CliDB.ReadDB2<TraitTreeLoadoutRecord>(_availableDb2Locales, _db2Path, Locale.enUS, "TraitTreeLoadout.db2", HotfixStatements.SEL_TRAIT_TREE_LOADOUT);
-            CliDB.TraitTreeLoadoutEntryStorage = CliDB.ReadDB2<TraitTreeLoadoutEntryRecord>(_availableDb2Locales, _db2Path, Locale.enUS, "TraitTreeLoadoutEntry.db2", HotfixStatements.SEL_TRAIT_TREE_LOADOUT_ENTRY);
-            CliDB.TraitTreeXTraitCostStorage = CliDB.ReadDB2<TraitTreeXTraitCostRecord>(_availableDb2Locales, _db2Path, Locale.enUS, "TraitTreeXTraitCost.db2", HotfixStatements.SEL_TRAIT_TREE_X_TRAIT_COST);
-            CliDB.TraitTreeXTraitCurrencyStorage = CliDB.ReadDB2<TraitTreeXTraitCurrencyRecord>(_availableDb2Locales, _db2Path, Locale.enUS, "TraitTreeXTraitCurrency.db2", HotfixStatements.SEL_TRAIT_TREE_X_TRAIT_CURRENCY);
+            CliDB.ChrSpecializationStorage = SharedHelpers.ReadDB2<ChrSpecializationRecord>(_availableDb2Locales, _db2Path, Locale.enUS, "ChrSpecialization.db2", HotfixStatements.SEL_CHR_SPECIALIZATION, HotfixStatements.SEL_CHR_SPECIALIZATION_LOCALE);
+            CliDB.SpecSetMemberStorage = SharedHelpers.ReadDB2<SpecSetMemberRecord>(_availableDb2Locales, _db2Path, Locale.enUS, "SpecSetMember.db2", HotfixStatements.SEL_SPEC_SET_MEMBER);
+            CliDB.SkillLineStorage = SharedHelpers.ReadDB2<SkillLineRecord>(_availableDb2Locales, _db2Path, Locale.enUS, "SkillLine.db2", HotfixStatements.SEL_SKILL_LINE, HotfixStatements.SEL_SKILL_LINE_LOCALE);
+            CliDB.SkillLineXTraitTreeStorage = SharedHelpers.ReadDB2<SkillLineXTraitTreeRecord>(_availableDb2Locales, _db2Path, Locale.enUS, "SkillLineXTraitTree.db2", HotfixStatements.SEL_SKILL_LINE_X_TRAIT_TREE);
+            CliDB.SkillRaceClassInfoStorage = SharedHelpers.ReadDB2<SkillRaceClassInfoRecord>(_availableDb2Locales, _db2Path, Locale.enUS, "SkillRaceClassInfo.db2", HotfixStatements.SEL_SKILL_RACE_CLASS_INFO);
+            CliDB.SpellNameStorage = SharedHelpers.ReadDB2<SpellNameRecord>(_availableDb2Locales, _db2Path, Locale.enUS, "SpellName.db2", HotfixStatements.SEL_SPELL_NAME, HotfixStatements.SEL_SPELL_NAME_LOCALE);
+            CliDB.TraitCondStorage = SharedHelpers.ReadDB2<TraitCondRecord>(_availableDb2Locales, _db2Path, Locale.enUS, "TraitCond.db2", HotfixStatements.SEL_TRAIT_COND);
+            CliDB.TraitCostStorage = SharedHelpers.ReadDB2<TraitCostRecord>(_availableDb2Locales, _db2Path, Locale.enUS, "TraitCost.db2", HotfixStatements.SEL_TRAIT_COST);
+            CliDB.TraitCurrencyStorage = SharedHelpers.ReadDB2<TraitCurrencyRecord>(_availableDb2Locales, _db2Path, Locale.enUS, "TraitCurrency.db2", HotfixStatements.SEL_TRAIT_CURRENCY);
+            CliDB.TraitCurrencySourceStorage = SharedHelpers.ReadDB2<TraitCurrencySourceRecord>(_availableDb2Locales, _db2Path, Locale.enUS, "TraitCurrencySource.db2", HotfixStatements.SEL_TRAIT_CURRENCY_SOURCE); //, HotfixStatements.SEL_TRAIT_CURRENCY_SOURCE_LOCALE);
+            CliDB.TraitDefinitionStorage = SharedHelpers.ReadDB2<TraitDefinitionRecord>(_availableDb2Locales, _db2Path, Locale.enUS, "TraitDefinition.db2", HotfixStatements.SEL_TRAIT_DEFINITION); //, HotfixStatements.SEL_TRAIT_DEFINITION_LOCALE);
+            CliDB.TraitDefinitionEffectPointsStorage = SharedHelpers.ReadDB2<TraitDefinitionEffectPointsRecord>(_availableDb2Locales, _db2Path, Locale.enUS, "TraitDefinitionEffectPoints.db2", HotfixStatements.SEL_TRAIT_DEFINITION_EFFECT_POINTS);
+            CliDB.TraitEdgeStorage = SharedHelpers.ReadDB2<TraitEdgeRecord>(_availableDb2Locales, _db2Path, Locale.enUS, "TraitEdge.db2", HotfixStatements.SEL_TRAIT_EDGE);
+            CliDB.TraitNodeStorage = SharedHelpers.ReadDB2<TraitNodeRecord>(_availableDb2Locales, _db2Path, Locale.enUS, "TraitNode.db2", HotfixStatements.SEL_TRAIT_NODE);
+            CliDB.TraitNodeEntryStorage = SharedHelpers.ReadDB2<TraitNodeEntryRecord>(_availableDb2Locales, _db2Path, Locale.enUS, "TraitNodeEntry.db2", HotfixStatements.SEL_TRAIT_NODE_ENTRY);
+            CliDB.TraitNodeEntryXTraitCondStorage = SharedHelpers.ReadDB2<TraitNodeEntryXTraitCondRecord>(_availableDb2Locales, _db2Path, Locale.enUS, "TraitNodeEntryXTraitCond.db2", HotfixStatements.SEL_TRAIT_NODE_ENTRY_X_TRAIT_COND);
+            CliDB.TraitNodeEntryXTraitCostStorage = SharedHelpers.ReadDB2<TraitNodeEntryXTraitCostRecord>(_availableDb2Locales, _db2Path, Locale.enUS, "TraitNodeEntryXTraitCost.db2", HotfixStatements.SEL_TRAIT_NODE_ENTRY_X_TRAIT_COST);
+            CliDB.TraitNodeGroupStorage = SharedHelpers.ReadDB2<TraitNodeGroupRecord>(_availableDb2Locales, _db2Path, Locale.enUS, "TraitNodeGroup.db2", HotfixStatements.SEL_TRAIT_NODE_GROUP);
+            CliDB.TraitNodeGroupXTraitCondStorage = SharedHelpers.ReadDB2<TraitNodeGroupXTraitCondRecord>(_availableDb2Locales, _db2Path, Locale.enUS, "TraitNodeGroupXTraitCond.db2", HotfixStatements.SEL_TRAIT_NODE_GROUP_X_TRAIT_COND);
+            CliDB.TraitNodeGroupXTraitCostStorage = SharedHelpers.ReadDB2<TraitNodeGroupXTraitCostRecord>(_availableDb2Locales, _db2Path, Locale.enUS, "TraitNodeGroupXTraitCost.db2", HotfixStatements.SEL_TRAIT_NODE_GROUP_X_TRAIT_COST);
+            CliDB.TraitNodeGroupXTraitNodeStorage = SharedHelpers.ReadDB2<TraitNodeGroupXTraitNodeRecord>(_availableDb2Locales, _db2Path, Locale.enUS, "TraitNodeGroupXTraitNode.db2", HotfixStatements.SEL_TRAIT_NODE_GROUP_X_TRAIT_NODE);
+            CliDB.TraitNodeXTraitCondStorage = SharedHelpers.ReadDB2<TraitNodeXTraitCondRecord>(_availableDb2Locales, _db2Path, Locale.enUS, "TraitNodeXTraitCond.db2", HotfixStatements.SEL_TRAIT_NODE_X_TRAIT_COND);
+            CliDB.TraitNodeXTraitCostStorage = SharedHelpers.ReadDB2<TraitNodeXTraitCostRecord>(_availableDb2Locales, _db2Path, Locale.enUS, "TraitNodeXTraitCost.db2", HotfixStatements.SEL_TRAIT_NODE_X_TRAIT_COST);
+            CliDB.TraitNodeXTraitNodeEntryStorage = SharedHelpers.ReadDB2<TraitNodeXTraitNodeEntryRecord>(_availableDb2Locales, _db2Path, Locale.enUS, "TraitNodeXTraitNodeEntry.db2", HotfixStatements.SEL_TRAIT_NODE_X_TRAIT_NODE_ENTRY);
+            CliDB.TraitTreeStorage = SharedHelpers.ReadDB2<TraitTreeRecord>(_availableDb2Locales, _db2Path, Locale.enUS, "TraitTree.db2", HotfixStatements.SEL_TRAIT_TREE);
+            CliDB.TraitTreeLoadoutStorage = SharedHelpers.ReadDB2<TraitTreeLoadoutRecord>(_availableDb2Locales, _db2Path, Locale.enUS, "TraitTreeLoadout.db2", HotfixStatements.SEL_TRAIT_TREE_LOADOUT);
+            CliDB.TraitTreeLoadoutEntryStorage = SharedHelpers.ReadDB2<TraitTreeLoadoutEntryRecord>(_availableDb2Locales, _db2Path, Locale.enUS, "TraitTreeLoadoutEntry.db2", HotfixStatements.SEL_TRAIT_TREE_LOADOUT_ENTRY);
+            CliDB.TraitTreeXTraitCostStorage = SharedHelpers.ReadDB2<TraitTreeXTraitCostRecord>(_availableDb2Locales, _db2Path, Locale.enUS, "TraitTreeXTraitCost.db2", HotfixStatements.SEL_TRAIT_TREE_X_TRAIT_COST);
+            CliDB.TraitTreeXTraitCurrencyStorage = SharedHelpers.ReadDB2<TraitTreeXTraitCurrencyRecord>(_availableDb2Locales, _db2Path, Locale.enUS, "TraitTreeXTraitCurrency.db2", HotfixStatements.SEL_TRAIT_TREE_X_TRAIT_CURRENCY);
 
-            CliDB.TraitSystemStorage = CliDB.ReadDB2<TraitSystemRecord>(_availableDb2Locales, _db2Path, Locale.enUS, "TraitSystem.db2", HotfixStatements.SEL_TRAIT_SYSTEM);
+            CliDB.TraitSystemStorage = SharedHelpers.ReadDB2<TraitSystemRecord>(_availableDb2Locales, _db2Path, Locale.enUS, "TraitSystem.db2", HotfixStatements.SEL_TRAIT_SYSTEM);
 
             foreach (var entry in CliDB.SkillRaceClassInfoStorage)
                 if (CliDB.SkillLineStorage.ContainsKey(entry.Value.SkillID))
@@ -92,7 +93,7 @@ namespace Forged.Tools.TraitEditor.Utils
             foreach (var item in ordered.OrderBy(i => i.Id))
                 SpellIconStorage.Add(item.Id, item);
 
-            var misc = CliDB.ReadDB2<SpellMiscRecord>(_availableDb2Locales, _db2Path, Locale.enUS, "SpellMisc.db2", HotfixStatements.SEL_SPELL_MISC);
+            var misc = SharedHelpers.ReadDB2<SpellMiscRecord>(_availableDb2Locales, _db2Path, Locale.enUS, "SpellMisc.db2", HotfixStatements.SEL_SPELL_MISC);
             foreach (var miscrec in misc)
                 SpellMiscBySpellID[miscrec.Value.SpellID] = miscrec.Value;
         }
