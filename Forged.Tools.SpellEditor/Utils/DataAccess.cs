@@ -95,6 +95,8 @@ namespace Forged.Tools.SpellEditor.Utils
                 if (SharedConst.IsValidLocale(locale))
                     _availableDb2Locales[(int)locale] = true;
             }
+
+            DB.Hotfix.PrepareStatement(HotfixStatements.SEL_SPELL, "SELECT ID, NameSubtext, Description, AuraDescription FROM spell WHERE (`VerifiedBuild` > 0) = ?");
         }
 
         public void LoadStores()
