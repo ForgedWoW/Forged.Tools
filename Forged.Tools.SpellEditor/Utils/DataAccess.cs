@@ -104,11 +104,6 @@ namespace Forged.Tools.SpellEditor.Utils
             if (!_availableDb2Locales[(int)Locale.enUS])
                 return;
 
-            var results = DB.Hotfix.Query("SELECT * FROM `spell`");
-
-            if (results.IsEmpty())
-                DB.Hotfix.ApplyFile("SpellTable.sql");
-
             CliDB.BattlePetSpeciesStorage = SharedHelpers.ReadDB2<BattlePetSpeciesRecord>(_availableDb2Locales, _db2Path, Locale.enUS, "BattlePetSpecies.db2", HotfixStatements.SEL_BATTLE_PET_SPECIES, HotfixStatements.SEL_BATTLE_PET_SPECIES_LOCALE);
             CliDB.DifficultyStorage = SharedHelpers.ReadDB2<DifficultyRecord>(_availableDb2Locales, _db2Path, Locale.enUS, "Difficulty.db2", HotfixStatements.SEL_DIFFICULTY, HotfixStatements.SEL_DIFFICULTY_LOCALE);
             CliDB.SpellNameStorage = SharedHelpers.ReadDB2<SpellNameRecord>(_availableDb2Locales, _db2Path, Locale.enUS, "SpellName.db2", HotfixStatements.SEL_SPELL_NAME, HotfixStatements.SEL_SPELL_NAME_LOCALE);
