@@ -42,10 +42,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Interface\ICONS\*">
+    <None Update="Interface\**">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="dbc\enUS\*">
+    <None Update="Data\**">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="IconIDs.csv">
