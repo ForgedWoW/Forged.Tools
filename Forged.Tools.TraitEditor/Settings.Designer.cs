@@ -25,66 +25,6 @@ namespace Forged.Tools.TraitEditor {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("hotfixes")]
-        public string HotfixDatabaseName {
-            get {
-                return ((string)(this["HotfixDatabaseName"]));
-            }
-            set {
-                this["HotfixDatabaseName"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("127.0.0.1")]
-        public string HotfixDatabaseHost {
-            get {
-                return ((string)(this["HotfixDatabaseHost"]));
-            }
-            set {
-                this["HotfixDatabaseHost"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("3306")]
-        public string HotfixDatabasePort {
-            get {
-                return ((string)(this["HotfixDatabasePort"]));
-            }
-            set {
-                this["HotfixDatabasePort"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("root")]
-        public string HotfixDatabaseUser {
-            get {
-                return ((string)(this["HotfixDatabaseUser"]));
-            }
-            set {
-                this["HotfixDatabaseUser"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("root")]
-        public string HotfixDatabasePassword {
-            get {
-                return ((string)(this["HotfixDatabasePassword"]));
-            }
-            set {
-                this["HotfixDatabasePassword"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("{FullTraitEditorPath}")]
         public string DB2ParentDir {
             get {

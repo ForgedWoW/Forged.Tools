@@ -29,9 +29,9 @@ namespace Forged.Tools.SpellEditor
                 Username = ConfigMgr.GetDefaultValue("HotfixDatabaseInfo.Username", "dev"), 
                 Password = ConfigMgr.GetDefaultValue("HotfixDatabaseInfo.Password", "forgeddev!123")
             });
-            var result = DB.Hotfix.Query(DataAccess.SELECT_SPELL_EFFECT_IDS);
+            var result = DB.Hotfix.Query("SHOW TABLES;");
 
-            if (result == null)
+            if (result.IsEmpty())
             {
                 MessageBox.Show("Unable to connect to the database. Please check your settings.", "Database Error");
                 Environment.Exit(0);
