@@ -2873,7 +2873,7 @@ namespace Forged.Tools.SpellEditor
             // label17
             // 
             this.label17.AutoSize = true;
-            this.label17.Location = new System.Drawing.Point(72, 33);
+            this.label17.Location = new System.Drawing.Point(72, 41);
             this.label17.Name = "label17";
             this.label17.Size = new System.Drawing.Size(49, 20);
             this.label17.TabIndex = 0;
@@ -2892,7 +2892,7 @@ namespace Forged.Tools.SpellEditor
             // 
             this.txtSpellName.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtSpellName.Location = new System.Drawing.Point(123, 29);
+            this.txtSpellName.Location = new System.Drawing.Point(123, 37);
             this.txtSpellName.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.txtSpellName.Name = "txtSpellName";
             this.txtSpellName.PlaceholderText = "Spell Name";
