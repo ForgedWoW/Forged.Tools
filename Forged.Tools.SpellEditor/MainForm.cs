@@ -115,6 +115,7 @@ namespace Forged.Tools.SpellEditor
             listCatFlags.Items.AddEnumNames(typeof(SpellCategoryFlags));
 
             cmbDispelType.Items.AddEnumNames(typeof(DispelType));
+            cmbDispelType.Items.Remove("AllMask");
             cmbDispelType.SelectedIndex = 0;
             cmbMechanic.Items.AddEnumNames(typeof(Mechanics));
             cmbMechanic.SelectedIndex = 0;
@@ -147,7 +148,19 @@ namespace Forged.Tools.SpellEditor
 
             // Proc info
             listProcTargets.Items.AddEnumNames(typeof(SpellCastTargetFlags));
+            listProcTargets.Items.Remove("UnitMask");
+            listProcTargets.Items.Remove("GameobjectMask");
+            listProcTargets.Items.Remove("CorpseMask");
+            listProcTargets.Items.Remove("ItemMask");
             listProcFlags.Items.AddEnumNames(typeof(ProcFlags));
+            listProcFlags.Items.Remove("AutoAttackMask");
+            listProcFlags.Items.Remove("MeleeMask");
+            listProcFlags.Items.Remove("RangedMask");
+            listProcFlags.Items.Remove("SpellMask");
+            listProcFlags.Items.Remove("DoneHitMask");
+            listProcFlags.Items.Remove("TakenHitMask");
+            listProcFlags.Items.Remove("ReqSpellPhaseMask");
+            listProcFlags.Items.Remove("MeleeBasedTriggerMask");
             listProcFlags2.Items.AddEnumNames(typeof(ProcFlags2));
 
             cmbSpellFocus.Items.Add($"0 - None");
@@ -159,6 +172,7 @@ namespace Forged.Tools.SpellEditor
             cmbSpellEffect.Items.AddEnumNames(typeof(SpellEffectName));
             cmbSpellEffect.SelectedIndex = 0;
             cmbEffMechanic.Items.AddEnumNames(typeof(Mechanics));
+            cmbEffMechanic.Items.Remove("ImmuneToMovementImpairmentAndLossControlMask");
             cmbEffMechanic.SelectedIndex = 0;
             cmbTargetA.Items.AddEnumNames(typeof(Targets));
             cmbTargetA.SelectedIndex = 0;
@@ -205,8 +219,10 @@ namespace Forged.Tools.SpellEditor
             // flags
             listInterruptFlags.Items.AddEnumNames(typeof(SpellInterruptFlags));
             listAuraInterruptFlags.Items.AddEnumNames(typeof(SpellAuraInterruptFlags));
+            listAuraInterruptFlags.Items.Remove("NotVictim");
             listAuraInterruptFlags2.Items.AddEnumNames(typeof(SpellAuraInterruptFlags2));
             listChannelInterruptFlags.Items.AddEnumNames(typeof(SpellAuraInterruptFlags));
+            listChannelInterruptFlags.Items.Remove("NotVictim");
             listChannelInterruptFlags2.Items.AddEnumNames(typeof(SpellAuraInterruptFlags2));
             listTargetCreatureType.Items.AddEnumNames(typeof(CreatureType));
             listTargetCreatureType.Items.Remove("MaskDemonOrUndead");
