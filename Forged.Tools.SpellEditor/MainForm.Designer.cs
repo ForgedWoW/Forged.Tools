@@ -175,6 +175,7 @@ namespace Forged.Tools.SpellEditor
             this.label22 = new System.Windows.Forms.Label();
             this.label21 = new System.Windows.Forms.Label();
             this.groupSpellInfo = new System.Windows.Forms.GroupBox();
+            this.spellIdChanger = new System.Windows.Forms.NumericUpDown();
             this.txtLaunchDelay = new System.Windows.Forms.TextBox();
             this.label204 = new System.Windows.Forms.Label();
             this.numModalNextSpell = new System.Windows.Forms.NumericUpDown();
@@ -567,6 +568,7 @@ namespace Forged.Tools.SpellEditor
             ((System.ComponentModel.ISupportInitialize)(this.numCooldown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numCategory)).BeginInit();
             this.groupSpellInfo.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.spellIdChanger)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numModalNextSpell)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numStackAmount)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numFamilyFlags4)).BeginInit();
@@ -2505,6 +2507,7 @@ namespace Forged.Tools.SpellEditor
             this.groupSpellInfo.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupSpellInfo.Controls.Add(this.spellIdChanger);
             this.groupSpellInfo.Controls.Add(this.txtLaunchDelay);
             this.groupSpellInfo.Controls.Add(this.label204);
             this.groupSpellInfo.Controls.Add(this.numModalNextSpell);
@@ -2545,6 +2548,27 @@ namespace Forged.Tools.SpellEditor
             this.groupSpellInfo.TabIndex = 6;
             this.groupSpellInfo.TabStop = false;
             this.groupSpellInfo.Text = "Spell Info";
+            // 
+            // spellIdChanger
+            // 
+            this.spellIdChanger.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.spellIdChanger.Increment = new decimal(new int[] {
+            0,
+            0,
+            0,
+            0});
+            this.spellIdChanger.Location = new System.Drawing.Point(123, 1);
+            this.spellIdChanger.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.spellIdChanger.Maximum = new decimal(new int[] {
+            -1,
+            0,
+            0,
+            0});
+            this.spellIdChanger.Name = "spellIdChanger";
+            this.spellIdChanger.ReadOnly = true;
+            this.spellIdChanger.Size = new System.Drawing.Size(277, 27);
+            this.spellIdChanger.TabIndex = 70;
             // 
             // txtLaunchDelay
             // 
@@ -6811,6 +6835,7 @@ namespace Forged.Tools.SpellEditor
             ((System.ComponentModel.ISupportInitialize)(this.numCategory)).EndInit();
             this.groupSpellInfo.ResumeLayout(false);
             this.groupSpellInfo.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.spellIdChanger)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numModalNextSpell)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numStackAmount)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numFamilyFlags4)).EndInit();
@@ -7412,5 +7437,6 @@ namespace Forged.Tools.SpellEditor
         private MultiLineComboBox mlcmbEditCat;
         private Button btnDeleteSpell;
         private MultiLineComboBox mlcmbPPM;
+        private NumericUpDown spellIdChanger;
     }
 }

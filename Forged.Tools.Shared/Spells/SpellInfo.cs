@@ -164,8 +164,8 @@ namespace Forged.Tools.Shared.Spells
                 if (spellEffect == null)
                     continue;
 
-                _effects.EnsureWritableListIndex((uint)spellEffect.EffectIndex, new SpellEffectInfo(this));
-                _effects[(int)spellEffect.EffectIndex] = new SpellEffectInfo(this, spellEffect);
+                _effects.EnsureWritableListIndex(spellEffect.EffectIndex, new SpellEffectInfo(this));
+                _effects[spellEffect.EffectIndex] = new SpellEffectInfo(this, spellEffect);
             }
 
             // Correct EffectIndex for blank effects

@@ -290,6 +290,7 @@ namespace Forged.Tools.SpellEditor
 
             // update basic info
             txtSpellName.Text = CurrentSpell.SpellInfo.SpellName[Locale.enUS];
+            spellIdChanger.Value= CurrentSpell.SpellInfo.Id;
             txtSpellNameSubtext.Text = CurrentSpell.SpellDescriptions?.NameSubtext_lang;
             txtSpellDesc.Text = CurrentSpell.SpellDescriptions?.Description_lang;
             txtAuraDesc.Text = CurrentSpell.SpellDescriptions?.AuraDescription_lang;
