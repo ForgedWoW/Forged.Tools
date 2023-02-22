@@ -1158,7 +1158,7 @@ namespace Forged.Tools.Shared.Spells
         public SpellEffectName Effect;
         public AuraType ApplyAuraName;
         public uint ApplyAuraPeriod;
-        public int BasePoints;
+        public float BasePoints;
         public float RealPointsPerLevel;
         public float PointsPerResource;
         public float Amplitude;

@@ -517,9 +517,6 @@ namespace Forged.Tools.SpellEditor.Utils
                         break;
 
                     // numeric
-                    case "BasePoints":
-                        ret.BasePoints = (int)((NumericUpDown)c).Value;
-                        break;
                     case "AuraTickRate":
                         ret.ApplyAuraPeriod = (uint)((NumericUpDown)c).Value;
                         break;
@@ -593,6 +590,9 @@ namespace Forged.Tools.SpellEditor.Utils
                         break;
                     case "PositionFacing":
                         ret.PositionFacing = float.Parse(((TextBox)c).Text);
+                        break;
+                    case "BasePoints":
+                        ret.BasePoints = float.Parse(((TextBox)c).Text);
                         break;
 
                     default:
