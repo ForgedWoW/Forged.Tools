@@ -505,7 +505,7 @@ namespace Forged.Tools.Shared.Entities
         public SpellCategoriesRecord Categories;
         public SpellClassOptionsRecord ClassOptions;
         public SpellCooldownsRecord Cooldowns;
-        public SpellEffectRecord[] Effects = new SpellEffectRecord[SpellConst.MaxEffects];
+        public SpellEffectRecord[] Effects = new SpellEffectRecord[32];
         public SpellEquippedItemsRecord EquippedItems;
         public SpellInterruptsRecord Interrupts;
         public List<SpellLabelRecord> Labels = new();

@@ -21,7 +21,7 @@ namespace Forged.Tools.TraitEditor.Utils
 
         public DataAccess()
         {
-            _db2Path = Settings.Default.DB2ParentDir.Replace("{FullTraitEditorPath}", System.Reflection.Assembly.GetEntryAssembly().Location.Replace("\\Forged.Tools.TraitEditor.dll", "\\dbc"));
+            _db2Path = Settings.Default.DB2ParentDir.Replace("{FullTraitEditorPath}", System.Reflection.Assembly.GetEntryAssembly().Location.Replace("\\Forged.Tools.TraitEditor.dll", "\\Data\\dbc"));
             
             _availableDb2Locales = new((int)Locale.Total);
             foreach (var dir in Directory.GetDirectories(_db2Path).AsSpan())

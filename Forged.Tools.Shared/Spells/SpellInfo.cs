@@ -511,7 +511,7 @@ namespace Forged.Tools.Shared.Spells
         public SpellAttr13 AttributesEx13 { get; set; }
         public SpellAttr14 AttributesEx14 { get; set; }
         public SpellCustomAttributes AttributesCu { get; set; }
-        public BitSet NegativeEffects { get; set; } = new BitSet(SpellConst.MaxEffects);
+        public BitSet NegativeEffects { get; set; } = new BitSet(32);
         public ulong Stances { get; set; }
         public ulong StancesNot { get; set; }
         public SpellCastTargetFlags Targets { get; set; }

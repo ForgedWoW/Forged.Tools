@@ -82,7 +82,7 @@ namespace Forged.Tools.SpellEditor.Utils
         public DataAccess()
         {
             DBExecutableUtil.CheckExecutable();
-            _db2Path = ConfigMgr.GetDefaultValue("DataDir", "{FullSpellEditorPath}").Replace("{FullSpellEditorPath}", System.Reflection.Assembly.GetEntryAssembly().Location.Replace("\\Forged.Tools.SpellEditor.dll", "\\dbc"));
+            _db2Path = ConfigMgr.GetDefaultValue("DataDir", "{FullSpellEditorPath}").Replace("{FullSpellEditorPath}", System.Reflection.Assembly.GetEntryAssembly().Location.Replace("\\Forged.Tools.SpellEditor.dll", "\\Data\\dbc"));
 
             if (!_db2Path.EndsWith("\\dbc"))
                 _db2Path += "\\dbc";
