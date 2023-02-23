@@ -22,6 +22,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Google.Apis.Drive.v3" Version="1.60.0.2971" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\..\ForgedCore\Source\Framework\Framework.csproj" />
     <ProjectReference Include="..\..\ForgedCore\Source\Game\Game.csproj" />
     <ProjectReference Include="..\Forged.Tools.Shared\Forged.Tools.Shared.csproj" />
@@ -40,6 +44,12 @@
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>
     <None Update="ArtTextureID.lua">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="IconIDs.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="readonly_cred.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Settings.settings">

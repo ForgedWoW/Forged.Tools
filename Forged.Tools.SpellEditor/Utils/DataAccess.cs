@@ -87,6 +87,32 @@ namespace Forged.Tools.SpellEditor.Utils
             if (!_db2Path.EndsWith("\\dbc"))
                 _db2Path += "\\dbc";
 
+            DB.Hotfix.PrepareStatement(HotfixStatements.SEL_SPELL, "SELECT ID, NameSubtext, Description, AuraDescription FROM spell WHERE (`VerifiedBuild` > 0) = ?");
+        }
+
+        public void LoadStores(bool newVersion)
+        {
+            if (newVersion && Directory.Exists(_db2Path))
+                Directory.Delete(_db2Path, true);
+
+            if (!Directory.Exists(_db2Path))
+            {
+                var localDir = System.Reflection.Assembly.GetEntryAssembly().Location.Replace("Forged.Tools.SpellEditor.dll", "");
+                var dbcs = "1Jo-7594VT-X0g0TZLApsq3Eg9bFKZbR_";
+
+                var zipFile = Path.Combine(localDir, "enUS.zip");
+
+                if (File.Exists(zipFile))
+                    File.Delete(zipFile);
+
+                DownloadGoogleDriveFile.DriveDownloadFile(dbcs, zipFile);
+
+                System.IO.Compression.ZipFile.ExtractToDirectory(zipFile, _db2Path);
+                Thread.Sleep(1000);
+                File.Delete(zipFile);
+            }
+
+
             _availableDb2Locales = new((int)Locale.Total);
 
             foreach (var dir in Directory.GetDirectories(_db2Path).AsSpan())
@@ -96,11 +122,6 @@ namespace Forged.Tools.SpellEditor.Utils
                     _availableDb2Locales[(int)locale] = true;
             }
 
-            DB.Hotfix.PrepareStatement(HotfixStatements.SEL_SPELL, "SELECT ID, NameSubtext, Description, AuraDescription FROM spell WHERE (`VerifiedBuild` > 0) = ?");
-        }
-
-        public void LoadStores()
-        {
             if (!_availableDb2Locales[(int)Locale.enUS])
                 return;
 

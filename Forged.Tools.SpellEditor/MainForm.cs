@@ -9,6 +9,7 @@ using Framework.Database;
 using Framework.Dynamic;
 using Forged.Tools.Shared.Forms;
 using Framework.Configuration;
+using System.IO.Compression;
 
 namespace Forged.Tools.SpellEditor
 {
@@ -60,8 +61,50 @@ namespace Forged.Tools.SpellEditor
             txtWidth.MakeNumberBox();
             txtLaunchDelay.MakeNumberBox();
 
-            Program.DataAccess.LoadStores();
-            _iconFolder = ConfigMgr.GetDefaultValue("Tools.IconDir", "{FullSpellEditorPath}").Replace("{FullSpellEditorPath}", System.Reflection.Assembly.GetEntryAssembly().Location.Replace("Forged.Tools.SpellEditor.dll", ""));
+            var localDir = System.Reflection.Assembly.GetEntryAssembly().Location.Replace("Forged.Tools.SpellEditor.dll", "");
+            var versionFile = Path.Combine(localDir, "NewVersion.txt");
+            var oldVersionFile = Path.Combine(localDir, "CurrentVersion.txt");
+
+            bool newVersion = false;
+        
+            DownloadGoogleDriveFile.DriveDownloadFile("1jx6kFQnPR2GDSrLmwinwHGrheeD3SGUM", versionFile);
+
+            if (!File.Exists(oldVersionFile))
+            {
+                newVersion = true;
+                File.Copy(versionFile, oldVersionFile);
+            }
+            else
+            {
+                if (!int.TryParse(File.ReadAllText(versionFile).Trim(), out var newVers) ||
+                    !int.TryParse(File.ReadAllText(oldVersionFile).Trim(), out var oldVer) ||
+                    oldVer < newVers)
+                {
+                    newVersion = true;
+                    File.Copy(versionFile, oldVersionFile);
+                }
+            }
+
+            File.Delete(versionFile);
+
+            Program.DataAccess.LoadStores(newVersion);
+            _iconFolder = ConfigMgr.GetDefaultValue("Tools.IconDir", "{FullSpellEditorPath}").Replace("{FullSpellEditorPath}", localDir);
+
+            if (!Directory.Exists(Path.Combine(_iconFolder, "Interface", "Icons")))
+            {
+                var icons = "1pRZ04T67qePO-pLT3fK2gZ8MtIHvhns9";
+                var zipFile = Path.Combine(localDir, "icons.zip");
+
+                if (File.Exists(zipFile))
+                    File.Delete(zipFile);
+
+                DownloadGoogleDriveFile.DriveDownloadFile(icons, zipFile);
+
+                System.IO.Compression.ZipFile.ExtractToDirectory(zipFile, _iconFolder);
+                Thread.Sleep(1000);
+                File.Delete(zipFile);
+            }
+
             SpellManager.Instance.LoadSpellInfoStore(Program.DataAccess);
 
             listSpells.PopulateSpellList(numCurentMin, numCurentMax, cmbIndexing.SelectedIndex, _currentNameSearch, ref _maxSpellSearch);

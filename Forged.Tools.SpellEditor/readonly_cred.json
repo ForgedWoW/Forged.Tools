@@ -1,0 +1,12 @@
+{
+  "type": "service_account",
+  "project_id": "forgedtools",
+  "private_key_id": "26bf17be51dd92a0512a088e04c3e12ac91231a5",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQC7k6w/sVSsKQ5c\nov+y7WbIY1k4nBle4xvFOOhmmztxnLe6Z7muEOqZYoWdWHqw1kpwSu0FDYFxf/ZP\nO2wSlT17P/+qQQcjI2EKwtKrNhqgBdRAKH1JBFxH9XpfACzbY7GWNLkua8EiKvgn\n5aJX+vB15M2+KmBF0Xfe0pLQyu0nQnU/hlhM7Pugw6yoLuRrUPA3cwByKt13B1er\n47DwtTu9MmQwCedb4st4x5hUvF9nyhTLXWaJ+6g1KDunnhXJvUloPsnI5uCtHxn1\nFKS7zxpEHHKeQCFgdtVUZs4EQylDWABK+XgigbBQ665834Q175Sa6VLWNiT+X9v3\nSyf5phJnAgMBAAECggEAE46dCfMCQgTx02THRi+MZN4+4jEcUBFbxt9dE72hoAHY\nAh5odKac3ysvhS1BdYiSME0Pk1RKJ7xQwQgQB4v54gzVKjondVlt98JCVsmIUyDo\ndVwDXAaRXItSm+8XvjQRwvhySk2/0EEsqHQ/ze6C/bfCX85pRT5GwjuwRQazXUFZ\ns87hZt5rH+iNtwWwGjPuk39VSnyIRkKxa9LdPuldy3hzfBrItQNW+GxUvxID4FAe\nh8y4QU7PaWqJ/xDRJe781US7I3a+eiaiFp0aOMu4tFaFDmOq8j0YlQlBCxlpJ2E3\nmQnN+J2HV7XPno6t3v7J62GLrC5LBYD4itWqeul3IQKBgQDw39sdRms+mB0IiE2g\npU2riAaEdfgNWJb2gjMqArtuG//1xtqM5cInxNtgzGHldRXdBidwUlzaU2ey+45K\nn2Zh/SMsZRZjKboKYc0b5TmCWze3fNtAW2XE/g34JPBvEJxmHeJG0XoVN7BqauWu\n9YgaTJwHcIp1BeSZBMRO0dknsQKBgQDHWwnvUUtNOarjiBfY0HbbWrffT/Ce708V\nudhZmuR1hH1J3IfHRKJYQbellyk/wJNd4COQdewuMk3f8Yd8r1+aytkPsGXUNjZV\nLS3zsWIsHrj+iKiag4Kgr5hpNb0LUXpWsRDJJb0WzMJabFS1J/PANat66c/VcYgv\nb22Vu915lwKBgCThATlAONdCjt9pjwkThgrHLshFD49riuF/GbpK5Mt8+fl1UqzT\n2KAiIbx2Tl7FSG2orY0i7xh2QKBEp4qBUTmbejEn4P+ZueQxCShGNkHhGWy8bw0x\ncSlyBE2DylQW5Ps1hBl3pQtulVIVv8jDyuzL4e+5qVk1Z8SN2EiBFJBhAoGBAJZC\ne1GDr8NMZQ7MxFSqg/u/+/l4sn/JFo3knzqisfIV461paHn8tHTbS8WnEvM3fpvy\nVjwLdfI3/lR+I0YKlYABxuu5ZHc4SWmX/RvCJqHkokFP1e1olGvzDmi2lX/TcOeo\n3GMQa96khRVMs+g7bdEBYvfpBbr2sNQ4I5wJltyPAoGBAN9qSIskHiWUtwgtsz8t\n4HUksCifNRnKUhmdghUv8mvipH3L1yyqfBuAuPQ91PXqSj9m/7UHMPkoY3JW6NFd\nHR1WgKnLMCZoi7DjK+rEC8QIsqzWyE3tGVtpkM41XwxS9mxgM9HxadLotMYXe4KJ\nxT8jUW88ZwboRWxZDsN9p86m\n-----END PRIVATE KEY-----\n",
+  "client_email": "forgedtoolreadonly@forgedtools.iam.gserviceaccount.com",
+  "client_id": "107164780816511211084",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/forgedtoolreadonly%40forgedtools.iam.gserviceaccount.com"
+}
