@@ -769,9 +769,25 @@ namespace Forged.Tools.SpellEditor
             listEquippedItemInvenType.SelectedItems.AddSelectedIntEnum(CurrentSpell.SpellInfo.EquippedItemInventoryTypeMask, typeof(InventoryType));
             listEquippedItemSubClass.UpdateItemSubClass((ItemClass)Enum.Parse(typeof(ItemClass), (string)cmbEquippedItemClass.SelectedItem), CurrentSpell.SpellInfo.EquippedItemClass, CurrentSpell.SpellInfo.EquippedItemSubClassMask, true);
 
-            cmbCurveIndex.Items.Clear();
+            //cmbCurveIndex.Items.Clear();
+            //foreach (var curve in CurrentSpell.Curves)
+            //    cmbCurveIndex.Items.Add(curve.TraitDefinitionEffectPoints.EffectIndex);
+
+            StringBuilder text = new();
+
             foreach (var curve in CurrentSpell.Curves)
-                cmbCurveIndex.Items.Add(curve.TraitDefinitionEffectPoints.EffectIndex);
+            {
+                //lblCurveId.Text = curve.CurveRecord.Id.ToString();
+
+                foreach (var cp in curve.CurvePoints)
+                {
+                    text.Append("Curve: ").Append(curve.CurveRecord.Id).Append(" - Effect Index: ").Append(curve.TraitDefinitionEffectPoints.EffectIndex).Append(Environment.NewLine)
+                        .Append("Curve Point Id: ").Append(cp.Id).Append(" - Rank: ").Append(cp.Pos.X).Append(" - Points: ").Append(cp.Pos.Y).Append(Environment.NewLine);
+                }
+
+            }
+
+            txtbxCurvePoints.Text = text.ToString();
 
             btnCurIconUndo_Click(null, null);
             btnActiveIconUndo_Click(null, null);
@@ -1648,31 +1664,31 @@ namespace Forged.Tools.SpellEditor
 
         private void cmbCurveIndex_SelectedIndexChanged(object sender, EventArgs e)
         {
-            bool found = false;
-            foreach (var curve in CurrentSpell.Curves)
-            {
-                if ((int)cmbCurveIndex.SelectedItem == curve.TraitDefinitionEffectPoints.EffectIndex)
-                {
-                    lblCurveId.Text = curve.CurveRecord.Id.ToString();
-                    StringBuilder text = new();
+            //bool found = false;
+            //foreach (var curve in CurrentSpell.Curves)
+            //{
+            //    if ((int)cmbCurveIndex.SelectedItem == curve.TraitDefinitionEffectPoints.EffectIndex)
+            //    {
+            //        lblCurveId.Text = curve.CurveRecord.Id.ToString();
+            //        StringBuilder text = new();
 
-                    foreach(var cp in curve.CurvePoints)
-                    {
-                        text.Append("Id: ").Append(cp.Id).Append(" - Rank: ").Append(cp.Pos.X).Append(" - Points: ").Append(cp.Pos.Y).Append(Environment.NewLine);
-                    }
+            //        foreach(var cp in curve.CurvePoints)
+            //        {
+            //            text.Append("Id: ").Append(cp.Id).Append(" - Rank: ").Append(cp.Pos.X).Append(" - Points: ").Append(cp.Pos.Y).Append(Environment.NewLine);
+            //        }
 
-                    txtbxCurvePoints.Text = text.ToString();
-                    found = true;
+            //        txtbxCurvePoints.Text = text.ToString();
+            //        found = true;
 
-                    break;
-                }
-            }
+            //        break;
+            //    }
+            //}
 
-            if (!found)
-            {
-                lblCurveId.Text = string.Empty;
-                txtbxCurvePoints.Text = string.Empty;
-            }
+            //if (!found)
+            //{
+            //    lblCurveId.Text = string.Empty;
+            //    txtbxCurvePoints.Text = string.Empty;
+            //}
         }
     }
 }

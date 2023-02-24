@@ -508,6 +508,13 @@ namespace Forged.Tools.SpellEditor
             this.label85 = new System.Windows.Forms.Label();
             this.label84 = new System.Windows.Forms.Label();
             this.lvIcons = new System.Windows.Forms.ListView();
+            this.tabCurves = new System.Windows.Forms.TabPage();
+            this.txtbxCurvePoints = new System.Windows.Forms.TextBox();
+            this.label131 = new System.Windows.Forms.Label();
+            this.lblCurveId = new System.Windows.Forms.Label();
+            this.label130 = new System.Windows.Forms.Label();
+            this.cmbCurveIndex = new System.Windows.Forms.ComboBox();
+            this.label70 = new System.Windows.Forms.Label();
             this.btnSave = new System.Windows.Forms.Button();
             this.btnNew = new System.Windows.Forms.Button();
             this.cmbIndexing = new System.Windows.Forms.ComboBox();
@@ -518,13 +525,6 @@ namespace Forged.Tools.SpellEditor
             this.label75 = new System.Windows.Forms.Label();
             this.btnCopy = new System.Windows.Forms.Button();
             this.btnDeleteSpell = new System.Windows.Forms.Button();
-            this.tabCurves = new System.Windows.Forms.TabPage();
-            this.label70 = new System.Windows.Forms.Label();
-            this.cmbCurveIndex = new System.Windows.Forms.ComboBox();
-            this.label130 = new System.Windows.Forms.Label();
-            this.lblCurveId = new System.Windows.Forms.Label();
-            this.label131 = new System.Windows.Forms.Label();
-            this.txtbxCurvePoints = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.numCurentMin)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numCurentMax)).BeginInit();
             this.tabsSpellInfo.SuspendLayout();
@@ -664,9 +664,9 @@ namespace Forged.Tools.SpellEditor
             ((System.ComponentModel.ISupportInitialize)(this.picSelectedIcon)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.picActiveIcon)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.picCurIcon)).BeginInit();
+            this.tabCurves.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numNewSpellID)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numIdSearch)).BeginInit();
-            this.tabCurves.SuspendLayout();
             this.SuspendLayout();
             // 
             // listSpells
@@ -808,7 +808,7 @@ namespace Forged.Tools.SpellEditor
             this.tabBasicInfo.Controls.Add(this.groupCooldown);
             this.tabBasicInfo.Location = new System.Drawing.Point(4, 24);
             this.tabBasicInfo.Name = "tabBasicInfo";
-            this.tabBasicInfo.Padding = new System.Windows.Forms.Padding(3, 3, 3, 3);
+            this.tabBasicInfo.Padding = new System.Windows.Forms.Padding(3);
             this.tabBasicInfo.Size = new System.Drawing.Size(991, 652);
             this.tabBasicInfo.TabIndex = 0;
             this.tabBasicInfo.Text = "Basic Info";
@@ -1274,7 +1274,7 @@ namespace Forged.Tools.SpellEditor
             this.tabPower1.Controls.Add(this.label31);
             this.tabPower1.Location = new System.Drawing.Point(4, 24);
             this.tabPower1.Name = "tabPower1";
-            this.tabPower1.Padding = new System.Windows.Forms.Padding(3, 3, 3, 3);
+            this.tabPower1.Padding = new System.Windows.Forms.Padding(3);
             this.tabPower1.Size = new System.Drawing.Size(599, 176);
             this.tabPower1.TabIndex = 0;
             this.tabPower1.Text = "Cost 1";
@@ -1563,7 +1563,7 @@ namespace Forged.Tools.SpellEditor
             this.tabPower2.Controls.Add(this.numericUpDown20);
             this.tabPower2.Location = new System.Drawing.Point(4, 24);
             this.tabPower2.Name = "tabPower2";
-            this.tabPower2.Padding = new System.Windows.Forms.Padding(3, 3, 3, 3);
+            this.tabPower2.Padding = new System.Windows.Forms.Padding(3);
             this.tabPower2.Size = new System.Drawing.Size(599, 176);
             this.tabPower2.TabIndex = 1;
             this.tabPower2.Text = "Cost 2";
@@ -3896,7 +3896,7 @@ namespace Forged.Tools.SpellEditor
             this.tabProcInfo.Controls.Add(this.label63);
             this.tabProcInfo.Location = new System.Drawing.Point(4, 24);
             this.tabProcInfo.Name = "tabProcInfo";
-            this.tabProcInfo.Padding = new System.Windows.Forms.Padding(3, 3, 3, 3);
+            this.tabProcInfo.Padding = new System.Windows.Forms.Padding(3);
             this.tabProcInfo.Size = new System.Drawing.Size(991, 652);
             this.tabProcInfo.TabIndex = 3;
             this.tabProcInfo.Text = "Proc Info";
@@ -4150,7 +4150,7 @@ namespace Forged.Tools.SpellEditor
             this.tabEffect.Controls.Add(this.lblSpellEffect);
             this.tabEffect.Location = new System.Drawing.Point(4, 24);
             this.tabEffect.Name = "tabEffect";
-            this.tabEffect.Padding = new System.Windows.Forms.Padding(3, 3, 3, 3);
+            this.tabEffect.Padding = new System.Windows.Forms.Padding(3);
             this.tabEffect.Size = new System.Drawing.Size(979, 584);
             this.tabEffect.TabIndex = 0;
             this.tabEffect.Text = "Effect 1";
@@ -4823,7 +4823,7 @@ namespace Forged.Tools.SpellEditor
             this.tabAttributes.Controls.Add(this.label2);
             this.tabAttributes.Location = new System.Drawing.Point(4, 24);
             this.tabAttributes.Name = "tabAttributes";
-            this.tabAttributes.Padding = new System.Windows.Forms.Padding(3, 3, 3, 3);
+            this.tabAttributes.Padding = new System.Windows.Forms.Padding(3);
             this.tabAttributes.Size = new System.Drawing.Size(991, 652);
             this.tabAttributes.TabIndex = 1;
             this.tabAttributes.Text = "Attributes";
@@ -6136,7 +6136,7 @@ namespace Forged.Tools.SpellEditor
             this.tabIcon.Controls.Add(this.lvIcons);
             this.tabIcon.Location = new System.Drawing.Point(4, 24);
             this.tabIcon.Name = "tabIcon";
-            this.tabIcon.Padding = new System.Windows.Forms.Padding(3, 3, 3, 3);
+            this.tabIcon.Padding = new System.Windows.Forms.Padding(3);
             this.tabIcon.Size = new System.Drawing.Size(991, 652);
             this.tabIcon.TabIndex = 2;
             this.tabIcon.Text = "Icon";
@@ -6358,6 +6358,74 @@ namespace Forged.Tools.SpellEditor
             this.lvIcons.UseCompatibleStateImageBehavior = false;
             this.lvIcons.SelectedIndexChanged += new System.EventHandler(this.lvIcons_SelectedIndexChanged);
             // 
+            // tabCurves
+            // 
+            this.tabCurves.Controls.Add(this.txtbxCurvePoints);
+            this.tabCurves.Controls.Add(this.label131);
+            this.tabCurves.Controls.Add(this.lblCurveId);
+            this.tabCurves.Controls.Add(this.label130);
+            this.tabCurves.Controls.Add(this.cmbCurveIndex);
+            this.tabCurves.Controls.Add(this.label70);
+            this.tabCurves.Location = new System.Drawing.Point(4, 24);
+            this.tabCurves.Name = "tabCurves";
+            this.tabCurves.Size = new System.Drawing.Size(991, 652);
+            this.tabCurves.TabIndex = 9;
+            this.tabCurves.Text = "Curves";
+            this.tabCurves.UseVisualStyleBackColor = true;
+            // 
+            // txtbxCurvePoints
+            // 
+            this.txtbxCurvePoints.Location = new System.Drawing.Point(90, 64);
+            this.txtbxCurvePoints.Multiline = true;
+            this.txtbxCurvePoints.Name = "txtbxCurvePoints";
+            this.txtbxCurvePoints.ReadOnly = true;
+            this.txtbxCurvePoints.Size = new System.Drawing.Size(255, 574);
+            this.txtbxCurvePoints.TabIndex = 5;
+            // 
+            // label131
+            // 
+            this.label131.AutoSize = true;
+            this.label131.Location = new System.Drawing.Point(7, 67);
+            this.label131.Name = "label131";
+            this.label131.Size = new System.Drawing.Size(77, 15);
+            this.label131.TabIndex = 4;
+            this.label131.Text = "Curve Points:";
+            // 
+            // lblCurveId
+            // 
+            this.lblCurveId.AutoSize = true;
+            this.lblCurveId.Location = new System.Drawing.Point(63, 42);
+            this.lblCurveId.Name = "lblCurveId";
+            this.lblCurveId.Size = new System.Drawing.Size(0, 15);
+            this.lblCurveId.TabIndex = 3;
+            // 
+            // label130
+            // 
+            this.label130.AutoSize = true;
+            this.label130.Location = new System.Drawing.Point(3, 42);
+            this.label130.Name = "label130";
+            this.label130.Size = new System.Drawing.Size(54, 15);
+            this.label130.TabIndex = 2;
+            this.label130.Text = "Curve Id:";
+            // 
+            // cmbCurveIndex
+            // 
+            this.cmbCurveIndex.FormattingEnabled = true;
+            this.cmbCurveIndex.Location = new System.Drawing.Point(81, 5);
+            this.cmbCurveIndex.Name = "cmbCurveIndex";
+            this.cmbCurveIndex.Size = new System.Drawing.Size(121, 23);
+            this.cmbCurveIndex.TabIndex = 1;
+            this.cmbCurveIndex.SelectedIndexChanged += new System.EventHandler(this.cmbCurveIndex_SelectedIndexChanged);
+            // 
+            // label70
+            // 
+            this.label70.AutoSize = true;
+            this.label70.Location = new System.Drawing.Point(3, 9);
+            this.label70.Name = "label70";
+            this.label70.Size = new System.Drawing.Size(72, 15);
+            this.label70.TabIndex = 0;
+            this.label70.Text = "Effect Index:";
+            // 
             // btnSave
             // 
             this.btnSave.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
@@ -6465,74 +6533,6 @@ namespace Forged.Tools.SpellEditor
             this.btnDeleteSpell.Text = "Delete Current";
             this.btnDeleteSpell.UseVisualStyleBackColor = true;
             this.btnDeleteSpell.Click += new System.EventHandler(this.btnDeleteSpell_Click);
-            // 
-            // tabCurves
-            // 
-            this.tabCurves.Controls.Add(this.txtbxCurvePoints);
-            this.tabCurves.Controls.Add(this.label131);
-            this.tabCurves.Controls.Add(this.lblCurveId);
-            this.tabCurves.Controls.Add(this.label130);
-            this.tabCurves.Controls.Add(this.cmbCurveIndex);
-            this.tabCurves.Controls.Add(this.label70);
-            this.tabCurves.Location = new System.Drawing.Point(4, 24);
-            this.tabCurves.Name = "tabCurves";
-            this.tabCurves.Size = new System.Drawing.Size(991, 652);
-            this.tabCurves.TabIndex = 9;
-            this.tabCurves.Text = "Curves";
-            this.tabCurves.UseVisualStyleBackColor = true;
-            // 
-            // label70
-            // 
-            this.label70.AutoSize = true;
-            this.label70.Location = new System.Drawing.Point(3, 9);
-            this.label70.Name = "label70";
-            this.label70.Size = new System.Drawing.Size(72, 15);
-            this.label70.TabIndex = 0;
-            this.label70.Text = "Effect Index:";
-            // 
-            // cmbCurveIndex
-            // 
-            this.cmbCurveIndex.FormattingEnabled = true;
-            this.cmbCurveIndex.Location = new System.Drawing.Point(81, 5);
-            this.cmbCurveIndex.Name = "cmbCurveIndex";
-            this.cmbCurveIndex.Size = new System.Drawing.Size(121, 23);
-            this.cmbCurveIndex.TabIndex = 1;
-            this.cmbCurveIndex.SelectedIndexChanged += new System.EventHandler(this.cmbCurveIndex_SelectedIndexChanged);
-            // 
-            // label130
-            // 
-            this.label130.AutoSize = true;
-            this.label130.Location = new System.Drawing.Point(3, 42);
-            this.label130.Name = "label130";
-            this.label130.Size = new System.Drawing.Size(54, 15);
-            this.label130.TabIndex = 2;
-            this.label130.Text = "Curve Id:";
-            // 
-            // lblCurveId
-            // 
-            this.lblCurveId.AutoSize = true;
-            this.lblCurveId.Location = new System.Drawing.Point(63, 42);
-            this.lblCurveId.Name = "lblCurveId";
-            this.lblCurveId.Size = new System.Drawing.Size(0, 15);
-            this.lblCurveId.TabIndex = 3;
-            // 
-            // label131
-            // 
-            this.label131.AutoSize = true;
-            this.label131.Location = new System.Drawing.Point(7, 67);
-            this.label131.Name = "label131";
-            this.label131.Size = new System.Drawing.Size(77, 15);
-            this.label131.TabIndex = 4;
-            this.label131.Text = "Curve Points:";
-            // 
-            // txtbxCurvePoints
-            // 
-            this.txtbxCurvePoints.Location = new System.Drawing.Point(90, 64);
-            this.txtbxCurvePoints.Multiline = true;
-            this.txtbxCurvePoints.Name = "txtbxCurvePoints";
-            this.txtbxCurvePoints.ReadOnly = true;
-            this.txtbxCurvePoints.Size = new System.Drawing.Size(255, 256);
-            this.txtbxCurvePoints.TabIndex = 5;
             // 
             // MainForm
             // 
@@ -6722,10 +6722,10 @@ namespace Forged.Tools.SpellEditor
             ((System.ComponentModel.ISupportInitialize)(this.picSelectedIcon)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.picActiveIcon)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.picCurIcon)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numNewSpellID)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numIdSearch)).EndInit();
             this.tabCurves.ResumeLayout(false);
             this.tabCurves.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numNewSpellID)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numIdSearch)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
