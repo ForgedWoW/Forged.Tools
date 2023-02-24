@@ -10,6 +10,7 @@ using Framework.Dynamic;
 using Forged.Tools.Shared.Forms;
 using Framework.Configuration;
 using System.IO.Compression;
+using System.Text;
 
 namespace Forged.Tools.SpellEditor
 {
@@ -767,6 +768,10 @@ namespace Forged.Tools.SpellEditor
             listEquippedItemInvenType.SelectedItems.Clear();
             listEquippedItemInvenType.SelectedItems.AddSelectedIntEnum(CurrentSpell.SpellInfo.EquippedItemInventoryTypeMask, typeof(InventoryType));
             listEquippedItemSubClass.UpdateItemSubClass((ItemClass)Enum.Parse(typeof(ItemClass), (string)cmbEquippedItemClass.SelectedItem), CurrentSpell.SpellInfo.EquippedItemClass, CurrentSpell.SpellInfo.EquippedItemSubClassMask, true);
+
+            cmbCurveIndex.Items.Clear();
+            foreach (var curve in CurrentSpell.Curves)
+                cmbCurveIndex.Items.Add(curve.TraitDefinitionEffectPoints.EffectIndex);
 
             btnCurIconUndo_Click(null, null);
             btnActiveIconUndo_Click(null, null);
@@ -1638,6 +1643,35 @@ namespace Forged.Tools.SpellEditor
                 CurrentSpell = new FullSpellInfo();
                 LoadCurrentSpell();
                 listSpells.PopulateSpellList(numCurentMin, numCurentMax, cmbIndexing.SelectedIndex, _currentNameSearch, ref _maxSpellSearch);
+            }
+        }
+
+        private void cmbCurveIndex_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            bool found = false;
+            foreach (var curve in CurrentSpell.Curves)
+            {
+                if ((int)cmbCurveIndex.SelectedItem == curve.TraitDefinitionEffectPoints.EffectIndex)
+                {
+                    lblCurveId.Text = curve.CurveRecord.Id.ToString();
+                    StringBuilder text = new();
+
+                    foreach(var cp in curve.CurvePoints)
+                    {
+                        text.Append("Id: ").Append(cp.Id).Append(" - Rank: ").Append(cp.Pos.X).Append(" - Points: ").Append(cp.Pos.Y).Append(Environment.NewLine);
+                    }
+
+                    txtbxCurvePoints.Text = text.ToString();
+                    found = true;
+
+                    break;
+                }
+            }
+
+            if (!found)
+            {
+                lblCurveId.Text = string.Empty;
+                txtbxCurvePoints.Text = string.Empty;
             }
         }
     }

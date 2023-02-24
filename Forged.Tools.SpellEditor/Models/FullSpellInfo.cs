@@ -12,16 +12,20 @@ namespace Forged.Tools.SpellEditor.Models
     {
         public SpellInfo SpellInfo;
         public SpellRecord SpellDescriptions;
+        public List<Curve> Curves;
 
         public FullSpellInfo()
         {
-            this.SpellInfo = new SpellInfo();
-            SpellDescriptions = new SpellRecord();
+            this.SpellInfo = new();
+            SpellDescriptions = new();
+            this.Curves = new();
         }
-        public FullSpellInfo(SpellInfo spellInfo, SpellRecord spell)
+
+        public FullSpellInfo(SpellInfo spellInfo, SpellRecord spell, List<Curve> curve)
         {
             this.SpellInfo = spellInfo;
             SpellDescriptions = spell;
+            this.Curves = curve;
         }
 
         public void Save()
@@ -865,6 +869,8 @@ namespace Forged.Tools.SpellEditor.Models
                     spellEffectId++;
                     effects.Add(spellInfo);
                 }
+
+                ret.Curves = new();
             }
             catch (Exception ex)
             {

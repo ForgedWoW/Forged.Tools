@@ -38,6 +38,8 @@ namespace Forged.Tools.TraitEditor.Utils
                 return;
 
             CliDB.ChrSpecializationStorage = SharedHelpers.ReadDB2<ChrSpecializationRecord>(_availableDb2Locales, _db2Path, Locale.enUS, "ChrSpecialization.db2", HotfixStatements.SEL_CHR_SPECIALIZATION, HotfixStatements.SEL_CHR_SPECIALIZATION_LOCALE);
+            CliDB.CurveStorage = SharedHelpers.ReadDB2<CurveRecord>(_availableDb2Locales, _db2Path, Locale.enUS, "Curve.db2", HotfixStatements.SEL_CURVE);
+            CliDB.CurvePointStorage = SharedHelpers.ReadDB2<CurvePointRecord>(_availableDb2Locales, _db2Path, Locale.enUS, "CurvePoint.db2", HotfixStatements.SEL_CURVE_POINT);
             CliDB.SpecSetMemberStorage = SharedHelpers.ReadDB2<SpecSetMemberRecord>(_availableDb2Locales, _db2Path, Locale.enUS, "SpecSetMember.db2", HotfixStatements.SEL_SPEC_SET_MEMBER);
             CliDB.SkillLineStorage = SharedHelpers.ReadDB2<SkillLineRecord>(_availableDb2Locales, _db2Path, Locale.enUS, "SkillLine.db2", HotfixStatements.SEL_SKILL_LINE, HotfixStatements.SEL_SKILL_LINE_LOCALE);
             CliDB.SkillLineXTraitTreeStorage = SharedHelpers.ReadDB2<SkillLineXTraitTreeRecord>(_availableDb2Locales, _db2Path, Locale.enUS, "SkillLineXTraitTree.db2", HotfixStatements.SEL_SKILL_LINE_X_TRAIT_TREE);

@@ -416,8 +416,8 @@ namespace Forged.Tools.SpellEditor.Utils
                     maxSpellSearch = spellNames.OrderBy(a => a.Value.Id).Last().Value.Id;
 
                 for (uint i = (uint)numCurentMin.Value; i <= numCurentMax.Value; i++)
-                    if (spellNames.ContainsKey(i))
-                        toAdd.Add(spellNames[i]);
+                    if (spellNames.TryGetValue(i, out var val))
+                        toAdd.Add(val);
 
                 foreach (var spell in toAdd.OrderBy(a => a.Id).ToArray().AsSpan())
                     listSpells.Items.Add(Helpers.SpellDisplayName(spell));
@@ -426,14 +426,7 @@ namespace Forged.Tools.SpellEditor.Utils
             {
                 var spellNames = CliDB.SpellNameStorage.OrderBy(a => a.Value.Id).ToArray();
 
-                maxSpellSearch = (uint)spellNames.Length;
-
-                if (numCurentMax.Value > maxSpellSearch)
-                {
-                    decimal range = Helpers.CurrentRange(numCurentMin.Value, numCurentMax.Value);
-                    numCurentMax.Value = maxSpellSearch;
-                    numCurentMin.Value = numCurentMax.Value - range + 1;
-                }
+                maxSpellSearch = (uint)numCurentMax.Value;
 
                 if (searchSpellName) //Search by spell name
                 {

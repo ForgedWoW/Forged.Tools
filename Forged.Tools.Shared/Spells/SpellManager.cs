@@ -446,6 +446,35 @@ namespace Forged.Tools.Shared.Entities
             return list.Any(spellInfo => spellInfo.Difficulty == difficulty);
         }
 
+        public List<Curve> GetCurves(uint spellId)
+        {
+            var traitdef = CliDB.TraitDefinitionStorage.Where(a => a.Value.SpellID == spellId);
+
+            if (traitdef.Count() == 0)
+                return new();
+
+            var td = traitdef.First();
+            var tdes = CliDB.TraitDefinitionEffectPointsStorage.Where(a => a.Value.TraitDefinitionID == td.Key);
+
+            if (tdes.Count() == 0)
+                return new();
+
+            List<Curve> curves = new();
+
+            foreach (var tde in tdes.OrderBy(a => a.Value.EffectIndex))
+            {
+                Curve curve = new();
+                curve.TraitDefinition = td.Value;
+                curve.TraitDefinitionEffectPoints = tde.Value;
+                curve.CurveRecord = CliDB.CurveStorage[(uint)tde.Value.CurveID];
+                curve.CurvePoints = CliDB.CurvePointStorage.Where(a => a.Value.CurveID == curve.CurveRecord.Id).Select(a => a.Value).OrderBy(a => a.OrderIndex).ToList();
+
+                curves.Add(curve);
+            }
+
+            return curves;
+        }
+
         #region Fields
         MultiMap<uint, uint> mSpellsReqSpell = new();
         MultiMap<uint, uint> mSpellReq = new();

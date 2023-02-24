@@ -8,6 +8,7 @@ using Forged.Tools.Shared.Entities;
 using Forged.Tools.Shared.DataStorage;
 using Framework.Configuration;
 using Forged.Tools.Shared.Utils;
+using Forged.Tools.Shared.Spells;
 
 namespace Forged.Tools.SpellEditor.Utils
 {
@@ -126,6 +127,8 @@ namespace Forged.Tools.SpellEditor.Utils
                 return;
 
             CliDB.BattlePetSpeciesStorage = SharedHelpers.ReadDB2<BattlePetSpeciesRecord>(_availableDb2Locales, _db2Path, Locale.enUS, "BattlePetSpecies.db2", HotfixStatements.SEL_BATTLE_PET_SPECIES, HotfixStatements.SEL_BATTLE_PET_SPECIES_LOCALE);
+            CliDB.CurveStorage = SharedHelpers.ReadDB2<CurveRecord>(_availableDb2Locales, _db2Path, Locale.enUS, "Curve.db2", HotfixStatements.SEL_CURVE);
+            CliDB.CurvePointStorage = SharedHelpers.ReadDB2<CurvePointRecord>(_availableDb2Locales, _db2Path, Locale.enUS, "CurvePoint.db2", HotfixStatements.SEL_CURVE_POINT);
             CliDB.DifficultyStorage = SharedHelpers.ReadDB2<DifficultyRecord>(_availableDb2Locales, _db2Path, Locale.enUS, "Difficulty.db2", HotfixStatements.SEL_DIFFICULTY, HotfixStatements.SEL_DIFFICULTY_LOCALE);
             CliDB.SpellNameStorage = SharedHelpers.ReadDB2<SpellNameRecord>(_availableDb2Locales, _db2Path, Locale.enUS, "SpellName.db2", HotfixStatements.SEL_SPELL_NAME, HotfixStatements.SEL_SPELL_NAME_LOCALE);
             CliDB.SpellAuraOptionsStorage = SharedHelpers.ReadDB2<SpellAuraOptionsRecord>(_availableDb2Locales, _db2Path, Locale.enUS, "SpellAuraOptions.db2", HotfixStatements.SEL_SPELL_AURA_OPTIONS);
@@ -172,6 +175,8 @@ namespace Forged.Tools.SpellEditor.Utils
             CliDB.SpellEmpowerStorage = SharedHelpers.ReadDB2<SpellEmpowerRecord>(_availableDb2Locales, _db2Path, Locale.enUS, "SpellEmpower.db2", HotfixStatements.SEL_SPELL_EMPOWER);
             CliDB.SpellEmpowerStageStorage = SharedHelpers.ReadDB2<SpellEmpowerStageRecord>(_availableDb2Locales, _db2Path, Locale.enUS, "SpellEmpowerStage.db2", HotfixStatements.SEL_SPELL_EMPOWER_STAGE);
             CliDB.SpellReplacementStorage = SharedHelpers.ReadDB2<SpellReplacementRecord>(_availableDb2Locales, _db2Path, Locale.enUS, "SpellReplacement.db2", HotfixStatements.SEL_SPELL_REPLACEMENT);
+            CliDB.TraitDefinitionStorage = SharedHelpers.ReadDB2<TraitDefinitionRecord>(_availableDb2Locales, _db2Path, Locale.enUS, "TraitDefinition.db2", HotfixStatements.SEL_TRAIT_DEFINITION); //, HotfixStatements.SEL_TRAIT_DEFINITION_LOCALE);
+            CliDB.TraitDefinitionEffectPointsStorage = SharedHelpers.ReadDB2<TraitDefinitionEffectPointsRecord>(_availableDb2Locales, _db2Path, Locale.enUS, "TraitDefinitionEffectPoints.db2", HotfixStatements.SEL_TRAIT_DEFINITION_EFFECT_POINTS);
 
             CliDB.SpellStorage = SharedHelpers.ReadDB2<SpellRecord>(_availableDb2Locales, _db2Path, Locale.enUS, "Spell.db2", HotfixStatements.SEL_SPELL);
 
@@ -196,9 +201,8 @@ namespace Forged.Tools.SpellEditor.Utils
 
         public FullSpellInfo GetSpellInfo(uint spellId)
         {
-            var spellInfo = SpellManager.Instance.GetSpellInfo(spellId, Difficulty.None);
-
-            return new(spellInfo, CliDB.SpellStorage[spellId]);
+            return new(SpellManager.Instance.GetSpellInfo(spellId, Difficulty.None), 
+                CliDB.SpellStorage[spellId], SpellManager.Instance.GetCurves(spellId));
         }
 
         /// <summary>
