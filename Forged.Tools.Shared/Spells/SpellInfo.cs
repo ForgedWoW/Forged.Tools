@@ -154,7 +154,7 @@ namespace Forged.Tools.Shared.Spells
             _auraState = AuraStateType.None;
         }
 
-        public SpellInfo(SpellNameRecord spellName, Difficulty difficulty, SpellInfoLoadHelper data, BaseDataAccess dataAccess)
+        public SpellInfo(SpellNameRecord spellName, Difficulty difficulty, SpellInfoLoadHelper data, BaseDataAccess dataAccess, List<Curve> curves)
         {
             Id = spellName.Id;
             Difficulty = difficulty;
@@ -393,6 +393,7 @@ namespace Forged.Tools.Shared.Spells
 
             _spellSpecific = SpellSpecificType.Normal;
             _auraState = AuraStateType.None;
+            Curves = curves;
         }
 
         public bool HasLabel(uint labelId)
@@ -589,6 +590,7 @@ namespace Forged.Tools.Shared.Spells
         AuraStateType _auraState;
         public byte MaxPassiveAuraLevel { get; set; }
         public sbyte StanceBarOrder { get; set; }
+        public List<Curve> Curves { get; set; }
 
         SpellDiminishInfo _diminishInfo;
         uint _allowedMechanicMask;

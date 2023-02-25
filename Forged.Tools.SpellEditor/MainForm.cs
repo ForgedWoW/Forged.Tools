@@ -775,7 +775,7 @@ namespace Forged.Tools.SpellEditor
 
             StringBuilder text = new();
 
-            foreach (var curve in CurrentSpell.Curves)
+            foreach (var curve in CurrentSpell.SpellInfo.Curves)
             {
                 //lblCurveId.Text = curve.CurveRecord.Id.ToString();
 
@@ -1067,9 +1067,9 @@ namespace Forged.Tools.SpellEditor
 
         private void btnCurIconUndo_Click(object sender, EventArgs e)
         {
-            if (CurrentSpell != null && CurrentSpell.SpellInfo.IconFileDataId > 0)
+            if (CurrentSpell != null && CurrentSpell.SpellInfo.IconFileDataId > 0
+                && Program.DataAccess.SpellIconStorage.TryGetValue(CurrentSpell.SpellInfo.IconFileDataId, out var iconRecord))
             {
-                var iconRecord = Program.DataAccess.SpellIconStorage[CurrentSpell.SpellInfo.IconFileDataId];
                 picCurIcon.BackgroundImage = iconRecord.GetImage();
                 lblCurIcon.Text = $"{iconRecord.TextureFilename.Split('/').Last()} - {iconRecord.Id}";
             }
@@ -1091,9 +1091,9 @@ namespace Forged.Tools.SpellEditor
 
         private void btnActiveIconUndo_Click(object sender, EventArgs e)
         {
-            if (CurrentSpell != null && CurrentSpell.SpellInfo.ActiveIconFileDataId > 0)
+            if (CurrentSpell != null && CurrentSpell.SpellInfo.ActiveIconFileDataId > 0
+                && Program.DataAccess.SpellIconStorage.TryGetValue(CurrentSpell.SpellInfo.ActiveIconFileDataId, out var iconRecord))
             {
-                var iconRecord = Program.DataAccess.SpellIconStorage[CurrentSpell.SpellInfo.ActiveIconFileDataId];
                 picActiveIcon.BackgroundImage = iconRecord.GetImage();
                 lblActiveIcon.Text = $"{iconRecord.TextureFilename.Split('/').Last()} - {iconRecord.Id}";
             }
