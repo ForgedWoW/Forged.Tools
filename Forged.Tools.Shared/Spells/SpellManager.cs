@@ -446,7 +446,7 @@ namespace Forged.Tools.Shared.Entities
             return list.Any(spellInfo => spellInfo.Difficulty == difficulty);
         }
 
-        public List<Curve> GetCurves(uint spellId)
+        public List<SpellCurve> GetCurves(uint spellId)
         {
             var traitdef = CliDB.TraitDefinitionStorage.Where(a => a.Value.SpellID == spellId);
 
@@ -459,11 +459,11 @@ namespace Forged.Tools.Shared.Entities
             if (tdes.Count() == 0)
                 return new();
 
-            List<Curve> curves = new();
+            List<SpellCurve> curves = new();
 
             foreach (var tde in tdes.OrderBy(a => a.Value.EffectIndex))
             {
-                Curve curve = new();
+                SpellCurve curve = new();
                 curve.TraitDefinition = td.Value;
                 curve.TraitDefinitionEffectPoints = tde.Value;
                 curve.CurveRecord = CliDB.CurveStorage[(uint)tde.Value.CurveID];

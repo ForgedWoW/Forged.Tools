@@ -1,4 +1,7 @@
-﻿namespace Forged.Tools.Shared.Utils
+﻿using Framework.Constants;
+using Game.DataStorage;
+
+namespace Forged.Tools.Shared.Utils
 {
     public static class ExtensionMethods
     {
@@ -14,6 +17,18 @@
                 dic.Add(key, new List<t>());
 
             dic[key].AddIfDoesntExist(value);
+        }
+
+        public static LocalizedString DeepCopy(this LocalizedString str)
+        {
+            LocalizedString ret = new();
+
+            for (int i = 0; i < (int)Locale.Total; i++)
+            {
+                ret[(Locale)i] = str[(Locale)i];
+            }
+
+            return ret;
         }
     }
 }

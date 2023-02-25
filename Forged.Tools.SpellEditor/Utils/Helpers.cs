@@ -1,5 +1,6 @@
 ﻿using Game.DataStorage;
 using Framework.Constants;
+using Forged.Tools.Shared.Spells;
 
 namespace Forged.Tools.SpellEditor.Utils
 {
@@ -269,6 +270,50 @@ namespace Forged.Tools.SpellEditor.Utils
             }
 
             return tpNew;
+        }
+
+        public static GroupBox CopyCurveEffect(GroupBox toCopy, int effIndex, bool newEffect = false)
+        {
+            GroupBox gbNew = new GroupBox();
+
+            gbNew.Name = Guid.NewGuid().ToString().Replace("-", "");
+            gbNew.Text = "Effect " + effIndex.ToString();
+            gbNew.Size = toCopy.Size;
+            gbNew.Visible = true;
+
+            // labels
+            foreach (Control control in toCopy.Controls)
+            {
+                Type controlType = control.GetType();
+
+                if (controlType == typeof(Label))
+                {
+                    var cToCopy = (Label)control;
+                    var newControl = new Label();
+                    newControl.Location = cToCopy.Location;
+                    newControl.Size = cToCopy.Size;
+                    newControl.Text = cToCopy.Text;
+                    newControl.Tag = cToCopy.Tag;
+                    newControl.Enabled = cToCopy.Enabled;
+                    gbNew.Controls.Add(newControl);
+                }
+                else if (controlType == typeof(TextBox))
+                {
+                    var cToCopy = (TextBox)control;
+                    var newControl = new TextBox();
+                    newControl.Location = cToCopy.Location;
+                    newControl.Size = cToCopy.Size;
+                    newControl.Tag = cToCopy.Tag;
+                    newControl.Text = cToCopy.Text;
+                    newControl.Enabled = cToCopy.Enabled;
+                    newControl.ReadOnly = cToCopy.ReadOnly;
+
+                    newControl.MakeNumberBox();
+                    gbNew.Controls.Add(newControl);
+                }
+            }
+
+            return gbNew;
         }
 
         public static string SpellDisplayName(SpellNameRecord spell)

@@ -12,17 +12,23 @@ namespace Forged.Tools.SpellEditor.Models
     {
         public SpellInfo SpellInfo;
         public SpellRecord SpellDescriptions;
+        public List<SpellCurve> DirtyCurves;
 
         public FullSpellInfo()
         {
             this.SpellInfo = new();
             SpellDescriptions = new();
+            DirtyCurves = new();
         }
 
         public FullSpellInfo(SpellInfo spellInfo, SpellRecord spell)
         {
             this.SpellInfo = spellInfo;
             SpellDescriptions = spell;
+            DirtyCurves = new();
+
+            foreach (var curve in SpellInfo.Curves.OrderBy(a => a.TraitDefinitionEffectPoints.EffectIndex))
+                DirtyCurves.Add(curve.DeepCopy());
         }
 
         public void Save()

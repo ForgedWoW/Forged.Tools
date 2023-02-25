@@ -11,14 +11,19 @@ using Forged.Tools.Shared.Forms;
 using Framework.Configuration;
 using System.IO.Compression;
 using System.Text;
+using System.Security.Cryptography;
+using System.Windows.Forms;
 
 namespace Forged.Tools.SpellEditor
 {
     public partial class MainForm : Form
     {
+        #region Vairables
+
         public FullSpellInfo CurrentSpell = null;
 
         TabPage _defaultSpellEffectPage = null;
+        GroupBox _defaultCurveEffect = null;
         string _iconFolder = "";
         string _currentNameSearch = "";
         string _currentIconSearch = "";
@@ -30,6 +35,10 @@ namespace Forged.Tools.SpellEditor
         Dictionary<uint, int> _currencyTypeMap = new Dictionary<uint, int>();
         Dictionary<uint, SpellXSpellVisualRecordMod> _dirtySpellVisuals = new Dictionary<uint, SpellXSpellVisualRecordMod>();
         Dictionary<uint, SpellReagentsCurrencyRecordMod> _dirtyCurrencyRecords = new Dictionary<uint, SpellReagentsCurrencyRecordMod>();
+
+        #endregion
+
+        #region Initialize
 
         public MainForm()
         {
@@ -243,6 +252,9 @@ namespace Forged.Tools.SpellEditor
             _defaultSpellEffectPage = tabsSpellEffects.TabPages[0];
             tabsSpellEffects.TabPages.Clear();
 
+            _defaultCurveEffect = grpCurveEffect;
+            pnlCurves.Controls.Clear();
+
             // Spell Attribute tables
             listAttr0.Items.AddEnumNames(typeof(SpellAttr0));
             listAttr1.Items.AddEnumNames(typeof(SpellAttr1));
@@ -328,6 +340,8 @@ namespace Forged.Tools.SpellEditor
             mlcmbPPM.SetSelectedById(0);
         }
 
+        #endregion
+
         // clicked a spell
         private void listSpells_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -350,7 +364,7 @@ namespace Forged.Tools.SpellEditor
 
             // update basic info
             txtSpellName.Text = CurrentSpell.SpellInfo.SpellName[Locale.enUS];
-            spellIdChanger.Value= CurrentSpell.SpellInfo.Id;
+            spellIdChanger.Value = CurrentSpell.SpellInfo.Id;
             txtSpellNameSubtext.Text = CurrentSpell.SpellDescriptions?.NameSubtext_lang;
             txtSpellDesc.Text = CurrentSpell.SpellDescriptions?.Description_lang;
             txtAuraDesc.Text = CurrentSpell.SpellDescriptions?.AuraDescription_lang;
@@ -367,7 +381,7 @@ namespace Forged.Tools.SpellEditor
             else
                 mlcmbRange.SetSelectedById(0);
 
-            cmbCastTime.SelectedIndex = CurrentSpell.SpellInfo.CastTimeEntry != null && CurrentSpell.SpellInfo.CastTimeEntry.Id != 0 
+            cmbCastTime.SelectedIndex = CurrentSpell.SpellInfo.CastTimeEntry != null && CurrentSpell.SpellInfo.CastTimeEntry.Id != 0
                 ? _castTimeMap[CurrentSpell.SpellInfo.CastTimeEntry.Id] : 1;
 
             // class options
@@ -391,73 +405,7 @@ namespace Forged.Tools.SpellEditor
             cmbPreventionType.SelectedItem = CurrentSpell.SpellInfo.PreventionType.ToString();
 
             // power info
-            for (int i = 0; i < 4; i++)
-            {
-                var cost = CurrentSpell.SpellInfo.PowerCosts[i];
-                var tab = tabsPowerConfig.TabPages[i];
-
-                foreach (Control c in tab.Controls)
-                {
-                    if (c.GetType() == typeof(Label))
-                        continue;
-
-                    if (cost != null)
-                        switch (c.Tag)
-                        {
-                            // combo boxes
-                            case "PowerType":
-                                ((ComboBox)c).SelectedItem = cost.PowerType.ToString();
-                                break;
-
-                            // numeric
-                            case "ManaCost":
-                                ((NumericUpDown)c).Value = cost.ManaCost;
-                                break;
-                            case "ManaCostPerLevel":
-                                ((NumericUpDown)c).Value = cost.ManaCostPerLevel;
-                                break;
-                            case "ManaPerSecond":
-                                ((NumericUpDown)c).Value = cost.ManaPerSecond;
-                                break;
-                            case "PowerDisplayID":
-                                ((NumericUpDown)c).Value = cost.PowerDisplayID;
-                                break;
-                            case "AltPowerBarID":
-                                ((NumericUpDown)c).Value = cost.AltPowerBarID;
-                                break;
-                            case "RequiredAuraID":
-                                ((NumericUpDown)c).Value = cost.RequiredAuraSpellID;
-                                break;
-                            case "OptionalCost":
-                                ((NumericUpDown)c).Value = cost.OptionalCost;
-                                break;
-
-                            // text
-                            case "PowerCostPct":
-                                ((TextBox)c).Text = cost.PowerCostPct.ToString();
-                                break;
-                            case "PowerCostMaxPct":
-                                ((TextBox)c).Text = cost.PowerCostMaxPct.ToString();
-                                break;
-                            case "PowerPctPerSecond":
-                                ((TextBox)c).Text = cost.PowerPctPerSecond.ToString();
-                                break;
-
-                            default:
-                                break;
-                        }
-                    else
-                    {
-                        var type = c.GetType();
-                        if (type == typeof(ComboBox))
-                            ((ComboBox)c).SelectedIndex = 0;
-                        else if (type == typeof(NumericUpDown))
-                            ((NumericUpDown)c).Value = 0;
-                        else if (type == typeof(TextBox))
-                            ((TextBox)c).Text = "0";
-                    }
-                }
-            }
+            SetCurrentPowerInfo();
 
             // basic info 2
             numSpellLevel.Value = CurrentSpell.SpellInfo.SpellLevel;
@@ -547,6 +495,374 @@ namespace Forged.Tools.SpellEditor
             listProcTargets.SelectedItems.AddSelectedBitEnum(CurrentSpell.SpellInfo.Targets);
 
             // spell effects
+            CreateCurrentSpellEffectTabs();
+
+            // update attribute lists
+            listAttr0.SelectedItems.Clear();
+            listAttr1.SelectedItems.Clear();
+            listAttr2.SelectedItems.Clear();
+            listAttr3.SelectedItems.Clear();
+            listAttr4.SelectedItems.Clear();
+            listAttr5.SelectedItems.Clear();
+            listAttr6.SelectedItems.Clear();
+            listAttr7.SelectedItems.Clear();
+            listAttr8.SelectedItems.Clear();
+            listAttr9.SelectedItems.Clear();
+            listAttr10.SelectedItems.Clear();
+            listAttr11.SelectedItems.Clear();
+            listAttr12.SelectedItems.Clear();
+            listAttr13.SelectedItems.Clear();
+            listAttr14.SelectedItems.Clear();
+
+            listAttr0.SelectedItems.AddSelectedBitEnum(CurrentSpell.SpellInfo.Attributes);
+            listAttr1.SelectedItems.AddSelectedBitEnum(CurrentSpell.SpellInfo.AttributesEx);
+            listAttr2.SelectedItems.AddSelectedBitEnum(CurrentSpell.SpellInfo.AttributesEx2);
+            listAttr3.SelectedItems.AddSelectedBitEnum(CurrentSpell.SpellInfo.AttributesEx3);
+            listAttr4.SelectedItems.AddSelectedBitEnum(CurrentSpell.SpellInfo.AttributesEx4);
+            listAttr5.SelectedItems.AddSelectedBitEnum(CurrentSpell.SpellInfo.AttributesEx5);
+            listAttr6.SelectedItems.AddSelectedBitEnum(CurrentSpell.SpellInfo.AttributesEx6);
+            listAttr7.SelectedItems.AddSelectedBitEnum(CurrentSpell.SpellInfo.AttributesEx7);
+            listAttr8.SelectedItems.AddSelectedBitEnum(CurrentSpell.SpellInfo.AttributesEx8);
+            listAttr9.SelectedItems.AddSelectedBitEnum(CurrentSpell.SpellInfo.AttributesEx9);
+            listAttr10.SelectedItems.AddSelectedBitEnum(CurrentSpell.SpellInfo.AttributesEx10);
+            listAttr11.SelectedItems.AddSelectedBitEnum(CurrentSpell.SpellInfo.AttributesEx11);
+            listAttr12.SelectedItems.AddSelectedBitEnum(CurrentSpell.SpellInfo.AttributesEx12);
+            listAttr13.SelectedItems.AddSelectedBitEnum(CurrentSpell.SpellInfo.AttributesEx13);
+            listAttr14.SelectedItems.AddSelectedBitEnum(CurrentSpell.SpellInfo.AttributesEx14);
+
+            // update flags
+            listInterruptFlags.SelectedItems.Clear();
+            listAuraInterruptFlags.SelectedItems.Clear();
+            listAuraInterruptFlags2.SelectedItems.Clear();
+            listChannelInterruptFlags.SelectedItems.Clear();
+            listChannelInterruptFlags2.SelectedItems.Clear();
+            listTargetCreatureType.SelectedItems.Clear();
+            listStances.SelectedItems.Clear();
+            listExStances.SelectedItems.Clear();
+            cmbTotemCategory1.SelectedIndex = 0;
+            cmbTotemCategory2.SelectedIndex = 0;
+            cmbCurrencyType.SelectedIndex = 0;
+
+            listInterruptFlags.SelectedItems.AddSelectedBitEnum(CurrentSpell.SpellInfo.InterruptFlags);
+            listAuraInterruptFlags.SelectedItems.AddSelectedBitEnum(CurrentSpell.SpellInfo.AuraInterruptFlags);
+            listAuraInterruptFlags2.SelectedItems.AddSelectedBitEnum(CurrentSpell.SpellInfo.AuraInterruptFlags2);
+            listChannelInterruptFlags.SelectedItems.AddSelectedBitEnum(CurrentSpell.SpellInfo.ChannelInterruptFlags);
+            listChannelInterruptFlags2.SelectedItems.AddSelectedBitEnum(CurrentSpell.SpellInfo.ChannelInterruptFlags2);
+            listTargetCreatureType.SelectedItems.AddSelectedIntEnum((CreatureType)CurrentSpell.SpellInfo.TargetCreatureType);
+            listStances.SelectedItems.AddSelectedIntEnum((ShapeShiftForm)CurrentSpell.SpellInfo.Stances);
+            listExStances.SelectedItems.AddSelectedIntEnum((ShapeShiftForm)CurrentSpell.SpellInfo.StancesNot);
+            numTotem1.Value = CurrentSpell.SpellInfo.Totem[0];
+            numTotem2.Value = CurrentSpell.SpellInfo.Totem[1];
+            cmbTotemCategory1.SelectedIndex = _totemCatMap[CurrentSpell.SpellInfo.TotemCategory[0]];
+            cmbTotemCategory2.SelectedIndex = _totemCatMap[CurrentSpell.SpellInfo.TotemCategory[1]];
+            numReagent1.Value = CurrentSpell.SpellInfo.Reagent[0];
+            numReagent2.Value = CurrentSpell.SpellInfo.Reagent[1];
+            numReagent3.Value = CurrentSpell.SpellInfo.Reagent[2];
+            numReagent4.Value = CurrentSpell.SpellInfo.Reagent[3];
+            numReagent5.Value = CurrentSpell.SpellInfo.Reagent[4];
+            numReagent6.Value = CurrentSpell.SpellInfo.Reagent[5];
+            numReagent7.Value = CurrentSpell.SpellInfo.Reagent[6];
+            numReagent8.Value = CurrentSpell.SpellInfo.Reagent[7];
+            numReagentCount1.Value = CurrentSpell.SpellInfo.ReagentCount[0];
+            numReagentCount2.Value = CurrentSpell.SpellInfo.ReagentCount[1];
+            numReagentCount3.Value = CurrentSpell.SpellInfo.ReagentCount[2];
+            numReagentCount4.Value = CurrentSpell.SpellInfo.ReagentCount[3];
+            numReagentCount5.Value = CurrentSpell.SpellInfo.ReagentCount[4];
+            numReagentCount6.Value = CurrentSpell.SpellInfo.ReagentCount[5];
+            numReagentCount7.Value = CurrentSpell.SpellInfo.ReagentCount[6];
+            numReagentCount8.Value = CurrentSpell.SpellInfo.ReagentCount[7];
+
+            _dirtyCurrencyRecords.Clear();
+            cmbSelectCurrency.Items.Clear();
+            cmbSelectCurrency.Items.Add((uint)0);
+            foreach (var currency in CurrentSpell.SpellInfo.ReagentsCurrency.OrderBy(a => a.Id))
+            {
+                _dirtyCurrencyRecords.Add(currency.Id, currency.Copy(true));
+                cmbSelectCurrency.Items.Add(currency.Id);
+            }
+            cmbSelectCurrency.SelectedIndex = 0;
+
+            btnCurrencyNew.Enabled = true;
+            btnCurrencySave.Enabled = true;
+            btnCurrencyCopy.Enabled = true;
+            btnCurrencyDelete.Enabled = false;
+
+            cmbEquippedItemClass.SelectedItem = CurrentSpell.SpellInfo.EquippedItemClass.ToString();
+            listEquippedItemInvenType.SelectedItems.Clear();
+            listEquippedItemInvenType.SelectedItems.AddSelectedIntEnum(CurrentSpell.SpellInfo.EquippedItemInventoryTypeMask, typeof(InventoryType));
+            listEquippedItemSubClass.UpdateItemSubClass((ItemClass)Enum.Parse(typeof(ItemClass), (string)cmbEquippedItemClass.SelectedItem), CurrentSpell.SpellInfo.EquippedItemClass, CurrentSpell.SpellInfo.EquippedItemSubClassMask, true);
+            DrawCurrentCurveInfo();
+
+            btnCurIconUndo_Click(null, null);
+            btnActiveIconUndo_Click(null, null);
+        }
+
+        private void DrawCurrentCurveInfo()
+        {
+            pnlCurves.Controls.Clear();
+
+            foreach (var curve in CurrentSpell.DirtyCurves)
+            {
+                foreach (var cp in curve.CurvePoints)
+                {
+                    CreateCurveEffectBox(curve, cp);
+                }
+            }
+        }
+
+        private void CreateCurveEffectBox(SpellCurve curve, CurvePointRecord cp)
+        {
+            GroupBox bx = Helpers.CopyCurveEffect(_defaultCurveEffect, curve.TraitDefinitionEffectPoints.EffectIndex);
+            bx.Parent = pnlCurves;
+
+            int baseX = cp.Pos.X == 1 ? bx.Location.X : bx.Location.X + bx.Size.Width;
+            int baseY = curve.TraitDefinitionEffectPoints.EffectIndex == 0 ? bx.Location.Y : bx.Location.Y + bx.Size.Height;
+            int marginx = cp.Pos.X == 1 ? 0 : cp.OrderIndex * 10;
+            int marginy = curve.TraitDefinitionEffectPoints.EffectIndex * 5;
+            Point point = new((baseX * (int)cp.OrderIndex) + marginx, (baseY * (curve.TraitDefinitionEffectPoints.EffectIndex)) + marginy);
+            bx.Location = point;
+            bx.Tag = cp;
+
+            bx.MouseClick += Bx_MouseClick;
+
+            foreach (Control c in bx.Controls)
+            {
+                if (c.GetType() == typeof(Label))
+                    continue;
+
+                switch (c.Tag)
+                {
+                    // text boxes
+                    case "CurveId":
+                        ((TextBox)c).Text = curve.CurveRecord.Id.ToString();
+                        break;
+                    case "CurvePointId":
+                        ((TextBox)c).Text = cp.Id.ToString();
+                        break;
+                    case "Rank":
+                        ((TextBox)c).Text = cp.Pos.X.ToString();
+                        break;
+                    case "Points":
+                        ((TextBox)c).Text = cp.Pos.Y.ToString();
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+
+        private GroupBox _groupBoxContext = null;
+        private void Bx_MouseClick(object? sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Right)
+            {
+                _groupBoxContext = (GroupBox)sender;
+                ContextMenuStrip contextMenu = new ContextMenuStrip();
+                contextMenu.Items.Add("Delete Effect");
+                contextMenu.Items.Add("Delete Rank");
+                contextMenu.ItemClicked += new ToolStripItemClickedEventHandler(
+                    contextMenu_ItemClicked);
+                contextMenu.Show(MousePosition);
+            }
+        }
+
+        private void contextMenu_ItemClicked(object? sender, ToolStripItemClickedEventArgs e)
+        {
+            if (_groupBoxContext == null)
+                return;
+
+            int curvepointid = -1;
+            int curveid = -1;
+            int rank = -1;
+
+            foreach (Control control in _groupBoxContext.Controls)
+            {
+                switch (control.Tag)
+                {
+                    case "CurvePointId":
+                        curvepointid = int.Parse(((TextBox)control).Text);
+                        break;
+                    case "CurveId":
+                        curveid = int.Parse(((TextBox)control).Text);
+                        break;
+                    case "Rank":
+                        rank = int.Parse(((TextBox)control).Text);
+                        break;
+                }
+            }
+
+            if (curvepointid != 0)
+            {
+                MessageBox.Show("Unable to delete existing effects or ranks.");
+                _groupBoxContext = null;
+                return;
+            }
+
+            switch (e.ClickedItem.Text)
+            {
+                case "Delete Effect":
+                    if (curveid != 0)
+                    {
+                        MessageBox.Show("Unable to delete existing effects or ranks.");
+                        _groupBoxContext = null;
+                        return;
+                    }
+
+                    int effectId = int.Parse(_groupBoxContext.Text.Replace("Effect ", ""));
+
+                    // delete effect
+                    CurrentSpell.DirtyCurves.RemoveIf(a => a.TraitDefinitionEffectPoints.EffectIndex == effectId);
+
+                    // need to clean up TraitDefinitionEffectPoints.EffectIndex for all of the effects above this one
+                    if (CurrentSpell.DirtyCurves.Count >= effectId)
+                    {
+                        int newIndex = effectId;
+
+                        foreach (var curve in CurrentSpell.DirtyCurves.OrderBy(a => a.TraitDefinitionEffectPoints.EffectIndex))
+                        {
+                            if (curve.TraitDefinitionEffectPoints.EffectIndex < effectId)
+                                continue;
+
+                            curve.TraitDefinitionEffectPoints.EffectIndex = newIndex;
+                            newIndex++;
+                        }
+                    }
+                    break;
+                case "Delete Rank":
+                    // loop to validate rank already exists and can not be deleted
+                    foreach (var curve in CurrentSpell.DirtyCurves)
+                    {
+                        var cpr = curve.CurvePoints.Where(a => a.Pos.X == rank).FirstOrDefault();
+
+                        if (cpr != null)
+                        {
+                            if (cpr.Id != 0)
+                            {
+                                MessageBox.Show("Unable to delete existing effects or ranks.");
+                                _groupBoxContext = null;
+                                return;
+                            }
+                        }
+                    }
+
+                    foreach (var curve in CurrentSpell.DirtyCurves)
+                    {
+                        // delete rank
+                        curve.CurvePoints.RemoveIf(a => a.Pos.X == rank);
+                        int newIndex = rank;
+
+                        // correct higher ranks after deleting
+                        foreach (var cpr in curve.CurvePoints.OrderBy(a => a.Pos.X))
+                        {
+                            if (cpr.Pos.X < rank)
+                                continue;
+
+                            cpr.OrderIndex = (byte)(newIndex - 1);
+                            cpr.Pos = new System.Numerics.Vector2(newIndex, cpr.Pos.Y);
+                            newIndex++;
+                        }
+                    }
+                    break;
+            }
+
+            UpdateDirtyCurveEffectPoints();
+            DrawCurrentCurveInfo();
+            _groupBoxContext = null;
+        }
+
+        private void UpdateDirtyCurveEffectPoints()
+        {
+            foreach (Control control in pnlCurves.Controls)
+            {
+                if (control.GetType() != typeof(GroupBox))
+                    return;
+
+                int points = 0;
+
+                foreach (Control bxControl in control.Controls)
+                {
+                    if (bxControl.Tag == "Points")
+                    {
+                        var cpr = (CurvePointRecord)control.Tag;
+                        cpr.Pos = new System.Numerics.Vector2(cpr.Pos.X, float.Parse(bxControl.Text));
+                    }
+                }
+            }
+        }
+
+        private void SetCurrentPowerInfo()
+        {
+            for (int i = 0; i < 4; i++)
+            {
+                var cost = CurrentSpell.SpellInfo.PowerCosts[i];
+                var tab = tabsPowerConfig.TabPages[i];
+
+                foreach (Control c in tab.Controls)
+                {
+                    if (c.GetType() == typeof(Label))
+                        continue;
+
+                    if (cost != null)
+                        switch (c.Tag)
+                        {
+                            // combo boxes
+                            case "PowerType":
+                                ((ComboBox)c).SelectedItem = cost.PowerType.ToString();
+                                break;
+
+                            // numeric
+                            case "ManaCost":
+                                ((NumericUpDown)c).Value = cost.ManaCost;
+                                break;
+                            case "ManaCostPerLevel":
+                                ((NumericUpDown)c).Value = cost.ManaCostPerLevel;
+                                break;
+                            case "ManaPerSecond":
+                                ((NumericUpDown)c).Value = cost.ManaPerSecond;
+                                break;
+                            case "PowerDisplayID":
+                                ((NumericUpDown)c).Value = cost.PowerDisplayID;
+                                break;
+                            case "AltPowerBarID":
+                                ((NumericUpDown)c).Value = cost.AltPowerBarID;
+                                break;
+                            case "RequiredAuraID":
+                                ((NumericUpDown)c).Value = cost.RequiredAuraSpellID;
+                                break;
+                            case "OptionalCost":
+                                ((NumericUpDown)c).Value = cost.OptionalCost;
+                                break;
+
+                            // text
+                            case "PowerCostPct":
+                                ((TextBox)c).Text = cost.PowerCostPct.ToString();
+                                break;
+                            case "PowerCostMaxPct":
+                                ((TextBox)c).Text = cost.PowerCostMaxPct.ToString();
+                                break;
+                            case "PowerPctPerSecond":
+                                ((TextBox)c).Text = cost.PowerPctPerSecond.ToString();
+                                break;
+
+                            default:
+                                break;
+                        }
+                    else
+                    {
+                        var type = c.GetType();
+                        if (type == typeof(ComboBox))
+                            ((ComboBox)c).SelectedIndex = 0;
+                        else if (type == typeof(NumericUpDown))
+                            ((NumericUpDown)c).Value = 0;
+                        else if (type == typeof(TextBox))
+                            ((TextBox)c).Text = "0";
+                    }
+                }
+            }
+        }
+
+        private void CreateCurrentSpellEffectTabs()
+        {
             tabsSpellEffects.TabPages.Clear();
 
             foreach (SpellEffectInfo eff in CurrentSpell.SpellInfo.GetEffects())
@@ -605,7 +921,7 @@ namespace Forged.Tools.SpellEditor
                             break;
                         case "MiscValueA":
                             ((NumericUpDown)c).Value = eff.MiscValue;
-                            break; 
+                            break;
                         case "MiscValueB":
                             ((NumericUpDown)c).Value = eff.MiscValueB;
                             break;
@@ -673,124 +989,6 @@ namespace Forged.Tools.SpellEditor
                     }
                 }
             }
-
-            // update attribute lists
-            listAttr0.SelectedItems.Clear();
-            listAttr1.SelectedItems.Clear();
-            listAttr2.SelectedItems.Clear();
-            listAttr3.SelectedItems.Clear();
-            listAttr4.SelectedItems.Clear();
-            listAttr5.SelectedItems.Clear();
-            listAttr6.SelectedItems.Clear();
-            listAttr7.SelectedItems.Clear();
-            listAttr8.SelectedItems.Clear();
-            listAttr9.SelectedItems.Clear();
-            listAttr10.SelectedItems.Clear();
-            listAttr11.SelectedItems.Clear();
-            listAttr12.SelectedItems.Clear();
-            listAttr13.SelectedItems.Clear();
-            listAttr14.SelectedItems.Clear();
-
-            listAttr0.SelectedItems.AddSelectedBitEnum(CurrentSpell.SpellInfo.Attributes);
-            listAttr1.SelectedItems.AddSelectedBitEnum(CurrentSpell.SpellInfo.AttributesEx);
-            listAttr2.SelectedItems.AddSelectedBitEnum(CurrentSpell.SpellInfo.AttributesEx2);
-            listAttr3.SelectedItems.AddSelectedBitEnum(CurrentSpell.SpellInfo.AttributesEx3);
-            listAttr4.SelectedItems.AddSelectedBitEnum(CurrentSpell.SpellInfo.AttributesEx4);
-            listAttr5.SelectedItems.AddSelectedBitEnum(CurrentSpell.SpellInfo.AttributesEx5);
-            listAttr6.SelectedItems.AddSelectedBitEnum(CurrentSpell.SpellInfo.AttributesEx6);
-            listAttr7.SelectedItems.AddSelectedBitEnum(CurrentSpell.SpellInfo.AttributesEx7);
-            listAttr8.SelectedItems.AddSelectedBitEnum(CurrentSpell.SpellInfo.AttributesEx8);
-            listAttr9.SelectedItems.AddSelectedBitEnum(CurrentSpell.SpellInfo.AttributesEx9);
-            listAttr10.SelectedItems.AddSelectedBitEnum(CurrentSpell.SpellInfo.AttributesEx10);
-            listAttr11.SelectedItems.AddSelectedBitEnum(CurrentSpell.SpellInfo.AttributesEx11);
-            listAttr12.SelectedItems.AddSelectedBitEnum(CurrentSpell.SpellInfo.AttributesEx12);
-            listAttr13.SelectedItems.AddSelectedBitEnum(CurrentSpell.SpellInfo.AttributesEx13);
-            listAttr14.SelectedItems.AddSelectedBitEnum(CurrentSpell.SpellInfo.AttributesEx14);
-            
-            // update flags
-            listInterruptFlags.SelectedItems.Clear();
-            listAuraInterruptFlags.SelectedItems.Clear();
-            listAuraInterruptFlags2.SelectedItems.Clear();
-            listChannelInterruptFlags.SelectedItems.Clear();
-            listChannelInterruptFlags2.SelectedItems.Clear();
-            listTargetCreatureType.SelectedItems.Clear();
-            listStances.SelectedItems.Clear();
-            listExStances.SelectedItems.Clear();
-            cmbTotemCategory1.SelectedIndex = 0;
-            cmbTotemCategory2.SelectedIndex = 0;
-            cmbCurrencyType.SelectedIndex = 0;
-            
-            listInterruptFlags.SelectedItems.AddSelectedBitEnum(CurrentSpell.SpellInfo.InterruptFlags);
-            listAuraInterruptFlags.SelectedItems.AddSelectedBitEnum(CurrentSpell.SpellInfo.AuraInterruptFlags);
-            listAuraInterruptFlags2.SelectedItems.AddSelectedBitEnum(CurrentSpell.SpellInfo.AuraInterruptFlags2);
-            listChannelInterruptFlags.SelectedItems.AddSelectedBitEnum(CurrentSpell.SpellInfo.ChannelInterruptFlags);
-            listChannelInterruptFlags2.SelectedItems.AddSelectedBitEnum(CurrentSpell.SpellInfo.ChannelInterruptFlags2);
-            listTargetCreatureType.SelectedItems.AddSelectedIntEnum((CreatureType)CurrentSpell.SpellInfo.TargetCreatureType);
-            listStances.SelectedItems.AddSelectedIntEnum((ShapeShiftForm)CurrentSpell.SpellInfo.Stances);
-            listExStances.SelectedItems.AddSelectedIntEnum((ShapeShiftForm)CurrentSpell.SpellInfo.StancesNot);
-            numTotem1.Value = CurrentSpell.SpellInfo.Totem[0];
-            numTotem2.Value = CurrentSpell.SpellInfo.Totem[1];
-            cmbTotemCategory1.SelectedIndex = _totemCatMap[CurrentSpell.SpellInfo.TotemCategory[0]];
-            cmbTotemCategory2.SelectedIndex = _totemCatMap[CurrentSpell.SpellInfo.TotemCategory[1]];
-            numReagent1.Value = CurrentSpell.SpellInfo.Reagent[0];
-            numReagent2.Value = CurrentSpell.SpellInfo.Reagent[1];
-            numReagent3.Value = CurrentSpell.SpellInfo.Reagent[2];
-            numReagent4.Value = CurrentSpell.SpellInfo.Reagent[3];
-            numReagent5.Value = CurrentSpell.SpellInfo.Reagent[4];
-            numReagent6.Value = CurrentSpell.SpellInfo.Reagent[5];
-            numReagent7.Value = CurrentSpell.SpellInfo.Reagent[6];
-            numReagent8.Value = CurrentSpell.SpellInfo.Reagent[7];
-            numReagentCount1.Value = CurrentSpell.SpellInfo.ReagentCount[0];
-            numReagentCount2.Value = CurrentSpell.SpellInfo.ReagentCount[1];
-            numReagentCount3.Value = CurrentSpell.SpellInfo.ReagentCount[2];
-            numReagentCount4.Value = CurrentSpell.SpellInfo.ReagentCount[3];
-            numReagentCount5.Value = CurrentSpell.SpellInfo.ReagentCount[4];
-            numReagentCount6.Value = CurrentSpell.SpellInfo.ReagentCount[5];
-            numReagentCount7.Value = CurrentSpell.SpellInfo.ReagentCount[6];
-            numReagentCount8.Value = CurrentSpell.SpellInfo.ReagentCount[7];
-
-            _dirtyCurrencyRecords.Clear();
-            cmbSelectCurrency.Items.Clear();
-            cmbSelectCurrency.Items.Add((uint)0);
-            foreach (var currency in CurrentSpell.SpellInfo.ReagentsCurrency.OrderBy(a => a.Id))
-            {
-                _dirtyCurrencyRecords.Add(currency.Id, currency.Copy(true));
-                cmbSelectCurrency.Items.Add(currency.Id);
-            }
-            cmbSelectCurrency.SelectedIndex = 0;
-
-            btnCurrencyNew.Enabled = true;
-            btnCurrencySave.Enabled = true;
-            btnCurrencyCopy.Enabled = true;
-            btnCurrencyDelete.Enabled = false;
-
-            cmbEquippedItemClass.SelectedItem = CurrentSpell.SpellInfo.EquippedItemClass.ToString();
-            listEquippedItemInvenType.SelectedItems.Clear();
-            listEquippedItemInvenType.SelectedItems.AddSelectedIntEnum(CurrentSpell.SpellInfo.EquippedItemInventoryTypeMask, typeof(InventoryType));
-            listEquippedItemSubClass.UpdateItemSubClass((ItemClass)Enum.Parse(typeof(ItemClass), (string)cmbEquippedItemClass.SelectedItem), CurrentSpell.SpellInfo.EquippedItemClass, CurrentSpell.SpellInfo.EquippedItemSubClassMask, true);
-
-            //cmbCurveIndex.Items.Clear();
-            //foreach (var curve in CurrentSpell.Curves)
-            //    cmbCurveIndex.Items.Add(curve.TraitDefinitionEffectPoints.EffectIndex);
-
-            StringBuilder text = new();
-
-            foreach (var curve in CurrentSpell.SpellInfo.Curves)
-            {
-                //lblCurveId.Text = curve.CurveRecord.Id.ToString();
-
-                foreach (var cp in curve.CurvePoints)
-                {
-                    text.Append("Curve: ").Append(curve.CurveRecord.Id).Append(" - Effect Index: ").Append(curve.TraitDefinitionEffectPoints.EffectIndex).Append(Environment.NewLine)
-                        .Append("Curve Point Id: ").Append(cp.Id).Append(" - Rank: ").Append(cp.Pos.X).Append(" - Points: ").Append(cp.Pos.Y).Append(Environment.NewLine);
-                }
-
-            }
-
-            txtbxCurvePoints.Text = text.ToString();
-
-            btnCurIconUndo_Click(null, null);
-            btnActiveIconUndo_Click(null, null);
         }
 
         private string ChargeCategoryDisplay(SpellCategoryRecord spellCat)
@@ -874,65 +1072,6 @@ namespace Forged.Tools.SpellEditor
             }
         }
 
-        private void btnNext_Click(object sender, EventArgs e)
-        {
-            if (numCurentMax.Value >= _maxSpellSearch)
-                return;
-
-            decimal range = Helpers.CurrentRange(numCurentMin.Value, numCurentMax.Value);
-
-            numCurentMin.Value += range;
-            if (numCurentMin.Value > _maxSpellSearch)
-                numCurentMin.Value = _maxSpellSearch - range - 1;
-
-            numCurentMax.Value = numCurentMin.Value + range - 1;
-
-            listSpells.PopulateSpellList(numCurentMin, numCurentMax, cmbIndexing.SelectedIndex, _currentNameSearch, ref _maxSpellSearch);
-        }
-
-        private void btnLast_Click(object sender, EventArgs e)
-        {
-            if (numCurentMax.Value >= _maxSpellSearch)
-                return;
-
-            decimal range = Helpers.CurrentRange(numCurentMin.Value, numCurentMax.Value);
-
-            numCurentMax.Value = _maxSpellSearch;
-            numCurentMin.Value = numCurentMax.Value - range + 1;
-
-            listSpells.PopulateSpellList(numCurentMin, numCurentMax, cmbIndexing.SelectedIndex, _currentNameSearch, ref _maxSpellSearch);
-        }
-
-        private void btnPrevious_Click(object sender, EventArgs e)
-        {
-            if (numCurentMin.Value > 1)
-            {
-                decimal range = Helpers.CurrentRange(numCurentMin.Value, numCurentMax.Value);
-
-                if (numCurentMin.Value < range + 1)
-                    numCurentMin.Value = 1;
-                else
-                    numCurentMin.Value -= range;
-
-                numCurentMax.Value = numCurentMin.Value + range - 1;
-
-                listSpells.PopulateSpellList(numCurentMin, numCurentMax, cmbIndexing.SelectedIndex, _currentNameSearch, ref _maxSpellSearch);
-            }
-        }
-
-        private void btnFirst_Click(object sender, EventArgs e)
-        {
-            if (numCurentMin.Value > 1)
-            {
-                decimal range = Helpers.CurrentRange(numCurentMin.Value, numCurentMax.Value);
-
-                numCurentMin.Value = 1;
-                numCurentMax.Value = range;
-
-                listSpells.PopulateSpellList(numCurentMin, numCurentMax, cmbIndexing.SelectedIndex, _currentNameSearch, ref _maxSpellSearch);
-            }
-        }
-
         private void cmbIndexing_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (cmbIndexing.SelectedIndex == 0)
@@ -941,63 +1080,6 @@ namespace Forged.Tools.SpellEditor
                 _maxSpellSearch = (uint)CliDB.SpellNameStorage.Count;
 
             listSpells.PopulateSpellList(numCurentMin, numCurentMax, cmbIndexing.SelectedIndex, _currentNameSearch, ref _maxSpellSearch);
-        }
-
-        private void btnSaveCategory_Click(object sender, EventArgs e)
-        {
-            bool dirty = false;
-
-            if (CliDB.SpellCategoryStorage.ContainsKey(numCatId.Value))
-            {
-                var cat = CliDB.SpellCategoryStorage[(uint)numCatId.Value];
-
-                if (cat.UsesPerWeek != numCatUsesPerWeek.Value
-                    || cat.MaxCharges != numCatCharges.Value
-                    || cat.ChargeRecoveryTime != numCatChargeCD.Value
-                    || cat.Name != txtCatName.Text
-                    || cat.TypeMask != numTypeMask.Value
-                    || Convert.ToInt64(cat.Flags) != listCatFlags.SelectedItems.EnumCollectionToInt64<SpellCategoryFlags>())
-                {
-                    dirty = true;
-                }
-            }
-            else
-                dirty = true;
-
-            if (dirty)
-            {
-                Int64 flags = 0;
-
-                foreach (string flag in listCatFlags.SelectedItems)
-                    flags |= Convert.ToInt64((SpellCategoryFlags)Enum.Parse(typeof(SpellCategoryFlags), flag));
-
-                SpellCategoryRecord record = new SpellCategoryRecord();
-                record.Id = (uint)numCatId.Value;
-                record.Name = txtCatName.Text;
-                record.Flags = (SpellCategoryFlags)flags;
-                record.UsesPerWeek = (byte)numCatUsesPerWeek.Value;
-                record.MaxCharges = (byte)numCatCharges.Value;
-                record.ChargeRecoveryTime = (int)numCatChargeCD.Value;
-                record.TypeMask = (int)numTypeMask.Value;
-
-                DB.Hotfix.Execute(string.Format(DataAccess.UPDATE_SPELL_CATEGORY, record.Id, record.Name, flags, record.UsesPerWeek, record.MaxCharges, record.ChargeRecoveryTime, record.TypeMask));
-                CliDB.SpellCategoryStorage[record.Id] = record;
-
-                DataTable editCatItems = MultiLineComboBox.GeneratteDataTable();
-                editCatItems.Rows.Add(new object[] { 0, $"None", ChargeCategoryDisplay(new SpellCategoryRecord() { Name = "None" }) });
-
-                var spellCats = CliDB.SpellCategoryStorage.OrderBy(a => a.Key);
-                int selIndex = 0;
-                foreach (var spellCat in spellCats)
-                {
-                    editCatItems.Rows.Add(new object[] { spellCat.Key, spellCat.Value.Name, ChargeCategoryDisplay(spellCat.Value) });
-
-                    if (spellCat.Key == record.Id)
-                        selIndex = editCatItems.Rows.Count - 1;
-                }
-                mlcmbEditCat.InitializeComboBox(editCatItems);
-                mlcmbEditCat.SelectedIndex = selIndex;
-            }
         }
 
         private void mlcmbEditCat_SelectedIndexChanged(object sender, EventArgs e)
@@ -1031,115 +1113,6 @@ namespace Forged.Tools.SpellEditor
             }
         }
 
-        private void btnAddEffect_Click(object sender, EventArgs e)
-        {
-            uint index = 0;
-
-            if (tabsSpellEffects.TabPages.Count > 0)
-                index = uint.Parse(tabsSpellEffects.TabPages[tabsSpellEffects.TabPages.Count - 1].Text.Replace("Effect ", ""));
-
-            tabsSpellEffects.TabPages.Add(NewSpellEffectTab(index + 1, true));
-            tabsSpellEffects.SelectedIndex = tabsSpellEffects.TabPages.Count - 1;
-        }
-
-        private TabPage NewSpellEffectTab(uint effIndex, bool newEffect = false)
-        {
-            return Helpers.CopySpellEffectTab(_defaultSpellEffectPage, effIndex, newEffect);
-        }
-
-        private void lvIcons_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (lvIcons.SelectedItems.Count > 0)
-            {
-                picSelectedIcon.BackgroundImage = lvIcons.SelectedItems[0].ImageList.Images[lvIcons.SelectedItems[0].ImageKey];
-                lblSelIcon.Text = lvIcons.SelectedItems[0].Text;
-            }
-        }
-
-        private void btnCurIconChange_Click(object sender, EventArgs e)
-        {
-            if (picSelectedIcon.BackgroundImage != null)
-            {
-                picCurIcon.BackgroundImage = picSelectedIcon.BackgroundImage;
-                lblCurIcon.Text = lblSelIcon.Text;
-            }
-        }
-
-        private void btnCurIconUndo_Click(object sender, EventArgs e)
-        {
-            if (CurrentSpell != null && CurrentSpell.SpellInfo.IconFileDataId > 0
-                && Program.DataAccess.SpellIconStorage.TryGetValue(CurrentSpell.SpellInfo.IconFileDataId, out var iconRecord))
-            {
-                picCurIcon.BackgroundImage = iconRecord.GetImage();
-                lblCurIcon.Text = $"{iconRecord.TextureFilename.Split('/').Last()} - {iconRecord.Id}";
-            }
-            else
-            {
-                picCurIcon.BackgroundImage = null;
-                lblCurIcon.Text = string.Empty;
-            }
-        }
-
-        private void btnActiveIconChange_Click(object sender, EventArgs e)
-        {
-            if (picSelectedIcon.BackgroundImage != null)
-            {
-                picActiveIcon.BackgroundImage = picSelectedIcon.BackgroundImage;
-                lblActiveIcon.Text = lblSelIcon.Text;
-            }
-        }
-
-        private void btnActiveIconUndo_Click(object sender, EventArgs e)
-        {
-            if (CurrentSpell != null && CurrentSpell.SpellInfo.ActiveIconFileDataId > 0
-                && Program.DataAccess.SpellIconStorage.TryGetValue(CurrentSpell.SpellInfo.ActiveIconFileDataId, out var iconRecord))
-            {
-                picActiveIcon.BackgroundImage = iconRecord.GetImage();
-                lblActiveIcon.Text = $"{iconRecord.TextureFilename.Split('/').Last()} - {iconRecord.Id}";
-            }
-            else
-            {
-                picActiveIcon.BackgroundImage = null;
-                lblActiveIcon.Text = string.Empty;
-            }
-        }
-
-        private void btnIconFirst_Click(object sender, EventArgs e)
-        {
-            if (numIconPage.Value > 1)
-            {
-                numIconPage.Value = 1;
-                lvIcons.PopulateIconList(lblIconPageCount, numIconPage, _iconFolder, _currentIconSearch);
-            }
-        }
-
-        private void btnIconPrevious_Click(object sender, EventArgs e)
-        {
-            if (numIconPage.Value > 1)
-            {
-                numIconPage.Value--;
-                lvIcons.PopulateIconList(lblIconPageCount, numIconPage, _iconFolder, _currentIconSearch);
-            }
-        }
-
-        private void btnIconNext_Click(object sender, EventArgs e)
-        {
-            if (numIconPage.Value < numIconPage.Maximum)
-            {
-                numIconPage.Value++;
-                lvIcons.PopulateIconList(lblIconPageCount, numIconPage, _iconFolder, _currentIconSearch);
-            }
-        }
-
-        private void btnIconLast_Click(object sender, EventArgs e)
-        {
-            if (numIconPage.Value < numIconPage.Maximum)
-            {
-                numIconPage.Value = numIconPage.Maximum;
-                lvIcons.PopulateIconList(lblIconPageCount, numIconPage, _iconFolder, _currentIconSearch);
-            }
-        }
-
         // visual stuff
         private void cmbSelectVisual_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -1165,78 +1138,18 @@ namespace Forged.Tools.SpellEditor
                 SetVisual0();
         }
 
-        private void btnVisualNew_Click(object sender, EventArgs e)
+        private TabPage NewSpellEffectTab(uint effIndex, bool newEffect = false)
         {
-            if (cmbSelectVisual.SelectedIndex != 0)
-                cmbSelectVisual.SelectedIndex = 0;
-            else
-                SetVisual0();
+            return Helpers.CopySpellEffectTab(_defaultSpellEffectPage, effIndex, newEffect);
         }
 
-        private void btnVisualCopy_Click(object sender, EventArgs e)
+        private void lvIcons_SelectedIndexChanged(object sender, EventArgs e)
         {
-            numVisualId.Value = 0;
-            numVisualId.Enabled = true;
-            btnVisualDelete.Enabled = false;
-        }
-
-        private void btnVisualSave_Click(object sender, EventArgs e)
-        {
-            bool savingNew = numVisualId.Enabled && !btnVisualDelete.Enabled;
-            uint id = savingNew ? (uint)numVisualId.Value : (uint)cmbSelectVisual.SelectedItem;
-
-            if (id == 0)
+            if (lvIcons.SelectedItems.Count > 0)
             {
-                MessageBox.Show("Invalid Visual Id.", "Error");
-                return;
+                picSelectedIcon.BackgroundImage = lvIcons.SelectedItems[0].ImageList.Images[lvIcons.SelectedItems[0].ImageKey];
+                lblSelIcon.Text = lvIcons.SelectedItems[0].Text;
             }
-
-            if (savingNew && (_dirtySpellVisuals.ContainsKey(id) || CliDB.SpellXSpellVisualStorage.ContainsKey(id)))
-            {
-                MessageBox.Show("Visual Id already in use.", "Error");
-                return;
-            }
-
-            _dirtySpellVisuals[id] = new SpellXSpellVisualRecordMod()
-            {
-                Id = id,
-                DifficultyID = (byte)Enum.Parse(typeof(Difficulty), cmbVisualDifficulty.SelectedItem.ToString()),
-                SpellVisualID = (uint)numSpellVisualId.Value,
-                SpellIconFileID = (int)numVisualIconId.Value,
-                ActiveIconFileID = (int)numVisualActiveIconId.Value,
-                Probability = float.Parse(txtVisualProbability.Text),
-                Priority = (int)numVisualPriority.Value,
-                ViewerUnitConditionID = (ushort)numUnitViewer.Value,
-                ViewerPlayerConditionID = (uint)numPlayerViewer.Value,
-                CasterUnitConditionID = (ushort)numUnitCaster.Value,
-                CasterPlayerConditionID = (uint)numPlayerCaster.Value,
-                SpellID = CurrentSpell.SpellInfo.Id,
-                KeepRecord = CliDB.SpellXSpellVisualStorage.ContainsKey(id)
-            };
-
-            if (!cmbSelectVisual.Items.Contains(id))
-                cmbSelectVisual.Items.Add(id);
-
-            cmbSelectVisual.SelectedItem = id;
-        }
-
-        private void btnVisualDelete_Click(object sender, EventArgs e)
-        {
-            if (!numVisualId.Enabled)
-                return;
-
-            var id = (uint)cmbSelectVisual.SelectedItem;
-            var visual = _dirtySpellVisuals[id];
-
-            if (visual == null || visual.KeepRecord)
-            {
-                MessageBox.Show("Unable to delete existing records.", "Error");
-                return;
-            }
-
-            cmbSelectVisual.SelectedIndex = 0;
-            cmbSelectVisual.Items.Remove(id);
-            _dirtySpellVisuals.Remove(id);
         }
 
         private void SetVisual0()
@@ -1272,75 +1185,6 @@ namespace Forged.Tools.SpellEditor
             }
             else
                 SetCurrency0();
-        }
-
-        private void btnCurrencyNew_Click(object sender, EventArgs e)
-        {
-            if (cmbSelectCurrency.SelectedIndex != 0)
-                cmbSelectCurrency.SelectedIndex = 0;
-            else
-                SetCurrency0();
-        }
-
-        private void btnCurrencyCopy_Click(object sender, EventArgs e)
-        {
-            numCurrencyId.Value = 0;
-            numCurrencyId.Enabled = true;
-            btnCurrencyDelete.Enabled = false;
-        }
-
-        private void btnCurrencySave_Click(object sender, EventArgs e)
-        {
-            bool savingNew = numCurrencyId.Enabled && !btnCurrencyDelete.Enabled;
-            uint id = savingNew ? (uint)numCurrencyId.Value : (uint)cmbSelectCurrency.SelectedItem;
-
-            if (id == 0)
-            {
-                MessageBox.Show("Invalid Currency Id.", "Error");
-                return;
-            }
-
-            if (savingNew && (_dirtyCurrencyRecords.ContainsKey(id) || CliDB.SpellReagentsCurrencyStorage.ContainsKey(id)))
-            {
-                MessageBox.Show("Currency Id already in use.", "Error");
-                return;
-            }
-
-            ushort currencytypeid = 0;
-
-            foreach (var cat in CliDB.CurrencyTypesStorage)
-            {
-                if (cat.Value.Name == cmbCurrencyType.SelectedItem)
-                {
-                    currencytypeid = (ushort)cat.Key;
-                    break;
-                }
-            }
-
-            _dirtyCurrencyRecords[id] = new SpellReagentsCurrencyRecordMod()
-            {
-                Id = id,
-                SpellID = (int)CurrentSpell.SpellInfo.Id,
-                CurrencyCount = (ushort)numCurrencyCount.Value,
-                CurrencyTypesID = currencytypeid,
-                KeepRecord = CliDB.SpellReagentsCurrencyStorage.ContainsKey(id)
-            };
-            
-            if (!cmbSelectVisual.Items.Contains(id))
-                cmbSelectVisual.Items.Add(id);
-
-            cmbSelectVisual.SelectedItem = id;
-        }
-
-        private void btnCurrencyDelete_Click(object sender, EventArgs e)
-        {
-            if (!numCurrencyId.Enabled)
-                return;
-
-            var id = (uint)cmbSelectCurrency.SelectedItem;
-            cmbSelectCurrency.SelectedIndex = 0;
-            cmbSelectCurrency.Items.Remove(id);
-            _dirtyCurrencyRecords.Remove(id);
         }
 
         public void SetCurrency0()
@@ -1563,6 +1407,246 @@ namespace Forged.Tools.SpellEditor
             return ret;
         }
 
+        #region Button Clicks
+
+        private void btnAddEffect_Click(object sender, EventArgs e)
+        {
+            uint index = 0;
+
+            if (tabsSpellEffects.TabPages.Count > 0)
+                index = uint.Parse(tabsSpellEffects.TabPages[tabsSpellEffects.TabPages.Count - 1].Text.Replace("Effect ", ""));
+
+            tabsSpellEffects.TabPages.Add(NewSpellEffectTab(index + 1, true));
+            tabsSpellEffects.SelectedIndex = tabsSpellEffects.TabPages.Count - 1;
+        }
+
+        private void btnCurIconChange_Click(object sender, EventArgs e)
+        {
+            if (picSelectedIcon.BackgroundImage != null)
+            {
+                picCurIcon.BackgroundImage = picSelectedIcon.BackgroundImage;
+                lblCurIcon.Text = lblSelIcon.Text;
+            }
+        }
+
+        private void btnCurIconUndo_Click(object sender, EventArgs e)
+        {
+            if (CurrentSpell != null && CurrentSpell.SpellInfo.IconFileDataId > 0
+                && Program.DataAccess.SpellIconStorage.TryGetValue(CurrentSpell.SpellInfo.IconFileDataId, out var iconRecord))
+            {
+                picCurIcon.BackgroundImage = iconRecord.GetImage();
+                lblCurIcon.Text = $"{iconRecord.TextureFilename.Split('/').Last()} - {iconRecord.Id}";
+            }
+            else
+            {
+                picCurIcon.BackgroundImage = null;
+                lblCurIcon.Text = string.Empty;
+            }
+        }
+
+        private void btnActiveIconChange_Click(object sender, EventArgs e)
+        {
+            if (picSelectedIcon.BackgroundImage != null)
+            {
+                picActiveIcon.BackgroundImage = picSelectedIcon.BackgroundImage;
+                lblActiveIcon.Text = lblSelIcon.Text;
+            }
+        }
+
+        private void btnActiveIconUndo_Click(object sender, EventArgs e)
+        {
+            if (CurrentSpell != null && CurrentSpell.SpellInfo.ActiveIconFileDataId > 0
+                && Program.DataAccess.SpellIconStorage.TryGetValue(CurrentSpell.SpellInfo.ActiveIconFileDataId, out var iconRecord))
+            {
+                picActiveIcon.BackgroundImage = iconRecord.GetImage();
+                lblActiveIcon.Text = $"{iconRecord.TextureFilename.Split('/').Last()} - {iconRecord.Id}";
+            }
+            else
+            {
+                picActiveIcon.BackgroundImage = null;
+                lblActiveIcon.Text = string.Empty;
+            }
+        }
+
+        private void btnIconFirst_Click(object sender, EventArgs e)
+        {
+            if (numIconPage.Value > 1)
+            {
+                numIconPage.Value = 1;
+                lvIcons.PopulateIconList(lblIconPageCount, numIconPage, _iconFolder, _currentIconSearch);
+            }
+        }
+
+        private void btnIconPrevious_Click(object sender, EventArgs e)
+        {
+            if (numIconPage.Value > 1)
+            {
+                numIconPage.Value--;
+                lvIcons.PopulateIconList(lblIconPageCount, numIconPage, _iconFolder, _currentIconSearch);
+            }
+        }
+
+        private void btnIconNext_Click(object sender, EventArgs e)
+        {
+            if (numIconPage.Value < numIconPage.Maximum)
+            {
+                numIconPage.Value++;
+                lvIcons.PopulateIconList(lblIconPageCount, numIconPage, _iconFolder, _currentIconSearch);
+            }
+        }
+
+        private void btnIconLast_Click(object sender, EventArgs e)
+        {
+            if (numIconPage.Value < numIconPage.Maximum)
+            {
+                numIconPage.Value = numIconPage.Maximum;
+                lvIcons.PopulateIconList(lblIconPageCount, numIconPage, _iconFolder, _currentIconSearch);
+            }
+        }
+
+        private void btnVisualNew_Click(object sender, EventArgs e)
+        {
+            if (cmbSelectVisual.SelectedIndex != 0)
+                cmbSelectVisual.SelectedIndex = 0;
+            else
+                SetVisual0();
+        }
+
+        private void btnVisualCopy_Click(object sender, EventArgs e)
+        {
+            numVisualId.Value = 0;
+            numVisualId.Enabled = true;
+            btnVisualDelete.Enabled = false;
+        }
+
+        private void btnVisualSave_Click(object sender, EventArgs e)
+        {
+            bool savingNew = numVisualId.Enabled && !btnVisualDelete.Enabled;
+            uint id = savingNew ? (uint)numVisualId.Value : (uint)cmbSelectVisual.SelectedItem;
+
+            if (id == 0)
+            {
+                MessageBox.Show("Invalid Visual Id.", "Error");
+                return;
+            }
+
+            if (savingNew && (_dirtySpellVisuals.ContainsKey(id) || CliDB.SpellXSpellVisualStorage.ContainsKey(id)))
+            {
+                MessageBox.Show("Visual Id already in use.", "Error");
+                return;
+            }
+
+            _dirtySpellVisuals[id] = new SpellXSpellVisualRecordMod()
+            {
+                Id = id,
+                DifficultyID = (byte)Enum.Parse(typeof(Difficulty), cmbVisualDifficulty.SelectedItem.ToString()),
+                SpellVisualID = (uint)numSpellVisualId.Value,
+                SpellIconFileID = (int)numVisualIconId.Value,
+                ActiveIconFileID = (int)numVisualActiveIconId.Value,
+                Probability = float.Parse(txtVisualProbability.Text),
+                Priority = (int)numVisualPriority.Value,
+                ViewerUnitConditionID = (ushort)numUnitViewer.Value,
+                ViewerPlayerConditionID = (uint)numPlayerViewer.Value,
+                CasterUnitConditionID = (ushort)numUnitCaster.Value,
+                CasterPlayerConditionID = (uint)numPlayerCaster.Value,
+                SpellID = CurrentSpell.SpellInfo.Id,
+                KeepRecord = CliDB.SpellXSpellVisualStorage.ContainsKey(id)
+            };
+
+            if (!cmbSelectVisual.Items.Contains(id))
+                cmbSelectVisual.Items.Add(id);
+
+            cmbSelectVisual.SelectedItem = id;
+        }
+
+        private void btnVisualDelete_Click(object sender, EventArgs e)
+        {
+            if (!numVisualId.Enabled)
+                return;
+
+            var id = (uint)cmbSelectVisual.SelectedItem;
+            var visual = _dirtySpellVisuals[id];
+
+            if (visual == null || visual.KeepRecord)
+            {
+                MessageBox.Show("Unable to delete existing records.", "Error");
+                return;
+            }
+
+            cmbSelectVisual.SelectedIndex = 0;
+            cmbSelectVisual.Items.Remove(id);
+            _dirtySpellVisuals.Remove(id);
+        }
+
+        private void btnCurrencyNew_Click(object sender, EventArgs e)
+        {
+            if (cmbSelectCurrency.SelectedIndex != 0)
+                cmbSelectCurrency.SelectedIndex = 0;
+            else
+                SetCurrency0();
+        }
+
+        private void btnCurrencyCopy_Click(object sender, EventArgs e)
+        {
+            numCurrencyId.Value = 0;
+            numCurrencyId.Enabled = true;
+            btnCurrencyDelete.Enabled = false;
+        }
+
+        private void btnCurrencySave_Click(object sender, EventArgs e)
+        {
+            bool savingNew = numCurrencyId.Enabled && !btnCurrencyDelete.Enabled;
+            uint id = savingNew ? (uint)numCurrencyId.Value : (uint)cmbSelectCurrency.SelectedItem;
+
+            if (id == 0)
+            {
+                MessageBox.Show("Invalid Currency Id.", "Error");
+                return;
+            }
+
+            if (savingNew && (_dirtyCurrencyRecords.ContainsKey(id) || CliDB.SpellReagentsCurrencyStorage.ContainsKey(id)))
+            {
+                MessageBox.Show("Currency Id already in use.", "Error");
+                return;
+            }
+
+            ushort currencytypeid = 0;
+
+            foreach (var cat in CliDB.CurrencyTypesStorage)
+            {
+                if (cat.Value.Name == cmbCurrencyType.SelectedItem)
+                {
+                    currencytypeid = (ushort)cat.Key;
+                    break;
+                }
+            }
+
+            _dirtyCurrencyRecords[id] = new SpellReagentsCurrencyRecordMod()
+            {
+                Id = id,
+                SpellID = (int)CurrentSpell.SpellInfo.Id,
+                CurrencyCount = (ushort)numCurrencyCount.Value,
+                CurrencyTypesID = currencytypeid,
+                KeepRecord = CliDB.SpellReagentsCurrencyStorage.ContainsKey(id)
+            };
+
+            if (!cmbSelectVisual.Items.Contains(id))
+                cmbSelectVisual.Items.Add(id);
+
+            cmbSelectVisual.SelectedItem = id;
+        }
+
+        private void btnCurrencyDelete_Click(object sender, EventArgs e)
+        {
+            if (!numCurrencyId.Enabled)
+                return;
+
+            var id = (uint)cmbSelectCurrency.SelectedItem;
+            cmbSelectCurrency.SelectedIndex = 0;
+            cmbSelectCurrency.Items.Remove(id);
+            _dirtyCurrencyRecords.Remove(id);
+        }
+
         private void btnSave_Click(object sender, EventArgs e)
         {
             if (CurrentSpell != null && CurrentSpell.SpellInfo.Id != 0)
@@ -1662,33 +1746,181 @@ namespace Forged.Tools.SpellEditor
             }
         }
 
-        private void cmbCurveIndex_SelectedIndexChanged(object sender, EventArgs e)
+        private void btnNext_Click(object sender, EventArgs e)
         {
-            //bool found = false;
-            //foreach (var curve in CurrentSpell.Curves)
-            //{
-            //    if ((int)cmbCurveIndex.SelectedItem == curve.TraitDefinitionEffectPoints.EffectIndex)
-            //    {
-            //        lblCurveId.Text = curve.CurveRecord.Id.ToString();
-            //        StringBuilder text = new();
+            if (numCurentMax.Value >= _maxSpellSearch)
+                return;
 
-            //        foreach(var cp in curve.CurvePoints)
-            //        {
-            //            text.Append("Id: ").Append(cp.Id).Append(" - Rank: ").Append(cp.Pos.X).Append(" - Points: ").Append(cp.Pos.Y).Append(Environment.NewLine);
-            //        }
+            decimal range = Helpers.CurrentRange(numCurentMin.Value, numCurentMax.Value);
 
-            //        txtbxCurvePoints.Text = text.ToString();
-            //        found = true;
+            numCurentMin.Value += range;
+            if (numCurentMin.Value > _maxSpellSearch)
+                numCurentMin.Value = _maxSpellSearch - range - 1;
 
-            //        break;
-            //    }
-            //}
+            numCurentMax.Value = numCurentMin.Value + range - 1;
 
-            //if (!found)
-            //{
-            //    lblCurveId.Text = string.Empty;
-            //    txtbxCurvePoints.Text = string.Empty;
-            //}
+            listSpells.PopulateSpellList(numCurentMin, numCurentMax, cmbIndexing.SelectedIndex, _currentNameSearch, ref _maxSpellSearch);
         }
+
+        private void btnLast_Click(object sender, EventArgs e)
+        {
+            if (numCurentMax.Value >= _maxSpellSearch)
+                return;
+
+            decimal range = Helpers.CurrentRange(numCurentMin.Value, numCurentMax.Value);
+
+            numCurentMax.Value = _maxSpellSearch;
+            numCurentMin.Value = numCurentMax.Value - range + 1;
+
+            listSpells.PopulateSpellList(numCurentMin, numCurentMax, cmbIndexing.SelectedIndex, _currentNameSearch, ref _maxSpellSearch);
+        }
+
+        private void btnPrevious_Click(object sender, EventArgs e)
+        {
+            if (numCurentMin.Value > 1)
+            {
+                decimal range = Helpers.CurrentRange(numCurentMin.Value, numCurentMax.Value);
+
+                if (numCurentMin.Value < range + 1)
+                    numCurentMin.Value = 1;
+                else
+                    numCurentMin.Value -= range;
+
+                numCurentMax.Value = numCurentMin.Value + range - 1;
+
+                listSpells.PopulateSpellList(numCurentMin, numCurentMax, cmbIndexing.SelectedIndex, _currentNameSearch, ref _maxSpellSearch);
+            }
+        }
+
+        private void btnFirst_Click(object sender, EventArgs e)
+        {
+            if (numCurentMin.Value > 1)
+            {
+                decimal range = Helpers.CurrentRange(numCurentMin.Value, numCurentMax.Value);
+
+                numCurentMin.Value = 1;
+                numCurentMax.Value = range;
+
+                listSpells.PopulateSpellList(numCurentMin, numCurentMax, cmbIndexing.SelectedIndex, _currentNameSearch, ref _maxSpellSearch);
+            }
+        }
+
+        private void btnSaveCategory_Click(object sender, EventArgs e)
+        {
+            bool dirty = false;
+
+            if (CliDB.SpellCategoryStorage.ContainsKey(numCatId.Value))
+            {
+                var cat = CliDB.SpellCategoryStorage[(uint)numCatId.Value];
+
+                if (cat.UsesPerWeek != numCatUsesPerWeek.Value
+                    || cat.MaxCharges != numCatCharges.Value
+                    || cat.ChargeRecoveryTime != numCatChargeCD.Value
+                    || cat.Name != txtCatName.Text
+                    || cat.TypeMask != numTypeMask.Value
+                    || Convert.ToInt64(cat.Flags) != listCatFlags.SelectedItems.EnumCollectionToInt64<SpellCategoryFlags>())
+                {
+                    dirty = true;
+                }
+            }
+            else
+                dirty = true;
+
+            if (dirty)
+            {
+                Int64 flags = 0;
+
+                foreach (string flag in listCatFlags.SelectedItems)
+                    flags |= Convert.ToInt64((SpellCategoryFlags)Enum.Parse(typeof(SpellCategoryFlags), flag));
+
+                SpellCategoryRecord record = new SpellCategoryRecord();
+                record.Id = (uint)numCatId.Value;
+                record.Name = txtCatName.Text;
+                record.Flags = (SpellCategoryFlags)flags;
+                record.UsesPerWeek = (byte)numCatUsesPerWeek.Value;
+                record.MaxCharges = (byte)numCatCharges.Value;
+                record.ChargeRecoveryTime = (int)numCatChargeCD.Value;
+                record.TypeMask = (int)numTypeMask.Value;
+
+                DB.Hotfix.Execute(string.Format(DataAccess.UPDATE_SPELL_CATEGORY, record.Id, record.Name, flags, record.UsesPerWeek, record.MaxCharges, record.ChargeRecoveryTime, record.TypeMask));
+                CliDB.SpellCategoryStorage[record.Id] = record;
+
+                DataTable editCatItems = MultiLineComboBox.GeneratteDataTable();
+                editCatItems.Rows.Add(new object[] { 0, $"None", ChargeCategoryDisplay(new SpellCategoryRecord() { Name = "None" }) });
+
+                var spellCats = CliDB.SpellCategoryStorage.OrderBy(a => a.Key);
+                int selIndex = 0;
+                foreach (var spellCat in spellCats)
+                {
+                    editCatItems.Rows.Add(new object[] { spellCat.Key, spellCat.Value.Name, ChargeCategoryDisplay(spellCat.Value) });
+
+                    if (spellCat.Key == record.Id)
+                        selIndex = editCatItems.Rows.Count - 1;
+                }
+                mlcmbEditCat.InitializeComboBox(editCatItems);
+                mlcmbEditCat.SelectedIndex = selIndex;
+            }
+        }
+
+        private void btnAddCurveEffect_Click(object sender, EventArgs e)
+        {
+            if (CurrentSpell == null)
+                return;
+
+            SpellCurve curve = new SpellCurve();
+            SpellCurve firstCurve = CurrentSpell.DirtyCurves.Count > 0 ? CurrentSpell.DirtyCurves.First() : new();
+
+            curve.TraitDefinition = firstCurve.TraitDefinition;
+            curve.TraitDefinitionEffectPoints.TraitDefinitionID = (int)curve.TraitDefinition.Id;
+            int newEffIndex = CurrentSpell.DirtyCurves.Count > 0 ? CurrentSpell.DirtyCurves.Max(a => a.TraitDefinitionEffectPoints.EffectIndex) + 1 : 0;
+
+            curve.TraitDefinitionEffectPoints.EffectIndex = newEffIndex;
+
+            int rankCount = firstCurve.CurvePoints.Count == 0 ? 1 : firstCurve.CurvePoints.Count;
+            for (int i = 0; i < rankCount; i++)
+            {
+                CurvePointRecord cp = new()
+                {
+                    Pos = new System.Numerics.Vector2(i + 1, 0),
+                    OrderIndex = (byte)i,
+                    CurveID = 0,
+                    Id = 0,
+                    PreSLSquishPos = new System.Numerics.Vector2(0, 0)
+                };
+                curve.CurvePoints.Add(cp);
+
+                CreateCurveEffectBox(curve, cp);
+            }
+
+            CurrentSpell.DirtyCurves.Add(curve);
+        }
+
+        private void btnAddCurveRank_Click(object sender, EventArgs e)
+        {
+            if (CurrentSpell == null)
+                return;
+
+            if (CurrentSpell.DirtyCurves.Count == 0)
+                return;
+
+            int rankCount = CurrentSpell.DirtyCurves.First().CurvePoints.Count;
+
+            foreach (var curve in CurrentSpell.DirtyCurves)
+            {
+                CurvePointRecord cp = new()
+                {
+                    Pos = new System.Numerics.Vector2(rankCount + 1, 0),
+                    OrderIndex = (byte)rankCount,
+                    CurveID = (ushort)curve.CurveRecord.Id,
+                    Id = 0,
+                    PreSLSquishPos = new System.Numerics.Vector2(0, 0)
+                };
+                curve.CurvePoints.Add(cp);
+
+                CreateCurveEffectBox(curve, cp);
+            }
+        }
+
+        #endregion
     }
 }
