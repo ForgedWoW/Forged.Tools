@@ -4,6 +4,7 @@ using Framework.Constants;
 using Framework.Database;
 using Forged.Tools.Shared.DataStorage;
 using Forged.Tools.Shared.Utils;
+using Framework.Configuration;
 
 namespace Forged.Tools.TraitEditor.Utils
 {
@@ -13,6 +14,7 @@ namespace Forged.Tools.TraitEditor.Utils
 
         public Dictionary<uint, List<SkillRaceClassInfoRecord>> SkillRaceClassInfoSorted { get; private set; } = new();
         public Dictionary<uint, SpellMiscRecord> SpellMiscBySpellID { get; private set; } = new();
+        public string IconFolder { get; private set; }
 
         string _db2Path = string.Empty;
         BitSet _availableDb2Locales;
@@ -21,8 +23,10 @@ namespace Forged.Tools.TraitEditor.Utils
 
         public DataAccess()
         {
-            _db2Path = Settings.Default.DB2ParentDir.Replace("{FullTraitEditorPath}", System.Reflection.Assembly.GetEntryAssembly().Location.Replace("\\Forged.Tools.TraitEditor.dll", "\\Data\\dbc"));
-            
+            string path = System.Reflection.Assembly.GetEntryAssembly().Location.Replace("Forged.Tools.TraitEditor.dll", "");
+            IconFolder = ConfigMgr.GetDefaultValue("Tools.IconDir", "{FullTraitEditorPath}").Replace("{FullTraitEditorPath}", path);
+            _db2Path = ConfigMgr.GetDefaultValue("DataDir", "{FullTraitEditorPath}").Replace("{FullTraitEditorPath}", Path.Combine(path, "Data", "dbc"));
+
             _availableDb2Locales = new((int)Locale.Total);
             foreach (var dir in Directory.GetDirectories(_db2Path).AsSpan())
             {
@@ -34,6 +38,10 @@ namespace Forged.Tools.TraitEditor.Utils
 
         public void LoadStores()
         {
+            var localDir = System.Reflection.Assembly.GetEntryAssembly().Location.Replace("Forged.Tools.TraitEditor.dll", "");
+            SharedDataAccess.UpdateDB2s(localDir, _db2Path);
+            SharedDataAccess.UpdateIcons(localDir, IconFolder);
+
             if (!_availableDb2Locales[(int)Locale.enUS])
                 return;
 

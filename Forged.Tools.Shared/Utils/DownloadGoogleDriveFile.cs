@@ -1,15 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO.Compression;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Google.Apis.Auth.OAuth2;
+﻿using Google.Apis.Auth.OAuth2;
 using Google.Apis.Download;
 using Google.Apis.Drive.v3;
 using Google.Apis.Services;
 
-namespace Forged.Tools.SpellEditor.Utils
+namespace Forged.Tools.Shared.Utils
 {
     public class DownloadGoogleDriveFile
     {

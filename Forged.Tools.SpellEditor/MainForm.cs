@@ -13,6 +13,7 @@ using System.IO.Compression;
 using System.Text;
 using System.Security.Cryptography;
 using System.Windows.Forms;
+using Forged.Tools.Shared.Utils;
 
 namespace Forged.Tools.SpellEditor
 {
@@ -24,7 +25,6 @@ namespace Forged.Tools.SpellEditor
 
         TabPage _defaultSpellEffectPage = null;
         GroupBox _defaultCurveEffect = null;
-        string _iconFolder = "";
         string _currentNameSearch = "";
         string _currentIconSearch = "";
         uint _maxSpellSearch = 0;
@@ -33,8 +33,6 @@ namespace Forged.Tools.SpellEditor
         Dictionary<uint, int> _radiusMap = new Dictionary<uint, int>();
         Dictionary<uint, int> _totemCatMap = new Dictionary<uint, int>();
         Dictionary<uint, int> _currencyTypeMap = new Dictionary<uint, int>();
-        Dictionary<uint, SpellXSpellVisualRecordMod> _dirtySpellVisuals = new Dictionary<uint, SpellXSpellVisualRecordMod>();
-        Dictionary<uint, SpellReagentsCurrencyRecordMod> _dirtyCurrencyRecords = new Dictionary<uint, SpellReagentsCurrencyRecordMod>();
 
         #endregion
 
@@ -71,49 +69,7 @@ namespace Forged.Tools.SpellEditor
             txtWidth.MakeNumberBox();
             txtLaunchDelay.MakeNumberBox();
 
-            var localDir = System.Reflection.Assembly.GetEntryAssembly().Location.Replace("Forged.Tools.SpellEditor.dll", "");
-            var versionFile = Path.Combine(localDir, "NewVersion.txt");
-            var oldVersionFile = Path.Combine(localDir, "CurrentVersion.txt");
-
-            bool newVersion = false;
-        
-            DownloadGoogleDriveFile.DriveDownloadFile("1jx6kFQnPR2GDSrLmwinwHGrheeD3SGUM", versionFile);
-
-            if (!File.Exists(oldVersionFile))
-            {
-                newVersion = true;
-                File.Copy(versionFile, oldVersionFile);
-            }
-            else
-            {
-                if (!int.TryParse(File.ReadAllText(versionFile).Trim(), out var newVers) ||
-                    !int.TryParse(File.ReadAllText(oldVersionFile).Trim(), out var oldVer) ||
-                    oldVer < newVers)
-                {
-                    newVersion = true;
-                    File.Copy(versionFile, oldVersionFile);
-                }
-            }
-
-            File.Delete(versionFile);
-
-            Program.DataAccess.LoadStores(newVersion);
-            _iconFolder = ConfigMgr.GetDefaultValue("Tools.IconDir", "{FullSpellEditorPath}").Replace("{FullSpellEditorPath}", localDir);
-
-            if (!Directory.Exists(Path.Combine(_iconFolder, "Interface", "Icons")))
-            {
-                var icons = "1pRZ04T67qePO-pLT3fK2gZ8MtIHvhns9";
-                var zipFile = Path.Combine(localDir, "icons.zip");
-
-                if (File.Exists(zipFile))
-                    File.Delete(zipFile);
-
-                DownloadGoogleDriveFile.DriveDownloadFile(icons, zipFile);
-
-                System.IO.Compression.ZipFile.ExtractToDirectory(zipFile, _iconFolder);
-                Thread.Sleep(1000);
-                File.Delete(zipFile);
-            }
+            Program.DataAccess.LoadStores();
 
             SpellManager.Instance.LoadSpellInfoStore(Program.DataAccess);
 
@@ -317,7 +273,7 @@ namespace Forged.Tools.SpellEditor
             listEquippedItemInvenType.Items.Remove("Max");
 
             // icon stuff. 
-            lvIcons.PopulateIconList(lblIconPageCount, numIconPage, _iconFolder, _currentIconSearch);
+            lvIcons.PopulateIconList(lblIconPageCount, numIconPage, DataAccess.IconFolder, _currentIconSearch);
 
             DataTable editCatItems = MultiLineComboBox.GeneratteDataTable();
             editCatItems.Rows.Add(new object[] { 0, $"None", ChargeCategoryDisplay(new SpellCategoryRecord() { Name = "None" }) });
@@ -435,12 +391,10 @@ namespace Forged.Tools.SpellEditor
                     break;
                 }
 
-            _dirtySpellVisuals.Clear();
             cmbSelectVisual.Items.Clear();
             cmbSelectVisual.Items.Add((uint)0);
             foreach (var visual in CurrentSpell.SpellInfo.GetSpellVisuals().OrderBy(a => a.Id))
             {
-                _dirtySpellVisuals.Add(visual.Id, visual.Copy(true));
                 cmbSelectVisual.Items.Add(visual.Id);
             }
             cmbSelectVisual.SelectedIndex = 0;
@@ -572,12 +526,10 @@ namespace Forged.Tools.SpellEditor
             numReagentCount7.Value = CurrentSpell.SpellInfo.ReagentCount[6];
             numReagentCount8.Value = CurrentSpell.SpellInfo.ReagentCount[7];
 
-            _dirtyCurrencyRecords.Clear();
             cmbSelectCurrency.Items.Clear();
             cmbSelectCurrency.Items.Add((uint)0);
             foreach (var currency in CurrentSpell.SpellInfo.ReagentsCurrency.OrderBy(a => a.Id))
             {
-                _dirtyCurrencyRecords.Add(currency.Id, currency.Copy(true));
                 cmbSelectCurrency.Items.Add(currency.Id);
             }
             cmbSelectCurrency.SelectedIndex = 0;
@@ -1049,7 +1001,7 @@ namespace Forged.Tools.SpellEditor
 
                 _currentIconSearch = txtIconSearch.Text;
 
-                lvIcons.PopulateIconList(lblIconPageCount, numIconPage, _iconFolder, _currentIconSearch);
+                lvIcons.PopulateIconList(lblIconPageCount, numIconPage, DataAccess.IconFolder, _currentIconSearch);
                 e.Handled = e.SuppressKeyPress = true;
             }
         }
@@ -1058,7 +1010,7 @@ namespace Forged.Tools.SpellEditor
         {
             if (e.KeyCode == Keys.Enter)
             {
-                lvIcons.PopulateIconList(lblIconPageCount, numIconPage, _iconFolder, _currentIconSearch);
+                lvIcons.PopulateIconList(lblIconPageCount, numIconPage, DataAccess.IconFolder, _currentIconSearch);
                 e.Handled = e.SuppressKeyPress = true;
             }
         }
@@ -1119,7 +1071,7 @@ namespace Forged.Tools.SpellEditor
             var id = (uint)((ComboBox)sender).SelectedItem;
             if (id > 0)
             {
-                var visual = _dirtySpellVisuals[id];
+                var visual = CurrentSpell.DirtySpellVisuals[id];
                 numVisualId.Value = id;
                 numVisualId.Enabled = !visual.KeepRecord;
                 btnVisualDelete.Enabled = !visual.KeepRecord;
@@ -1176,7 +1128,7 @@ namespace Forged.Tools.SpellEditor
 
             if (id > 0)
             {
-                var cur = _dirtyCurrencyRecords[id];
+                var cur = CurrentSpell.DirtyCurrencyRecords[id];
                 numCurrencyId.Value = cur.Id;
                 numCurrencyId.Enabled = !cur.KeepRecord;
                 btnCurrencyDelete.Enabled = !cur.KeepRecord;
@@ -1361,7 +1313,7 @@ namespace Forged.Tools.SpellEditor
                 ret.SpellInfo.ReagentCount[7] = (uint)numReagentCount8.Value;
 
                 ret.SpellInfo.ReagentsCurrency.Clear();
-                foreach (var dirtyCur in _dirtyCurrencyRecords)
+                foreach (var dirtyCur in CurrentSpell.DirtyCurrencyRecords)
                     ret.SpellInfo.ReagentsCurrency.Add(dirtyCur.Value.ToBaseRecord());
 
                 // SpellShapeshiftEntry
@@ -1389,7 +1341,7 @@ namespace Forged.Tools.SpellEditor
                 // Visuals
                 var visuals = ret.SpellInfo.GetSpellVisuals();
                 visuals.Clear();
-                foreach (var dirtyVis in _dirtySpellVisuals)
+                foreach (var dirtyVis in CurrentSpell.DirtySpellVisuals)
                     visuals.Add(dirtyVis.Value.ToBaseRecord());
 
                 // spell effects
@@ -1397,6 +1349,9 @@ namespace Forged.Tools.SpellEditor
                 effects.Clear();
                 foreach (TabPage tab in tabsSpellEffects.TabPages)
                     effects.Add(tab.ToSpellEffectInfo(ret.SpellInfo, _radiusMap));
+
+                UpdateDirtyCurveEffectPoints();
+                ret.DirtyCurves = CurrentSpell.DirtyCurves;
             }
             catch (Exception ex)
             {
@@ -1485,7 +1440,7 @@ namespace Forged.Tools.SpellEditor
             if (numIconPage.Value > 1)
             {
                 numIconPage.Value = 1;
-                lvIcons.PopulateIconList(lblIconPageCount, numIconPage, _iconFolder, _currentIconSearch);
+                lvIcons.PopulateIconList(lblIconPageCount, numIconPage, DataAccess.IconFolder, _currentIconSearch);
             }
         }
 
@@ -1494,7 +1449,7 @@ namespace Forged.Tools.SpellEditor
             if (numIconPage.Value > 1)
             {
                 numIconPage.Value--;
-                lvIcons.PopulateIconList(lblIconPageCount, numIconPage, _iconFolder, _currentIconSearch);
+                lvIcons.PopulateIconList(lblIconPageCount, numIconPage, DataAccess.IconFolder, _currentIconSearch);
             }
         }
 
@@ -1503,7 +1458,7 @@ namespace Forged.Tools.SpellEditor
             if (numIconPage.Value < numIconPage.Maximum)
             {
                 numIconPage.Value++;
-                lvIcons.PopulateIconList(lblIconPageCount, numIconPage, _iconFolder, _currentIconSearch);
+                lvIcons.PopulateIconList(lblIconPageCount, numIconPage, DataAccess.IconFolder, _currentIconSearch);
             }
         }
 
@@ -1512,7 +1467,7 @@ namespace Forged.Tools.SpellEditor
             if (numIconPage.Value < numIconPage.Maximum)
             {
                 numIconPage.Value = numIconPage.Maximum;
-                lvIcons.PopulateIconList(lblIconPageCount, numIconPage, _iconFolder, _currentIconSearch);
+                lvIcons.PopulateIconList(lblIconPageCount, numIconPage, DataAccess.IconFolder, _currentIconSearch);
             }
         }
 
@@ -1542,13 +1497,13 @@ namespace Forged.Tools.SpellEditor
                 return;
             }
 
-            if (savingNew && (_dirtySpellVisuals.ContainsKey(id) || CliDB.SpellXSpellVisualStorage.ContainsKey(id)))
+            if (savingNew && (CurrentSpell.DirtySpellVisuals.ContainsKey(id) || CliDB.SpellXSpellVisualStorage.ContainsKey(id)))
             {
                 MessageBox.Show("Visual Id already in use.", "Error");
                 return;
             }
 
-            _dirtySpellVisuals[id] = new SpellXSpellVisualRecordMod()
+            CurrentSpell.DirtySpellVisuals[id] = new SpellXSpellVisualRecordMod()
             {
                 Id = id,
                 DifficultyID = (byte)Enum.Parse(typeof(Difficulty), cmbVisualDifficulty.SelectedItem.ToString()),
@@ -1577,7 +1532,7 @@ namespace Forged.Tools.SpellEditor
                 return;
 
             var id = (uint)cmbSelectVisual.SelectedItem;
-            var visual = _dirtySpellVisuals[id];
+            var visual = CurrentSpell.DirtySpellVisuals[id];
 
             if (visual == null || visual.KeepRecord)
             {
@@ -1587,7 +1542,7 @@ namespace Forged.Tools.SpellEditor
 
             cmbSelectVisual.SelectedIndex = 0;
             cmbSelectVisual.Items.Remove(id);
-            _dirtySpellVisuals.Remove(id);
+            CurrentSpell.DirtySpellVisuals.Remove(id);
         }
 
         private void btnCurrencyNew_Click(object sender, EventArgs e)
@@ -1616,7 +1571,7 @@ namespace Forged.Tools.SpellEditor
                 return;
             }
 
-            if (savingNew && (_dirtyCurrencyRecords.ContainsKey(id) || CliDB.SpellReagentsCurrencyStorage.ContainsKey(id)))
+            if (savingNew && (CurrentSpell.DirtyCurrencyRecords.ContainsKey(id) || CliDB.SpellReagentsCurrencyStorage.ContainsKey(id)))
             {
                 MessageBox.Show("Currency Id already in use.", "Error");
                 return;
@@ -1633,7 +1588,7 @@ namespace Forged.Tools.SpellEditor
                 }
             }
 
-            _dirtyCurrencyRecords[id] = new SpellReagentsCurrencyRecordMod()
+            CurrentSpell.DirtyCurrencyRecords[id] = new SpellReagentsCurrencyRecordMod()
             {
                 Id = id,
                 SpellID = (int)CurrentSpell.SpellInfo.Id,
@@ -1656,7 +1611,7 @@ namespace Forged.Tools.SpellEditor
             var id = (uint)cmbSelectCurrency.SelectedItem;
             cmbSelectCurrency.SelectedIndex = 0;
             cmbSelectCurrency.Items.Remove(id);
-            _dirtyCurrencyRecords.Remove(id);
+            CurrentSpell.DirtyCurrencyRecords.Remove(id);
         }
 
         private void btnSave_Click(object sender, EventArgs e)

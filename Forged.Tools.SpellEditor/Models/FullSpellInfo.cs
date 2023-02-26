@@ -5,6 +5,7 @@ using Framework.Constants;
 using Forged.Tools.Shared.Spells;
 using Forged.Tools.Shared.Entities;
 using Framework.Dynamic;
+using static Game.AI.SmartAction;
 
 namespace Forged.Tools.SpellEditor.Models
 {
@@ -12,11 +13,15 @@ namespace Forged.Tools.SpellEditor.Models
     {
         public SpellInfo SpellInfo;
         public List<SpellCurve> DirtyCurves;
+        public Dictionary<uint, SpellXSpellVisualRecordMod> DirtySpellVisuals;
+        public Dictionary<uint, SpellReagentsCurrencyRecordMod> DirtyCurrencyRecords;
 
         public FullSpellInfo()
         {
             this.SpellInfo = new();
             DirtyCurves = new();
+            DirtySpellVisuals = new();
+            DirtyCurrencyRecords = new();
         }
 
         public FullSpellInfo(SpellInfo spellInfo)
@@ -26,6 +31,18 @@ namespace Forged.Tools.SpellEditor.Models
 
             foreach (var curve in SpellInfo.Curves.OrderBy(a => a.TraitDefinitionEffectPoints.EffectIndex))
                 DirtyCurves.Add(curve.DeepCopy());
+
+            DirtySpellVisuals = new();
+            foreach (var visual in SpellInfo.GetSpellVisuals().OrderBy(a => a.Id))
+            {
+                DirtySpellVisuals.Add(visual.Id, visual.Copy(true));
+            }
+
+            DirtyCurrencyRecords = new();
+            foreach (var currency in SpellInfo.ReagentsCurrency.OrderBy(a => a.Id))
+            {
+                DirtyCurrencyRecords.Add(currency.Id, currency.Copy(true));
+            }
         }
 
         public void Save()
@@ -472,6 +489,102 @@ namespace Forged.Tools.SpellEditor.Models
 
                 Program.DataAccess.UpdateHotfixDB(visualStmt);
                 CliDB.SpellXSpellVisualStorage[visual.Id] = visual;
+            }
+
+            // curves
+            this.SpellInfo.Curves = DirtyCurves;
+            uint curTraitDefId = 0;
+            uint curTraitDefPtsId = 0;
+            uint curCurveId = 0;
+            uint curCurvePtsId = 0;
+
+            foreach (var curve in this.SpellInfo.Curves)
+            {
+                if (curve.TraitDefinition.Id == 0)
+                {
+                    if (curTraitDefId == 0)
+                        curTraitDefId = Helpers.SelectGreater(CliDB.TraitDefinitionStorage.OrderByDescending(a => a.Key).First().Key, Program.DataAccess.GetLatestID("trait_definition"));
+
+                    curTraitDefId++;
+                    curve.TraitDefinition.Id = curTraitDefId;
+                    curve.TraitDefinitionEffectPoints.TraitDefinitionID = (int)curTraitDefId;
+                }
+
+                CliDB.TraitDefinitionStorage[curve.TraitDefinition.Id] = curve.TraitDefinition;
+                var traitDefStmt = new PreparedStatement(DataAccess.UPDATE_TRAIT_DEFINITION);
+                traitDefStmt.AddValue(0, curve.TraitDefinition.OverrideName[Locale.enUS]);
+                traitDefStmt.AddValue(1, curve.TraitDefinition.OverrideSubtext[Locale.enUS]);
+                traitDefStmt.AddValue(2, curve.TraitDefinition.OverrideDescription[Locale.enUS]);
+                traitDefStmt.AddValue(3, curve.TraitDefinition.Id);
+                traitDefStmt.AddValue(4, curve.TraitDefinition.SpellID);
+                traitDefStmt.AddValue(5, curve.TraitDefinition.OverrideIcon);
+                traitDefStmt.AddValue(6, curve.TraitDefinition.OverridesSpellID);
+                traitDefStmt.AddValue(7, curve.TraitDefinition.VisibleSpellID);
+                Program.DataAccess.UpdateHotfixDB(traitDefStmt);
+
+                if (curve.TraitDefinitionEffectPoints.Id == 0)
+                {
+                    if (curTraitDefPtsId == 0)
+                        curTraitDefPtsId = Helpers.SelectGreater(CliDB.TraitDefinitionEffectPointsStorage.OrderByDescending(a => a.Key).First().Key, 
+                            Program.DataAccess.GetLatestID("trait_definition_effect_points"));
+
+                    curTraitDefPtsId++;
+                    curve.TraitDefinitionEffectPoints.Id = curTraitDefPtsId;
+                }
+
+                CliDB.TraitDefinitionEffectPointsStorage[curve.TraitDefinitionEffectPoints.Id] = curve.TraitDefinitionEffectPoints;
+                var traitDefEffPtsStmt = new PreparedStatement(DataAccess.UPDATE_TRAIT_DEFINITION_EFFECT_POINTS);
+                traitDefEffPtsStmt.AddValue(0, curve.TraitDefinitionEffectPoints.Id);
+                traitDefEffPtsStmt.AddValue(1, curve.TraitDefinitionEffectPoints.TraitDefinitionID);
+                traitDefEffPtsStmt.AddValue(2, curve.TraitDefinitionEffectPoints.EffectIndex);
+                traitDefEffPtsStmt.AddValue(3, curve.TraitDefinitionEffectPoints.OperationType);
+                traitDefEffPtsStmt.AddValue(4, curve.TraitDefinitionEffectPoints.CurveID);
+                Program.DataAccess.UpdateHotfixDB(traitDefEffPtsStmt);
+
+                var curveId = curve.CurveRecord.Id;
+                if (curveId == 0)
+                {
+                    if (curCurveId == 0)
+                        curCurveId = Helpers.SelectGreater(CliDB.CurveStorage.OrderByDescending(a => a.Key).First().Key,
+                            Program.DataAccess.GetLatestID("curve"));
+
+                    curCurveId++;
+                    curveId = curCurveId;
+                }
+
+                curve.CurveRecord.Id = curveId;
+                CliDB.CurveStorage[curve.CurveRecord.Id] = curve.CurveRecord;
+                var curveStmt = new PreparedStatement(DataAccess.UPDATE_CURVE);
+                curveStmt.AddValue(0, curve.CurveRecord.Id);
+                curveStmt.AddValue(1, curve.CurveRecord.Type);
+                curveStmt.AddValue(2, curve.CurveRecord.Flags);
+                Program.DataAccess.UpdateHotfixDB(curveStmt);
+
+                foreach (var cpr in curve.CurvePoints)
+                {
+                    cpr.CurveID = (ushort)curveId;
+
+                    if (cpr.Id == 0)
+                    {
+                        if (curCurvePtsId == 0)
+                            curCurvePtsId = Helpers.SelectGreater(CliDB.CurvePointStorage.OrderByDescending(a => a.Key).First().Key,
+                                Program.DataAccess.GetLatestID("curve_point"));
+
+                        curCurvePtsId++;
+                        cpr.Id = curCurvePtsId;
+                    }
+
+                    CliDB.CurvePointStorage[cpr.Id] = cpr;
+                    var cprStmt = new PreparedStatement(DataAccess.UPDATE_CURVE_POINT);
+                    cprStmt.AddValue(0, cpr.Pos.X);
+                    cprStmt.AddValue(1, cpr.Pos.Y);
+                    cprStmt.AddValue(2, cpr.PreSLSquishPos.X);
+                    cprStmt.AddValue(3, cpr.PreSLSquishPos.Y);
+                    cprStmt.AddValue(4, cpr.Id);
+                    cprStmt.AddValue(5, cpr.CurveID);
+                    cprStmt.AddValue(6, cpr.OrderIndex);
+                    Program.DataAccess.UpdateHotfixDB(cprStmt);
+                }
             }
 
             SpellManager.Instance.UpsertSpellInfo(SpellInfo);
