@@ -1933,6 +1933,11 @@ namespace Forged.Tools.SpellEditor
             }
         }
 
+        private void copySpellIdConst_Click(object sender, EventArgs e)
+        {
+            Clipboard.SetText($"public const uint {CurrentSpell.SpellInfo.SpellName[Locale.enUS].ToUpperInvariant().Replace(" ", "_")} = {CurrentSpell.SpellInfo.Id};");
+        }
+
         #endregion
     }
 }
