@@ -17,6 +17,7 @@
 
 using Forged.Tools.Shared.DataStorage;
 using Forged.Tools.Shared.Spells;
+using Forged.Tools.Shared.Utils;
 using Framework.Constants;
 using Framework.Dynamic;
 using Game.DataStorage;
@@ -114,6 +115,42 @@ namespace Forged.Tools.Shared.Entities
         List<SpellInfo> _GetSpellInfo(uint spellId)
         {
             return mSpellInfoMap.LookupByKey(spellId);
+        }
+
+        public List<uint> GetRelatedSpells(SpellInfo spell)
+        {
+            List<uint> ret = new();
+            ret.Add(spell.Id);
+            ret.AddRange(spell.RelatedSpells);
+
+            foreach (var spellInfo in mSpellInfoMap.Values)
+            {
+                if (spellInfo.RelatedSpells.Contains(spell.Id))
+                    ret.AddIfDoesntExist(spellInfo.Id);
+            }
+
+            for (int i = 0; i < ret.Count; i++)
+            {
+                var eff = GetSpellInfo(ret[i], Difficulty.None);
+
+                if (eff == null)
+                {
+                    ret.RemoveAt(i);
+                    i--;
+                    continue;
+                }
+
+                foreach (var id in eff.RelatedSpells)
+                    ret.AddIfDoesntExist(id);
+            }
+
+            ret.Remove(1);
+            ret.Remove(2);
+            ret.Remove(3);
+            ret.Remove(4);
+            ret.Remove(5);
+            ret.Remove(6);
+            return ret;
         }
 
         #region Loads

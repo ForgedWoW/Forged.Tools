@@ -201,8 +201,7 @@ namespace Forged.Tools.SpellEditor.Utils
 
         public FullSpellInfo GetSpellInfo(uint spellId)
         {
-            return new(SpellManager.Instance.GetSpellInfo(spellId, Difficulty.None), 
-                CliDB.SpellStorage[spellId]);
+            return new(SpellManager.Instance.GetSpellInfo(spellId, Difficulty.None));
         }
 
         /// <summary>

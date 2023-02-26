@@ -11,20 +11,17 @@ namespace Forged.Tools.SpellEditor.Models
     public sealed class FullSpellInfo
     {
         public SpellInfo SpellInfo;
-        public SpellRecord SpellDescriptions;
         public List<SpellCurve> DirtyCurves;
 
         public FullSpellInfo()
         {
             this.SpellInfo = new();
-            SpellDescriptions = new();
             DirtyCurves = new();
         }
 
-        public FullSpellInfo(SpellInfo spellInfo, SpellRecord spell)
+        public FullSpellInfo(SpellInfo spellInfo)
         {
             this.SpellInfo = spellInfo;
-            SpellDescriptions = spell;
             DirtyCurves = new();
 
             foreach (var curve in SpellInfo.Curves.OrderBy(a => a.TraitDefinitionEffectPoints.EffectIndex))
@@ -48,9 +45,9 @@ namespace Forged.Tools.SpellEditor.Models
             // spell
             SpellRecord spellRecord = new SpellRecord();
             spellRecord.Id = SpellInfo.Id;
-            spellRecord.NameSubtext_lang = SpellDescriptions.NameSubtext_lang;
-            spellRecord.Description_lang = SpellDescriptions.Description_lang;
-            spellRecord.AuraDescription_lang = SpellDescriptions.AuraDescription_lang;
+            spellRecord.NameSubtext_lang = SpellInfo.SpellDescriptions.NameSubtext_lang;
+            spellRecord.Description_lang = SpellInfo.SpellDescriptions.Description_lang;
+            spellRecord.AuraDescription_lang = SpellInfo.SpellDescriptions.AuraDescription_lang;
 
             var spellStmt = new PreparedStatement(DataAccess.UPDATE_SPELL);
             spellStmt.AddValue(0, spellRecord.Id);
@@ -665,10 +662,10 @@ namespace Forged.Tools.SpellEditor.Models
                 // spell
                 ret.SpellInfo.SpellName = new LocalizedString();
                 ret.SpellInfo.SpellName[Locale.enUS] = SpellInfo.SpellName[Locale.enUS];
-                ret.SpellDescriptions.Id = 0;
-                ret.SpellDescriptions.NameSubtext_lang = SpellDescriptions.NameSubtext_lang;
-                ret.SpellDescriptions.Description_lang = SpellDescriptions.Description_lang;
-                ret.SpellDescriptions.AuraDescription_lang = SpellDescriptions.AuraDescription_lang;
+                ret.SpellInfo.SpellDescriptions.Id = 0;
+                ret.SpellInfo.SpellDescriptions.NameSubtext_lang = SpellInfo.SpellDescriptions.NameSubtext_lang;
+                ret.SpellInfo.SpellDescriptions.Description_lang = SpellInfo.SpellDescriptions.Description_lang;
+                ret.SpellInfo.SpellDescriptions.AuraDescription_lang = SpellInfo.SpellDescriptions.AuraDescription_lang;
 
                 // spell_misc
                 ret.SpellInfo.SpellMiscId = SpellInfo.SpellMiscId;

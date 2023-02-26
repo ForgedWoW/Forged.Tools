@@ -19,6 +19,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using Forged.Tools.Shared.DataStorage;
 using Forged.Tools.Shared.Entities;
 using Framework.Constants;
@@ -152,6 +153,8 @@ namespace Forged.Tools.Shared.Spells
 
             _spellSpecific = SpellSpecificType.Normal;
             _auraState = AuraStateType.None;
+            Curves = new();
+            RelatedSpells = new();
         }
 
         public SpellInfo(SpellNameRecord spellName, Difficulty difficulty, SpellInfoLoadHelper data, BaseDataAccess dataAccess, List<SpellCurve> curves)
@@ -394,6 +397,32 @@ namespace Forged.Tools.Shared.Spells
             _spellSpecific = SpellSpecificType.Normal;
             _auraState = AuraStateType.None;
             Curves = curves;
+
+            var spellRecord = CliDB.SpellStorage[Id];
+            SpellDescriptions = new();
+            SpellDescriptions.Description_lang = spellRecord.Description_lang;
+            SpellDescriptions.AuraDescription_lang = spellRecord.AuraDescription_lang;
+            SpellDescriptions.NameSubtext_lang = spellRecord.NameSubtext_lang;
+            SpellDescriptions.Id = spellRecord.Id;
+
+            RelatedSpells = new();
+            var result = Regex.Matches(SpellDescriptions.Description_lang, @"(?<=\$@)*\d+");
+            foreach (Match num in result)
+                if (uint.TryParse(num.Value, out uint val) && !RelatedSpells.Contains(val))
+                    RelatedSpells.Add(val);
+
+            result = Regex.Matches(SpellDescriptions.AuraDescription_lang, @"(?<=\$@)*\d+");
+            foreach (Match num in result)
+                if (uint.TryParse(num.Value, out uint val) && !RelatedSpells.Contains(val))
+                    RelatedSpells.Add(val);
+
+            foreach (var eff in _effects)
+            {
+                if (eff.TriggerSpell == 0 || RelatedSpells.Contains(eff.TriggerSpell))
+                    continue;
+
+                RelatedSpells.Add(eff.TriggerSpell);
+            }
         }
 
         public bool HasLabel(uint labelId)
@@ -591,6 +620,8 @@ namespace Forged.Tools.Shared.Spells
         public byte MaxPassiveAuraLevel { get; set; }
         public sbyte StanceBarOrder { get; set; }
         public List<SpellCurve> Curves { get; set; }
+        public List<uint> RelatedSpells { get; set; }
+        public SpellRecord SpellDescriptions { get; set; }
 
         SpellDiminishInfo _diminishInfo;
         uint _allowedMechanicMask;

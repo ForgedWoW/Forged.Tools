@@ -42,7 +42,8 @@ namespace Forged.Tools.SpellEditor
             this.tabsSpellInfo = new System.Windows.Forms.TabControl();
             this.tabBasicInfo = new System.Windows.Forms.TabPage();
             this.groupSpellInfo = new System.Windows.Forms.GroupBox();
-            this.spellIdChanger = new System.Windows.Forms.NumericUpDown();
+            this.spellIdChanger = new System.Windows.Forms.TextBox();
+            this.btnFindRelated = new System.Windows.Forms.Button();
             this.txtLaunchDelay = new System.Windows.Forms.TextBox();
             this.label204 = new System.Windows.Forms.Label();
             this.numModalNextSpell = new System.Windows.Forms.NumericUpDown();
@@ -536,7 +537,6 @@ namespace Forged.Tools.SpellEditor
             this.tabsSpellInfo.SuspendLayout();
             this.tabBasicInfo.SuspendLayout();
             this.groupSpellInfo.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.spellIdChanger)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numModalNextSpell)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numStackAmount)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numFamilyFlags4)).BeginInit();
@@ -689,7 +689,7 @@ namespace Forged.Tools.SpellEditor
             // 
             // btnFirst
             // 
-            this.btnFirst.Location = new System.Drawing.Point(12, 103);
+            this.btnFirst.Location = new System.Drawing.Point(12, 105);
             this.btnFirst.Name = "btnFirst";
             this.btnFirst.Size = new System.Drawing.Size(34, 23);
             this.btnFirst.TabIndex = 2;
@@ -699,7 +699,7 @@ namespace Forged.Tools.SpellEditor
             // 
             // btnPrevious
             // 
-            this.btnPrevious.Location = new System.Drawing.Point(52, 103);
+            this.btnPrevious.Location = new System.Drawing.Point(52, 105);
             this.btnPrevious.Name = "btnPrevious";
             this.btnPrevious.Size = new System.Drawing.Size(34, 23);
             this.btnPrevious.TabIndex = 3;
@@ -709,7 +709,7 @@ namespace Forged.Tools.SpellEditor
             // 
             // btnLast
             // 
-            this.btnLast.Location = new System.Drawing.Point(245, 103);
+            this.btnLast.Location = new System.Drawing.Point(245, 105);
             this.btnLast.Name = "btnLast";
             this.btnLast.Size = new System.Drawing.Size(34, 23);
             this.btnLast.TabIndex = 5;
@@ -719,7 +719,7 @@ namespace Forged.Tools.SpellEditor
             // 
             // btnNext
             // 
-            this.btnNext.Location = new System.Drawing.Point(205, 103);
+            this.btnNext.Location = new System.Drawing.Point(205, 105);
             this.btnNext.Name = "btnNext";
             this.btnNext.Size = new System.Drawing.Size(34, 23);
             this.btnNext.TabIndex = 4;
@@ -729,7 +729,7 @@ namespace Forged.Tools.SpellEditor
             // 
             // numCurentMin
             // 
-            this.numCurentMin.Location = new System.Drawing.Point(12, 74);
+            this.numCurentMin.Location = new System.Drawing.Point(12, 76);
             this.numCurentMin.Maximum = new decimal(new int[] {
             -727379968,
             232,
@@ -751,7 +751,7 @@ namespace Forged.Tools.SpellEditor
             // 
             // numCurentMax
             // 
-            this.numCurentMax.Location = new System.Drawing.Point(156, 74);
+            this.numCurentMax.Location = new System.Drawing.Point(156, 76);
             this.numCurentMax.Maximum = new decimal(new int[] {
             -727379968,
             232,
@@ -774,7 +774,7 @@ namespace Forged.Tools.SpellEditor
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(142, 78);
+            this.label1.Location = new System.Drawing.Point(142, 80);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(12, 15);
             this.label1.TabIndex = 8;
@@ -782,7 +782,7 @@ namespace Forged.Tools.SpellEditor
             // 
             // txtSearch
             // 
-            this.txtSearch.Location = new System.Drawing.Point(12, 45);
+            this.txtSearch.Location = new System.Drawing.Point(12, 47);
             this.txtSearch.Name = "txtSearch";
             this.txtSearch.PlaceholderText = "Search by name...";
             this.txtSearch.Size = new System.Drawing.Size(267, 23);
@@ -827,6 +827,7 @@ namespace Forged.Tools.SpellEditor
             this.groupSpellInfo.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.groupSpellInfo.Controls.Add(this.spellIdChanger);
+            this.groupSpellInfo.Controls.Add(this.btnFindRelated);
             this.groupSpellInfo.Controls.Add(this.txtLaunchDelay);
             this.groupSpellInfo.Controls.Add(this.label204);
             this.groupSpellInfo.Controls.Add(this.numModalNextSpell);
@@ -868,23 +869,21 @@ namespace Forged.Tools.SpellEditor
             // 
             // spellIdChanger
             // 
-            this.spellIdChanger.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.spellIdChanger.Increment = new decimal(new int[] {
-            0,
-            0,
-            0,
-            0});
             this.spellIdChanger.Location = new System.Drawing.Point(108, 1);
-            this.spellIdChanger.Maximum = new decimal(new int[] {
-            -1,
-            0,
-            0,
-            0});
             this.spellIdChanger.Name = "spellIdChanger";
             this.spellIdChanger.ReadOnly = true;
-            this.spellIdChanger.Size = new System.Drawing.Size(242, 23);
+            this.spellIdChanger.Size = new System.Drawing.Size(108, 23);
             this.spellIdChanger.TabIndex = 70;
+            // 
+            // btnFindRelated
+            // 
+            this.btnFindRelated.Location = new System.Drawing.Point(222, 1);
+            this.btnFindRelated.Name = "btnFindRelated";
+            this.btnFindRelated.Size = new System.Drawing.Size(128, 23);
+            this.btnFindRelated.TabIndex = 50;
+            this.btnFindRelated.Text = "Find Related Spells";
+            this.btnFindRelated.UseVisualStyleBackColor = true;
+            this.btnFindRelated.Click += new System.EventHandler(this.btnFindRelated_Click);
             // 
             // txtLaunchDelay
             // 
@@ -6524,7 +6523,7 @@ namespace Forged.Tools.SpellEditor
             this.cmbIndexing.Items.AddRange(new object[] {
             "Range by ID",
             "Range by Index"});
-            this.cmbIndexing.Location = new System.Drawing.Point(92, 104);
+            this.cmbIndexing.Location = new System.Drawing.Point(92, 106);
             this.cmbIndexing.MaxDropDownItems = 2;
             this.cmbIndexing.Name = "cmbIndexing";
             this.cmbIndexing.Size = new System.Drawing.Size(107, 23);
@@ -6563,7 +6562,7 @@ namespace Forged.Tools.SpellEditor
             // 
             // numIdSearch
             // 
-            this.numIdSearch.Location = new System.Drawing.Point(79, 16);
+            this.numIdSearch.Location = new System.Drawing.Point(79, 18);
             this.numIdSearch.Maximum = new decimal(new int[] {
             -1,
             0,
@@ -6576,7 +6575,7 @@ namespace Forged.Tools.SpellEditor
             // label75
             // 
             this.label75.AutoSize = true;
-            this.label75.Location = new System.Drawing.Point(8, 18);
+            this.label75.Location = new System.Drawing.Point(8, 20);
             this.label75.Name = "label75";
             this.label75.Size = new System.Drawing.Size(61, 15);
             this.label75.TabIndex = 45;
@@ -6639,7 +6638,6 @@ namespace Forged.Tools.SpellEditor
             this.tabBasicInfo.ResumeLayout(false);
             this.groupSpellInfo.ResumeLayout(false);
             this.groupSpellInfo.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.spellIdChanger)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numModalNextSpell)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numStackAmount)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numFamilyFlags4)).EndInit();
@@ -7293,7 +7291,6 @@ namespace Forged.Tools.SpellEditor
         private MultiLineComboBox mlcmbEditCat;
         private Button btnDeleteSpell;
         private MultiLineComboBox mlcmbPPM;
-        private NumericUpDown spellIdChanger;
         private TextBox txtBP;
         private TabPage tabCurves;
         private GroupBox grpCurveEffect;
@@ -7308,5 +7305,7 @@ namespace Forged.Tools.SpellEditor
         private Button btnAddCurveRank;
         private Button btnAddCurveEffect;
         private Panel pnlCurves;
+        private Button btnFindRelated;
+        private TextBox spellIdChanger;
     }
 }

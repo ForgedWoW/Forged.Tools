@@ -364,10 +364,10 @@ namespace Forged.Tools.SpellEditor
 
             // update basic info
             txtSpellName.Text = CurrentSpell.SpellInfo.SpellName[Locale.enUS];
-            spellIdChanger.Value = CurrentSpell.SpellInfo.Id;
-            txtSpellNameSubtext.Text = CurrentSpell.SpellDescriptions?.NameSubtext_lang;
-            txtSpellDesc.Text = CurrentSpell.SpellDescriptions?.Description_lang;
-            txtAuraDesc.Text = CurrentSpell.SpellDescriptions?.AuraDescription_lang;
+            spellIdChanger.Text = CurrentSpell.SpellInfo.Id.ToString();
+            txtSpellNameSubtext.Text = CurrentSpell.SpellInfo.SpellDescriptions?.NameSubtext_lang;
+            txtSpellDesc.Text = CurrentSpell.SpellInfo.SpellDescriptions?.Description_lang;
+            txtAuraDesc.Text = CurrentSpell.SpellInfo.SpellDescriptions?.AuraDescription_lang;
             numStackAmount.Value = CurrentSpell.SpellInfo.StackAmount;
             txtSpeed.Text = CurrentSpell.SpellInfo.Speed.ToString();
 
@@ -1212,10 +1212,10 @@ namespace Forged.Tools.SpellEditor
                 // spell
                 ret.SpellInfo.SpellName = new LocalizedString();
                 ret.SpellInfo.SpellName[Locale.enUS] = txtSpellName.Text;
-                ret.SpellDescriptions.Id = ret.SpellInfo.Id;
-                ret.SpellDescriptions.NameSubtext_lang = txtSpellNameSubtext.Text;
-                ret.SpellDescriptions.Description_lang = txtSpellDesc.Text;
-                ret.SpellDescriptions.AuraDescription_lang = txtAuraDesc.Text;
+                ret.SpellInfo.SpellDescriptions.Id = ret.SpellInfo.Id;
+                ret.SpellInfo.SpellDescriptions.NameSubtext_lang = txtSpellNameSubtext.Text;
+                ret.SpellInfo.SpellDescriptions.Description_lang = txtSpellDesc.Text;
+                ret.SpellInfo.SpellDescriptions.AuraDescription_lang = txtAuraDesc.Text;
 
                 // spell_misc
                 ret.SpellInfo.SpellMiscId = CurrentSpell.SpellInfo.SpellMiscId;
@@ -1408,6 +1408,18 @@ namespace Forged.Tools.SpellEditor
         }
 
         #region Button Clicks
+
+        private void btnFindRelated_Click(object sender, EventArgs e)
+        {
+            if (CurrentSpell == null)
+                return;
+
+            List<uint> spells = SpellManager.Instance.GetRelatedSpells(CurrentSpell.SpellInfo);
+            listSpells.Items.Clear();
+
+            foreach (uint id in spells.Order())
+                listSpells.Items.Add(Helpers.SpellDisplayName(CliDB.SpellNameStorage[id]));
+        }
 
         private void btnAddEffect_Click(object sender, EventArgs e)
         {
