@@ -17,6 +17,7 @@ namespace Forged.Tools.SpellEditor.Utils
         string _db2Path = string.Empty;
         BitSet _availableDb2Locales;
 
+        public static string IconFolder { get; private set; }
         public DB6Storage<SpellIconRecord> SpellIconStorage;
 
         public const string SELECT_SPELL_EFFECT_IDS = "SELECT ID FROM spell_effect;";
@@ -46,6 +47,10 @@ namespace Forged.Tools.SpellEditor.Utils
         public const string UPDATE_SPELL_TARGET_RESTRICTIONS = "REPLACE INTO `spell_target_restrictions` (`ID`, `DifficultyID`, `ConeDegrees`, `MaxTargets`, `MaxTargetLevel`, `TargetCreatureType`, `Targets`, `Width`, `SpellID`, `VerifiedBuild`) VALUES (@0, @1, @2, @3, @4, @5, @6, @7, @8, @9);";
         public const string UPDATE_SPELL_TOTEMS = "REPLACE INTO `spell_totems` (`ID`, `SpellID`, `RequiredTotemCategoryID1`, `RequiredTotemCategoryID2`, `Totem1`, `Totem2`, `VerifiedBuild`) VALUES (@0, @1, @2, @3, @4, @5, @6);";
         public const string UPDATE_SPELL_X_SPELL_VISUAL = "REPLACE INTO `spell_x_spell_visual` (`ID`, `DifficultyID`, `SpellVisualID`, `Probability`, `Priority`, `SpellIconFileID`, `ActiveIconFileID`, `ViewerUnitConditionID`, `ViewerPlayerConditionID`, `CasterUnitConditionID`, `CasterPlayerConditionID`, `SpellID`, `VerifiedBuild`) VALUES (@0, @1, @2, @3, @4, @5, @6, @7, @8, @9, @10, @11, @12);";
+        public const string UPDATE_TRAIT_DEFINITION = "REPLACE INTO `trait_definition` (`OverrideName`, `OverrideSubtext`, `OverrideDescription`, `ID`, `SpellID`, `OverrideIcon`, `OverridesSpellID`, `VisibleSpellID`, `VerifiedBuild`) VALUES (@0, @1, @2, @3, @4, @5, @6, @7, @8)";
+        public const string UPDATE_TRAIT_DEFINITION_EFFECT_POINTS = "REPLACE INTO `trait_definition_effect_points` (`ID`, `TraitDefinitionID`, `EffectIndex`, `OperationType`, `CurveID`, `VerifiedBuild`) VALUES (@0, @1, @2, @3, @4, @5)";
+        public const string UPDATE_CURVE = "REPLACE INTO `curve` (`ID`, `Type`, `Flags`, `VerifiedBuild`) VALUES (@0, @1, @2, @3)";
+        public const string UPDATE_CURVE_POINT = "REPLACE INTO `curve_point` (`PosX`, `PosY`, `PreSLSquishPosX`, `PreSLSquishPosY`, `ID`, `CurveID`, `OrderIndex`, `VerifiedBuild`) VALUES (@0, @1, @2, @3, @4, @5, @6, @7)";
 
         public const string SELECT_IDS_BUILD_SPELL_EFFECTS = "SELECT `ID` FROM `spell_effect` WHERE `SpellID` = @0 AND `VerifiedBuild` = @1;";
         public const string SELECT_IDS_BUILD_SPELL_LABEL = "SELECT `ID` FROM `spell_label` WHERE `SpellID` = @0 AND `VerifiedBuild` = @1;";
@@ -77,13 +82,16 @@ namespace Forged.Tools.SpellEditor.Utils
         public const string DELETE_SPELL_TARGET_RESTRICTIONS = "DELETE FROM `spell_target_restrictions` WHERE `SpellID` = @0 AND `VerifiedBuild` > 44730;";
         public const string DELETE_SPELL_TOTEMS = "DELETE FROM `spell_totems` WHERE `SpellID` = @0 AND `VerifiedBuild` > 44730;";
         public const string DELETE_SPELL_X_SPELL_VISUAL = "DELETE FROM `spell_x_spell_visual` WHERE `SpellID` = @0 AND `VerifiedBuild` > 44730;";
+        public const string DELETE_CURVE_POINT = "DELETE FROM `curve_point` WHERE `ID` = @0 AND `VerifiedBuild` > 44730;";
 
         public const string SELECT_LATEST_ID = "SELECT `ID` FROM `{0}` ORDER BY `ID` DESC LIMIT 1;";
 
         public DataAccess()
         {
             DBExecutableUtil.CheckExecutable();
-            _db2Path = ConfigMgr.GetDefaultValue("DataDir", "{FullSpellEditorPath}").Replace("{FullSpellEditorPath}", System.Reflection.Assembly.GetEntryAssembly().Location.Replace("\\Forged.Tools.SpellEditor.dll", "\\Data\\dbc"));
+            string path = System.Reflection.Assembly.GetEntryAssembly().Location.Replace("Forged.Tools.SpellEditor.dll", "");
+            IconFolder = ConfigMgr.GetDefaultValue("Tools.IconDir", "{FullSpellEditorPath}").Replace("{FullSpellEditorPath}", path);
+            _db2Path = ConfigMgr.GetDefaultValue("DataDir", "{FullSpellEditorPath}").Replace("{FullSpellEditorPath}", Path.Combine(path, "Data", "dbc"));
 
             if (!_db2Path.EndsWith("\\dbc"))
                 _db2Path += "\\dbc";
@@ -91,28 +99,11 @@ namespace Forged.Tools.SpellEditor.Utils
             DB.Hotfix.PrepareStatement(HotfixStatements.SEL_SPELL, "SELECT ID, NameSubtext, Description, AuraDescription FROM spell WHERE (`VerifiedBuild` > 0) = ?");
         }
 
-        public void LoadStores(bool newVersion)
+        public void LoadStores()
         {
-            if (newVersion && Directory.Exists(_db2Path))
-                Directory.Delete(_db2Path, true);
-
-            if (!Directory.Exists(_db2Path))
-            {
-                var localDir = System.Reflection.Assembly.GetEntryAssembly().Location.Replace("Forged.Tools.SpellEditor.dll", "");
-                var dbcs = "1Jo-7594VT-X0g0TZLApsq3Eg9bFKZbR_";
-
-                var zipFile = Path.Combine(localDir, "enUS.zip");
-
-                if (File.Exists(zipFile))
-                    File.Delete(zipFile);
-
-                DownloadGoogleDriveFile.DriveDownloadFile(dbcs, zipFile);
-
-                System.IO.Compression.ZipFile.ExtractToDirectory(zipFile, _db2Path);
-                Thread.Sleep(1000);
-                File.Delete(zipFile);
-            }
-
+            var localDir = System.Reflection.Assembly.GetEntryAssembly().Location.Replace("Forged.Tools.SpellEditor.dll", "");
+            SharedDataAccess.UpdateDB2s(localDir, _db2Path);
+            SharedDataAccess.UpdateIcons(localDir, IconFolder);
 
             _availableDb2Locales = new((int)Locale.Total);
 
@@ -226,13 +217,13 @@ namespace Forged.Tools.SpellEditor.Utils
             return ret;
         }
 
-        public List<uint> GetHotfixSpellEffectIDs()
+        public List<T> GetHotfixValues<T>(string stmt)
         {
-            var ret = new List<uint>();
+            var ret = new List<T>();
 
-            var results = DB.Hotfix.Query(SELECT_SPELL_EFFECT_IDS);
+            var results = DB.Hotfix.Query(stmt);
             while (results.NextRow())
-                ret.Add(results.Read<uint>(0));
+                ret.Add(results.Read<T>(0));
 
             return ret;
         }
@@ -250,11 +241,6 @@ namespace Forged.Tools.SpellEditor.Utils
                 return 0;
 
             return result.Read<uint>(0);
-        }
-
-        public uint GetLatestID(string tableName)
-        {
-            return GetHotfixValue(new PreparedStatement(string.Format(SELECT_LATEST_ID, tableName)));
         }
     }
 

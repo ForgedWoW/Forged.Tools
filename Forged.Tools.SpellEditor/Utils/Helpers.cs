@@ -1,6 +1,7 @@
 ﻿using Game.DataStorage;
 using Framework.Constants;
 using Forged.Tools.Shared.Spells;
+using Forged.Tools.Shared.Utils;
 
 namespace Forged.Tools.SpellEditor.Utils
 {
@@ -329,11 +330,6 @@ namespace Forged.Tools.SpellEditor.Utils
         public static decimal CurrentRange(decimal numCurentMin, decimal numCurentMax)
         {
             return numCurentMax - numCurentMin + 1;
-        }
-
-        public static uint SelectGreater(uint val1, uint val2)
-        {
-            return val2 != 0 && val2 > val1 ? val2 : val1;
         }
     }
 }

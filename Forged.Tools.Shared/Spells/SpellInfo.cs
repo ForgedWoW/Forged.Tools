@@ -155,6 +155,7 @@ namespace Forged.Tools.Shared.Spells
             _auraState = AuraStateType.None;
             Curves = new();
             RelatedSpells = new();
+            SpellDescriptions = new();
         }
 
         public SpellInfo(SpellNameRecord spellName, Difficulty difficulty, SpellInfoLoadHelper data, BaseDataAccess dataAccess, List<SpellCurve> curves)
