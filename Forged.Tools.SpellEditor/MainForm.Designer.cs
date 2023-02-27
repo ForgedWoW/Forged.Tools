@@ -42,6 +42,7 @@ namespace Forged.Tools.SpellEditor
             this.tabsSpellInfo = new System.Windows.Forms.TabControl();
             this.tabBasicInfo = new System.Windows.Forms.TabPage();
             this.groupSpellInfo = new System.Windows.Forms.GroupBox();
+            this.copySpellIdConst = new System.Windows.Forms.Button();
             this.spellIdChanger = new System.Windows.Forms.TextBox();
             this.btnFindRelated = new System.Windows.Forms.Button();
             this.txtLaunchDelay = new System.Windows.Forms.TextBox();
@@ -532,7 +533,7 @@ namespace Forged.Tools.SpellEditor
             this.label75 = new System.Windows.Forms.Label();
             this.btnCopy = new System.Windows.Forms.Button();
             this.btnDeleteSpell = new System.Windows.Forms.Button();
-            this.copySpellIdConst = new System.Windows.Forms.Button();
+            this.findSpellFamly = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.numCurentMin)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numCurentMax)).BeginInit();
             this.tabsSpellInfo.SuspendLayout();
@@ -837,6 +838,7 @@ namespace Forged.Tools.SpellEditor
             // 
             this.groupSpellInfo.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupSpellInfo.Controls.Add(this.findSpellFamly);
             this.groupSpellInfo.Controls.Add(this.copySpellIdConst);
             this.groupSpellInfo.Controls.Add(this.spellIdChanger);
             this.groupSpellInfo.Controls.Add(this.btnFindRelated);
@@ -880,6 +882,16 @@ namespace Forged.Tools.SpellEditor
             this.groupSpellInfo.TabIndex = 6;
             this.groupSpellInfo.TabStop = false;
             this.groupSpellInfo.Text = "Spell Info";
+            // 
+            // copySpellIdConst
+            // 
+            this.copySpellIdConst.Location = new System.Drawing.Point(88, 3);
+            this.copySpellIdConst.Name = "copySpellIdConst";
+            this.copySpellIdConst.Size = new System.Drawing.Size(30, 26);
+            this.copySpellIdConst.TabIndex = 71;
+            this.copySpellIdConst.Text = "C";
+            this.copySpellIdConst.UseVisualStyleBackColor = true;
+            this.copySpellIdConst.Click += new System.EventHandler(this.copySpellIdConst_Click);
             // 
             // spellIdChanger
             // 
@@ -6897,15 +6909,15 @@ namespace Forged.Tools.SpellEditor
             this.btnDeleteSpell.UseVisualStyleBackColor = true;
             this.btnDeleteSpell.Click += new System.EventHandler(this.btnDeleteSpell_Click);
             // 
-            // copySpellIdConst
+            // findSpellFamly
             // 
-            this.copySpellIdConst.Location = new System.Drawing.Point(88, 3);
-            this.copySpellIdConst.Name = "copySpellIdConst";
-            this.copySpellIdConst.Size = new System.Drawing.Size(30, 26);
-            this.copySpellIdConst.TabIndex = 71;
-            this.copySpellIdConst.Text = "C";
-            this.copySpellIdConst.UseVisualStyleBackColor = true;
-            this.copySpellIdConst.Click += new System.EventHandler(this.copySpellIdConst_Click);
+            this.findSpellFamly.Location = new System.Drawing.Point(0, 393);
+            this.findSpellFamly.Name = "findSpellFamly";
+            this.findSpellFamly.Size = new System.Drawing.Size(30, 26);
+            this.findSpellFamly.TabIndex = 72;
+            this.findSpellFamly.Text = "F";
+            this.findSpellFamly.UseVisualStyleBackColor = true;
+            this.findSpellFamly.Click += new System.EventHandler(this.findSpellFamly_Click);
             // 
             // MainForm
             // 
@@ -7613,5 +7625,6 @@ namespace Forged.Tools.SpellEditor
         private Button btnFindRelated;
         private TextBox spellIdChanger;
         private Button copySpellIdConst;
+        private Button findSpellFamly;
     }
 }

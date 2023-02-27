@@ -86,6 +86,11 @@ namespace Forged.Tools.Shared.Entities
         {
             mSpellInfoMap.Remove(spellInfo.Id);
             mSpellInfoMap.Add(spellInfo.Id, spellInfo);
+            mSpellFamilyNamesMap.Add(spellInfo.SpellFamilyName, spellInfo.Id);
+
+            foreach (var eff in spellInfo.GetEffects())
+                if (eff.TriggerSpell != 0)
+                    mTriggerSpellMap.Add(eff.TriggerSpell, spellInfo.Id);
         }
 
         public SpellInfo GetSpellInfo(uint spellId, Difficulty difficulty)
@@ -112,6 +117,14 @@ namespace Forged.Tools.Shared.Entities
             return null;
         }
 
+        public HashSet<uint> GetInfoBySpellFamily(SpellFamilyNames spellFamily)
+        {
+            if (mSpellFamilyNamesMap.TryGetValue(spellFamily, out HashSet<uint> ids) && ids != null)
+                return ids;
+
+            return new HashSet<uint>();
+        }
+
         List<SpellInfo> _GetSpellInfo(uint spellId)
         {
             return mSpellInfoMap.LookupByKey(spellId);
@@ -129,6 +142,10 @@ namespace Forged.Tools.Shared.Entities
                     ret.AddIfDoesntExist(spellInfo.Id);
             }
 
+            if (mTriggerSpellMap.TryGetValue(spell.Id, out HashSet<uint> ids))
+                foreach (var id in ids)
+                    ret.AddIfDoesntExist(id);
+
             for (int i = 0; i < ret.Count; i++)
             {
                 var eff = GetSpellInfo(ret[i], Difficulty.None);
@@ -142,6 +159,10 @@ namespace Forged.Tools.Shared.Entities
 
                 foreach (var id in eff.RelatedSpells)
                     ret.AddIfDoesntExist(id);
+
+                if (mTriggerSpellMap.TryGetValue(eff.Id, out ids))
+                    foreach (var id in ids)
+                        ret.AddIfDoesntExist(id);
             }
 
             ret.Remove(1);
@@ -344,8 +365,13 @@ namespace Forged.Tools.Shared.Entities
                 //first key = id, difficulty
                 //second key = id
 
+                var si = new SpellInfo(spellNameEntry, data.Key.difficulty, data.Value, dataAccess, GetCurves(spellNameEntry.Id));
+                mSpellInfoMap.Add(spellNameEntry.Id, si);
+                mSpellFamilyNamesMap.Add(si.SpellFamilyName, spellNameEntry.Id);
 
-                mSpellInfoMap.Add(spellNameEntry.Id, new SpellInfo(spellNameEntry, data.Key.difficulty, data.Value, dataAccess, GetCurves(spellNameEntry.Id)));
+                foreach (var eff in si.GetEffects())
+                    if (eff.TriggerSpell != 0)
+                        mTriggerSpellMap.Add(eff.TriggerSpell, si.Id);
             }
 
             Log.outInfo(LogFilter.ServerLoading, "Loaded SpellInfo store in {0} ms", Time.GetMSTimeDiffToNow(oldMSTime));
@@ -536,7 +562,8 @@ namespace Forged.Tools.Shared.Entities
         Dictionary<uint, PetDefaultSpellsEntry> mPetDefaultSpellsMap = new();           // only spells not listed in related mPetLevelupSpellMap entry
         MultiMap<uint, SpellInfo> mSpellInfoMap = new();
         Dictionary<Tuple<uint, byte>, uint> mSpellTotemModel = new();
-
+        MultiMapHashSet<SpellFamilyNames, uint> mSpellFamilyNamesMap = new();
+        MultiMapHashSet<uint, uint> mTriggerSpellMap = new();
         public MultiMap<uint, uint> PetFamilySpellsStorage = new();
         #endregion
     }

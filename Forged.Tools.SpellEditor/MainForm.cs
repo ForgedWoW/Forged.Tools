@@ -1938,6 +1938,20 @@ namespace Forged.Tools.SpellEditor
             Clipboard.SetText($"public const uint {CurrentSpell.SpellInfo.SpellName[Locale.enUS].ToUpperInvariant().Replace(" ", "_")} = {CurrentSpell.SpellInfo.Id};");
         }
 
+        private void findSpellFamly_Click(object sender, EventArgs e)
+        {
+            if (CurrentSpell == null)
+                return;
+
+            var spells = SpellManager.Instance.GetInfoBySpellFamily(CurrentSpell.SpellInfo.SpellFamilyName);
+            listSpells.Items.Clear();
+
+            foreach (uint id in spells.Order())
+                listSpells.Items.Add(Helpers.SpellDisplayName(CliDB.SpellNameStorage[id]));
+        }
+
         #endregion
+
+
     }
 }
