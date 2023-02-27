@@ -330,10 +330,5 @@ namespace Forged.Tools.SpellEditor.Utils
         {
             return numCurentMax - numCurentMin + 1;
         }
-
-        public static uint SelectGreater(uint val1, uint val2)
-        {
-            return val2 != 0 && val2 > val1 ? val2 : val1;
-        }
     }
 }

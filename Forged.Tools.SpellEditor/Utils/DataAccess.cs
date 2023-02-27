@@ -217,13 +217,13 @@ namespace Forged.Tools.SpellEditor.Utils
             return ret;
         }
 
-        public List<uint> GetHotfixSpellEffectIDs()
+        public List<T> GetHotfixValues<T>(string stmt)
         {
-            var ret = new List<uint>();
+            var ret = new List<T>();
 
-            var results = DB.Hotfix.Query(SELECT_SPELL_EFFECT_IDS);
+            var results = DB.Hotfix.Query(stmt);
             while (results.NextRow())
-                ret.Add(results.Read<uint>(0));
+                ret.Add(results.Read<T>(0));
 
             return ret;
         }
@@ -241,11 +241,6 @@ namespace Forged.Tools.SpellEditor.Utils
                 return 0;
 
             return result.Read<uint>(0);
-        }
-
-        public uint GetLatestID(string tableName)
-        {
-            return GetHotfixValue(new PreparedStatement(string.Format(SELECT_LATEST_ID, tableName)));
         }
     }
 

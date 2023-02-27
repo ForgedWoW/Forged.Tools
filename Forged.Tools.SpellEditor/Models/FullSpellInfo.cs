@@ -6,6 +6,7 @@ using Forged.Tools.Shared.Spells;
 using Forged.Tools.Shared.Entities;
 using Framework.Dynamic;
 using static Game.AI.SmartAction;
+using Forged.Tools.Shared.Utils;
 
 namespace Forged.Tools.SpellEditor.Models
 {
@@ -350,7 +351,7 @@ namespace Forged.Tools.SpellEditor.Models
                 if (power.Id == 0)
                 {
                     if (curMaxPwr == 0)
-                        curMaxPwr = Helpers.SelectGreater(CliDB.SpellPowerStorage.OrderByDescending(a => a.Key).First().Key, Program.DataAccess.GetLatestID("spell_power"));
+                        curMaxPwr = SharedDataAccess.GetLatestId(CliDB.SpellPowerStorage, "spell_power");
 
                     curMaxPwr++;
                     power.Id = curMaxPwr;
@@ -503,7 +504,7 @@ namespace Forged.Tools.SpellEditor.Models
                 if (curve.TraitDefinition.Id == 0)
                 {
                     if (curTraitDefId == 0)
-                        curTraitDefId = Helpers.SelectGreater(CliDB.TraitDefinitionStorage.OrderByDescending(a => a.Key).First().Key, Program.DataAccess.GetLatestID("trait_definition"));
+                        curTraitDefId = SharedDataAccess.GetLatestId(CliDB.TraitDefinitionStorage, "trait_definition");
 
                     curTraitDefId++;
                     curve.TraitDefinition.Id = curTraitDefId;
@@ -525,8 +526,7 @@ namespace Forged.Tools.SpellEditor.Models
                 if (curve.TraitDefinitionEffectPoints.Id == 0)
                 {
                     if (curTraitDefPtsId == 0)
-                        curTraitDefPtsId = Helpers.SelectGreater(CliDB.TraitDefinitionEffectPointsStorage.OrderByDescending(a => a.Key).First().Key, 
-                            Program.DataAccess.GetLatestID("trait_definition_effect_points"));
+                        curTraitDefPtsId = SharedDataAccess.GetLatestId(CliDB.TraitDefinitionEffectPointsStorage, "trait_definition_effect_points");
 
                     curTraitDefPtsId++;
                     curve.TraitDefinitionEffectPoints.Id = curTraitDefPtsId;
@@ -545,8 +545,7 @@ namespace Forged.Tools.SpellEditor.Models
                 if (curveId == 0)
                 {
                     if (curCurveId == 0)
-                        curCurveId = Helpers.SelectGreater(CliDB.CurveStorage.OrderByDescending(a => a.Key).First().Key,
-                            Program.DataAccess.GetLatestID("curve"));
+                        curCurveId = SharedDataAccess.GetLatestId(CliDB.CurveStorage, "curve");
 
                     curCurveId++;
                     curveId = curCurveId;
@@ -567,8 +566,7 @@ namespace Forged.Tools.SpellEditor.Models
                     if (cpr.Id == 0)
                     {
                         if (curCurvePtsId == 0)
-                            curCurvePtsId = Helpers.SelectGreater(CliDB.CurvePointStorage.OrderByDescending(a => a.Key).First().Key,
-                                Program.DataAccess.GetLatestID("curve_point"));
+                            curCurvePtsId = SharedDataAccess.GetLatestId(CliDB.CurvePointStorage, "curve_point");
 
                         curCurvePtsId++;
                         cpr.Id = curCurvePtsId;

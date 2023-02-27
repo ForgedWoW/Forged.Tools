@@ -1,4 +1,7 @@
 ﻿using Framework.Configuration;
+using Framework.Database;
+using Game.DataStorage;
+using Game.Extendability;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +12,8 @@ namespace Forged.Tools.Shared.Utils
 {
     public static class SharedDataAccess
     {
+        public const string SELECT_LATEST_ID = "SELECT `ID` FROM `{0}` ORDER BY `ID` DESC LIMIT 1;";
+
         public static void UpdateDB2s(string appPath, string db2Path)
         {
             var versionFile = Path.Combine(appPath, "NewVersion.txt");
@@ -72,6 +77,26 @@ namespace Forged.Tools.Shared.Utils
             System.IO.Compression.ZipFile.ExtractToDirectory(zipFile, Path.Combine(iconPath, "Interface"));
             Thread.Sleep(1000);
             File.Delete(zipFile);
+        }
+
+        public static uint GetLatestId<TValue>(Dictionary<uint, TValue> dataSet, string table)
+        {
+            uint hotfixId = 0;
+            uint db2Id = 0;
+
+            var result = DB.Hotfix.Query(string.Format(SELECT_LATEST_ID, table));
+
+            if (!result.IsEmpty())
+                hotfixId = result.Read<uint>(0);
+
+            db2Id = dataSet.OrderByDescending(a => a.Key).First().Key;
+
+            return Math.Max(db2Id, hotfixId);
+        }
+
+        public static uint GetNewId<TValue>(Dictionary<uint, TValue> dataSet, string table)
+        {
+            return GetLatestId(dataSet, table) + 1;
         }
     }
 }

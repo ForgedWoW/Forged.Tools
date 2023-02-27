@@ -1625,16 +1625,20 @@ namespace Forged.Tools.SpellEditor
                     validatedSpell.Save();
                     CurrentSpell = validatedSpell;
                     lblCurrentSpellName.Text = Helpers.SpellDisplayName(CurrentSpell.SpellInfo.Id, CurrentSpell.SpellInfo.SpellName[Locale.enUS]);
+                    DrawCurrentCurveInfo();
 
-                    uint prevMax = _maxSpellSearch;
-                    if (_maxSpellSearch < CurrentSpell.SpellInfo.Id)
-                        _maxSpellSearch = CurrentSpell.SpellInfo.Id;
-
-                    if (numCurentMax.Value == prevMax)
+                    if (CurrentSpell.SpellInfo.Id < numCurentMin.Value || CurrentSpell.SpellInfo.Id > numCurentMax.Value)
                     {
-                        var range = Helpers.CurrentRange(numCurentMin.Value, numCurentMax.Value);
-                        numCurentMax.Value = _maxSpellSearch;
-                        numCurentMin.Value = _maxSpellSearch - range;
+                        uint prevMax = _maxSpellSearch;
+                        if (_maxSpellSearch < CurrentSpell.SpellInfo.Id)
+                            _maxSpellSearch = CurrentSpell.SpellInfo.Id;
+
+                        if (numCurentMax.Value == prevMax)
+                        {
+                            var range = Helpers.CurrentRange(numCurentMin.Value, numCurentMax.Value);
+                            numCurentMax.Value = _maxSpellSearch;
+                            numCurentMin.Value = _maxSpellSearch - range;
+                        }
                     }
 
                     listSpells.PopulateSpellList(numCurentMin, numCurentMax, cmbIndexing.SelectedIndex, _currentNameSearch, ref _maxSpellSearch);

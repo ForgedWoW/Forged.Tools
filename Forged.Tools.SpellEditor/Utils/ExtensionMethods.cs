@@ -5,6 +5,7 @@ using Framework.Dynamic;
 using Framework.Database;
 using Forged.Tools.SpellEditor.Models;
 using Framework.Configuration;
+using Forged.Tools.Shared.Utils;
 
 namespace Forged.Tools.SpellEditor.Utils
 {
@@ -536,7 +537,7 @@ namespace Forged.Tools.SpellEditor.Utils
                         ret.Id = (uint)tblId.Value;
 
                         // throw if id = 0 or it is a new effect and exists in the effect cache or spell_effect table
-                        if (ret.Id == 0 || (tblId.Enabled && (CliDB.SpellEffectStorage.ContainsKey(ret.Id) || Program.DataAccess.GetHotfixSpellEffectIDs().Contains(ret.Id))))
+                        if (ret.Id == 0 || (tblId.Enabled && (CliDB.SpellEffectStorage.ContainsKey(ret.Id) || Program.DataAccess.GetHotfixValues<uint>(DataAccess.SELECT_SPELL_EFFECT_IDS).Contains(ret.Id))))
                             throw new Exception($"The Effect Table ID for spell effect {ret.EffectIndex} already exists.");
 
                         break;
@@ -728,7 +729,7 @@ namespace Forged.Tools.SpellEditor.Utils
 
             if (scale.Id == 0)
             {
-                scale.Id = Helpers.SelectGreater(CliDB.SpellScalingStorage.OrderByDescending(a => a.Key).First().Key, Program.DataAccess.GetLatestID("spell_scaling")) + 1;
+                scale.Id = SharedDataAccess.GetNewId(CliDB.SpellScalingStorage, "spell_scaling");
                 spellInfo.Scaling.Id = scale.Id;
             }
 
@@ -751,7 +752,7 @@ namespace Forged.Tools.SpellEditor.Utils
 
             if (aurOptions.Id == 0)
             {
-                aurOptions.Id = Helpers.SelectGreater(CliDB.SpellAuraOptionsStorage.OrderByDescending(a => a.Key).First().Key, Program.DataAccess.GetLatestID("spell_aura_options")) + 1;
+                aurOptions.Id = SharedDataAccess.GetNewId(CliDB.SpellAuraOptionsStorage, "spell_aura_options");
                 spellInfo.AuraOptionsId = aurOptions.Id;
             }
 
@@ -775,7 +776,7 @@ namespace Forged.Tools.SpellEditor.Utils
 
             if (aura.Id == 0)
             {
-                aura.Id = Helpers.SelectGreater(CliDB.SpellAuraRestrictionsStorage.OrderByDescending(a => a.Key).First().Key, Program.DataAccess.GetLatestID("spell_aura_restrictions")) + 1;
+                aura.Id = SharedDataAccess.GetNewId(CliDB.SpellAuraRestrictionsStorage, "spell_aura_restrictions");
                 spellInfo.AuraRestrictionsId = aura.Id;
             }
 
@@ -796,7 +797,7 @@ namespace Forged.Tools.SpellEditor.Utils
 
             if (req.Id == 0)
             {
-                req.Id = Helpers.SelectGreater(CliDB.SpellCastingRequirementsStorage.OrderByDescending(a => a.Key).First().Key, Program.DataAccess.GetLatestID("spell_casting_requirements")) + 1;
+                req.Id = SharedDataAccess.GetNewId(CliDB.SpellCastingRequirementsStorage, "spell_casting_requirements");
                 spellInfo.SpellCastingRequirements.Id = req.Id;
             }
 
@@ -821,7 +822,7 @@ namespace Forged.Tools.SpellEditor.Utils
 
             if (cat.Id == 0)
             {
-                cat.Id = Helpers.SelectGreater(CliDB.SpellCategoriesStorage.OrderByDescending(a => a.Key).First().Key, Program.DataAccess.GetLatestID("spell_categories")) + 1;
+                cat.Id = SharedDataAccess.GetNewId(CliDB.SpellCategoriesStorage, "spell_categories");
                 spellInfo.SpellCategoriesId = cat.Id;
             }
 
@@ -839,7 +840,7 @@ namespace Forged.Tools.SpellEditor.Utils
 
             if (options.Id == 0)
             {
-                options.Id = Helpers.SelectGreater(CliDB.SpellClassOptionsStorage.OrderByDescending(a => a.Key).First().Key, Program.DataAccess.GetLatestID("spell_class_options")) + 1;
+                options.Id = SharedDataAccess.GetNewId(CliDB.SpellClassOptionsStorage, "spell_class_options");
                 spellInfo.ClassOptionsId = options.Id;
             }
 
@@ -858,7 +859,7 @@ namespace Forged.Tools.SpellEditor.Utils
 
             if (cdr.Id == 0)
             {
-                cdr.Id = Helpers.SelectGreater(CliDB.SpellCooldownsStorage.OrderByDescending(a => a.Key).First().Key, Program.DataAccess.GetLatestID("spell_cooldowns")) + 1;
+                cdr.Id = SharedDataAccess.GetNewId(CliDB.SpellCooldownsStorage, "spell_cooldowns");
                 spellInfo.SpellCooldownsId = cdr.Id;
             }
 
@@ -876,7 +877,7 @@ namespace Forged.Tools.SpellEditor.Utils
 
             if (equip.Id == 0)
             {
-                equip.Id = Helpers.SelectGreater(CliDB.SpellEquippedItemsStorage.OrderByDescending(a => a.Key).First().Key, Program.DataAccess.GetLatestID("spell_equipped_items")) + 1;
+                equip.Id = SharedDataAccess.GetNewId(CliDB.SpellEquippedItemsStorage, "spell_equipped_items");
                 spellInfo.SpellEquippedItemsId = equip.Id;
             }
 
@@ -897,7 +898,7 @@ namespace Forged.Tools.SpellEditor.Utils
 
             if (sir.Id == 0)
             {
-                sir.Id = Helpers.SelectGreater(CliDB.SpellInterruptsStorage.OrderByDescending(a => a.Key).First().Key, Program.DataAccess.GetLatestID("spell_interrupts")) + 1;
+                sir.Id = SharedDataAccess.GetNewId(CliDB.SpellInterruptsStorage, "spell_interrupts");
                 spellInfo.SpellInterruptsId = sir.Id;
             }
 
@@ -933,7 +934,7 @@ namespace Forged.Tools.SpellEditor.Utils
                 if (newLabel.Id == 0)
                 {
                     if (curMax == 0)
-                        curMax = Helpers.SelectGreater(CliDB.SpellLabelStorage.OrderByDescending(a => a.Key).First().Key, Program.DataAccess.GetLatestID("spell_label"));
+                        curMax = SharedDataAccess.GetNewId(CliDB.SpellLabelStorage, "spell_label");
 
                     curMax++;
                     newLabel.Id = curMax;
@@ -958,7 +959,7 @@ namespace Forged.Tools.SpellEditor.Utils
 
             if (sl.Id == 0)
             {
-                sl.Id = Helpers.SelectGreater(CliDB.SpellLevelsStorage.OrderByDescending(a => a.Key).First().Key, Program.DataAccess.GetLatestID("spell_levels")) + 1;
+                sl.Id = SharedDataAccess.GetNewId(CliDB.SpellLevelsStorage, "spell_levels");
                 spellInfo.SpellLevelsId = sl.Id;
             }
 
@@ -977,7 +978,7 @@ namespace Forged.Tools.SpellEditor.Utils
 
             if (sr.Id == 0)
             {
-                sr.Id = Helpers.SelectGreater(CliDB.SpellReagentsStorage.OrderByDescending(a => a.Key).First().Key, Program.DataAccess.GetLatestID("spell_reagents")) + 1;
+                sr.Id = SharedDataAccess.GetNewId(CliDB.SpellReagentsStorage, "spell_reagents");
                 spellInfo.SpellReagentsId = sr.Id;
             }
 
@@ -997,7 +998,7 @@ namespace Forged.Tools.SpellEditor.Utils
 
             if (sr.Id == 0)
             {
-                sr.Id = Helpers.SelectGreater(CliDB.SpellShapeshiftStorage.OrderByDescending(a => a.Key).First().Key, Program.DataAccess.GetLatestID("spell_shapeshift")) + 1;
+                sr.Id = SharedDataAccess.GetNewId(CliDB.SpellShapeshiftStorage, "spell_shapeshift");
                 spellInfo.ShapeshiftRecordId = sr.Id;
             }
 
@@ -1019,7 +1020,7 @@ namespace Forged.Tools.SpellEditor.Utils
 
             if (tr.Id == 0)
             {
-                tr.Id = Helpers.SelectGreater(CliDB.SpellTargetRestrictionsStorage.OrderByDescending(a => a.Key).First().Key, Program.DataAccess.GetLatestID("spell_target_restrictions")) + 1;
+                tr.Id = SharedDataAccess.GetNewId(CliDB.SpellTargetRestrictionsStorage, "spell_target_restrictions");
                 spellInfo.TargetRestrictionsId = tr.Id;
             }
 
@@ -1038,7 +1039,7 @@ namespace Forged.Tools.SpellEditor.Utils
 
             if (tr.Id == 0)
             {
-                tr.Id = Helpers.SelectGreater(CliDB.SpellTotemsStorage.OrderByDescending(a => a.Key).First().Key, Program.DataAccess.GetLatestID("spell_totems")) + 1;
+                tr.Id = SharedDataAccess.GetNewId(CliDB.SpellTotemsStorage, "spell_totems");
                 spellInfo.TotemRecordID = tr.Id;
             }
 
