@@ -24,10 +24,10 @@ namespace Forged.Tools.TraitEditor
             DB.Hotfix.Initialize(new MySqlConnectionInfo()
             {
                 Database = ConfigMgr.GetDefaultValue("HotfixDatabaseInfo.Database", "hotfixes"),
-                Host = ConfigMgr.GetDefaultValue("HotfixDatabaseInfo.Host", "23.116.116.43"),
+                Host = ConfigMgr.GetDefaultValue("HotfixDatabaseInfo.Host", ""),
                 PortOrSocket = ConfigMgr.GetDefaultValue("HotfixDatabaseInfo.Port", "3306"),
-                Username = ConfigMgr.GetDefaultValue("HotfixDatabaseInfo.Username", "dev"),
-                Password = ConfigMgr.GetDefaultValue("HotfixDatabaseInfo.Password", "forgeddev!123")
+                Username = ConfigMgr.GetDefaultValue("HotfixDatabaseInfo.Username", ""),
+                Password = ConfigMgr.GetDefaultValue("HotfixDatabaseInfo.Password", "")
             });
             var result = DB.Hotfix.Query("SHOW TABLES;");
 
