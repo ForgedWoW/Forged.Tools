@@ -1369,7 +1369,7 @@ namespace Forged.Tools.SpellEditor
             if (CurrentSpell == null)
                 return;
 
-            List<uint> spells = SpellManager.Instance.GetRelatedSpells(CurrentSpell.SpellInfo);
+            var spells = SpellManager.Instance.GetRelatedSpells(CurrentSpell.SpellInfo);
             listSpells.Items.Clear();
 
             foreach (uint id in spells.Order())

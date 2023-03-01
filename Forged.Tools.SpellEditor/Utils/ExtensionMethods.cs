@@ -6,6 +6,7 @@ using Framework.Database;
 using Forged.Tools.SpellEditor.Models;
 using Framework.Configuration;
 using Forged.Tools.Shared.Utils;
+using System.Runtime.CompilerServices;
 
 namespace Forged.Tools.SpellEditor.Utils
 {

@@ -22,6 +22,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using Forged.Tools.Shared.DataStorage;
 using Forged.Tools.Shared.Entities;
+using Forged.Tools.Shared.Utils;
 using Framework.Constants;
 using Framework.Dynamic;
 using Game.DataStorage;
@@ -407,30 +408,27 @@ namespace Forged.Tools.Shared.Spells
             SpellDescriptions.Id = spellRecord.Id;
 
             RelatedSpells = new();
-            var result = Regex.Matches(SpellDescriptions.Description_lang, @"(?<=\$@)*\d+");
+            string pattern = @"\$(|\?|\@)(|spellname|spelldesc|a)(\d+)";
+            var result = Regex.Matches(SpellDescriptions.Description_lang, pattern);
             foreach (Match num in result)
-                if (uint.TryParse(num.Value, out uint val) && !RelatedSpells.Contains(val))
+                if (uint.TryParse(num.Value.TrimSpellDescriptionTokens(), out uint val) && CliDB.SpellStorage.ContainsKey(val))
                     RelatedSpells.Add(val);
 
-            result = Regex.Matches(SpellDescriptions.AuraDescription_lang, @"(?<=\$@)*\d+");
+            result = Regex.Matches(SpellDescriptions.AuraDescription_lang, pattern);
             foreach (Match num in result)
-                if (uint.TryParse(num.Value, out uint val) && !RelatedSpells.Contains(val))
+                if (uint.TryParse(num.Value.TrimSpellDescriptionTokens(), out uint val))
                     RelatedSpells.Add(val);
 
             foreach (var eff in _effects)
             {
-                if (eff.TriggerSpell == 0 || RelatedSpells.Contains(eff.TriggerSpell))
-                    continue;
-
-                RelatedSpells.Add(eff.TriggerSpell);
+                if (eff.TriggerSpell != 0)
+                    RelatedSpells.Add(eff.TriggerSpell);
             }
 
-            RelatedSpells.Remove(1);
-            RelatedSpells.Remove(2);
-            RelatedSpells.Remove(3);
-            RelatedSpells.Remove(4);
-            RelatedSpells.Remove(5);
-            RelatedSpells.Remove(6);
+            // spells in this range are either test dev spells or dont exist. If we have them there is a parsing error
+            if (RelatedSpells.Count > 0)
+                for (uint i = 0; i <= 16; i++)
+                    RelatedSpells.Remove(i);
         }
 
         public bool HasLabel(uint labelId)
@@ -628,7 +626,7 @@ namespace Forged.Tools.Shared.Spells
         public byte MaxPassiveAuraLevel { get; set; }
         public sbyte StanceBarOrder { get; set; }
         public List<SpellCurve> Curves { get; set; }
-        public List<uint> RelatedSpells { get; set; }
+        public HashSet<uint> RelatedSpells { get; set; }
         public SpellRecord SpellDescriptions { get; set; }
 
         SpellDiminishInfo _diminishInfo;

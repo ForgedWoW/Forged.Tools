@@ -7,26 +7,32 @@ namespace Forged.Tools.Shared.Utils
 {
     public static class ExtensionMethods
     {
-        public static void AddIfDoesntExist<t>(this List<t> list, t toadd)
+        public static void AddIfDoesntExist<t>(this IEnumerable<t> list, t toadd)
         {
             if (!list.Contains(toadd))
-                list.Add(toadd);
+                list.Append(toadd);
         }
 
-        public static void AddRangeIfDoesntExist<t>(this List<t> list, IEnumerable<t> toadd)
+        public static void AddRangeIfDoesntExist<t>(this IEnumerable<t> list, IEnumerable<t> toadd)
         {
             foreach (var item in toadd)
                 if (!list.Contains(item))
-                    list.Add(item);
+                    list.Append(item);
         }
 
-        public static bool HasOverlap<t>(this List<t> list, IEnumerable<t> toCompare)
+        public static bool HasOverlap<t>(this IEnumerable<t> list, IEnumerable<t> toCompare)
         {
             foreach (var item in toCompare)
                 if (list.Contains(item))
                     return true;
 
             return false;
+        }
+
+        public static void AddRange<t>(this HashSet<t> list, IEnumerable<t> toadd)
+        {
+            foreach (var item in toadd)
+                list.Add(item);
         }
 
         public static void AddListItem<t, T>(this Dictionary<T, List<t>> dic, T key, t value)
@@ -263,6 +269,12 @@ namespace Forged.Tools.Shared.Utils
             }
 
             return 0;
+        }
+
+        public static string TrimSpellDescriptionTokens(this string val)
+        {
+            return val.Replace("$@spelldesc", string.Empty).Replace("$@spellname", string.Empty).Replace("$spelldesc", string.Empty).Replace("$spellname", string.Empty)
+                .Replace("$?a", string.Empty).Replace("$@a", string.Empty).Replace("$@", string.Empty).Replace("$?", string.Empty).Replace("$", string.Empty);
         }
     }
 }

@@ -130,16 +130,16 @@ namespace Forged.Tools.Shared.Entities
             return mSpellInfoMap.LookupByKey(spellId);
         }
 
-        public List<uint> GetRelatedSpells(SpellInfo spell)
+        public HashSet<uint> GetRelatedSpells(SpellInfo spell)
         {
-            List<uint> ret = new();
+            HashSet<uint> ret = new();
             ret.Add(spell.Id);
             ret.AddRange(spell.RelatedSpells);
 
             if (mTriggerSpellMap.TryGetValue(spell.Id, out HashSet<uint> ids))
-                ret.AddRangeIfDoesntExist(ids);
+                ret.AddRange(ids);
 
-            List<uint> currentSpells = new();
+            HashSet<uint> currentSpells = new();
 
             while (currentSpells.Count != ret.Count)
             {
@@ -147,13 +147,13 @@ namespace Forged.Tools.Shared.Entities
 
                 foreach (var spellInfo in mSpellInfoMap.Values)
                 {
-                    if (ret.Contains(spellInfo.Id) || spellInfo.RelatedSpells.HasOverlap(ret))
+                    if (ret.Contains(spellInfo.Id) || ret.HasOverlap(spellInfo.RelatedSpells))
                     {
-                        ret.AddIfDoesntExist(spellInfo.Id);
-                        ret.AddRangeIfDoesntExist(spellInfo.RelatedSpells);
+                        ret.Add(spellInfo.Id);
+                        ret.AddRange(spellInfo.RelatedSpells);
 
                         if (mTriggerSpellMap.TryGetValue(spellInfo.Id, out ids))
-                            ret.AddRangeIfDoesntExist(ids);
+                            ret.AddRange(ids);
                     }
                 }
             }
