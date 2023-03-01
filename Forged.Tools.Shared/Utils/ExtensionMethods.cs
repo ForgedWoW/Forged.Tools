@@ -13,6 +13,22 @@ namespace Forged.Tools.Shared.Utils
                 list.Add(toadd);
         }
 
+        public static void AddRangeIfDoesntExist<t>(this List<t> list, IEnumerable<t> toadd)
+        {
+            foreach (var item in toadd)
+                if (!list.Contains(item))
+                    list.Add(item);
+        }
+
+        public static bool HasOverlap<t>(this List<t> list, IEnumerable<t> toCompare)
+        {
+            foreach (var item in toCompare)
+                if (list.Contains(item))
+                    return true;
+
+            return false;
+        }
+
         public static void AddListItem<t, T>(this Dictionary<T, List<t>> dic, T key, t value)
         {
             if (!dic.ContainsKey(key))

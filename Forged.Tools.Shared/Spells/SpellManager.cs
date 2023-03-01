@@ -136,41 +136,28 @@ namespace Forged.Tools.Shared.Entities
             ret.Add(spell.Id);
             ret.AddRange(spell.RelatedSpells);
 
-            foreach (var spellInfo in mSpellInfoMap.Values)
-            {
-                if (spellInfo.RelatedSpells.Contains(spell.Id))
-                    ret.AddIfDoesntExist(spellInfo.Id);
-            }
-
             if (mTriggerSpellMap.TryGetValue(spell.Id, out HashSet<uint> ids))
-                foreach (var id in ids)
-                    ret.AddIfDoesntExist(id);
+                ret.AddRangeIfDoesntExist(ids);
 
-            for (int i = 0; i < ret.Count; i++)
+            List<uint> currentSpells = new();
+
+            while (currentSpells.Count != ret.Count)
             {
-                var eff = GetSpellInfo(ret[i], Difficulty.None);
+                currentSpells = new(ret);
 
-                if (eff == null)
+                foreach (var spellInfo in mSpellInfoMap.Values)
                 {
-                    ret.RemoveAt(i);
-                    i--;
-                    continue;
+                    if (ret.Contains(spellInfo.Id) || spellInfo.RelatedSpells.HasOverlap(ret))
+                    {
+                        ret.AddIfDoesntExist(spellInfo.Id);
+                        ret.AddRangeIfDoesntExist(spellInfo.RelatedSpells);
+
+                        if (mTriggerSpellMap.TryGetValue(spellInfo.Id, out ids))
+                            ret.AddRangeIfDoesntExist(ids);
+                    }
                 }
-
-                foreach (var id in eff.RelatedSpells)
-                    ret.AddIfDoesntExist(id);
-
-                if (mTriggerSpellMap.TryGetValue(eff.Id, out ids))
-                    foreach (var id in ids)
-                        ret.AddIfDoesntExist(id);
             }
 
-            ret.Remove(1);
-            ret.Remove(2);
-            ret.Remove(3);
-            ret.Remove(4);
-            ret.Remove(5);
-            ret.Remove(6);
             return ret;
         }
 

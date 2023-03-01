@@ -424,6 +424,13 @@ namespace Forged.Tools.Shared.Spells
 
                 RelatedSpells.Add(eff.TriggerSpell);
             }
+
+            RelatedSpells.Remove(1);
+            RelatedSpells.Remove(2);
+            RelatedSpells.Remove(3);
+            RelatedSpells.Remove(4);
+            RelatedSpells.Remove(5);
+            RelatedSpells.Remove(6);
         }
 
         public bool HasLabel(uint labelId)
