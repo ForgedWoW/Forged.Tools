@@ -35,7 +35,7 @@ namespace Forged.Tools.Shared.Utils
                     oldVer < newVers)
                 {
                     newVersion = true;
-                    File.Copy(versionFile, oldVersionFile);
+                    File.Copy(versionFile, oldVersionFile, true);
                 }
             }
 
