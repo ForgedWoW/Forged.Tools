@@ -101,7 +101,7 @@ namespace Forged.Tools.TraitEditor.Utils
 
             ordered.Sort((id1, id2) => id1.Id.CompareTo(id2.Id));
             foreach (var item in ordered.OrderBy(i => i.Id))
-                SpellIconStorage.Add(item.Id, item);
+                SpellIconStorage[item.Id] = item;
 
             var misc = SharedHelpers.ReadDB2<SpellMiscRecord>(_availableDb2Locales, _db2Path, Locale.enUS, "SpellMisc.db2", HotfixStatements.SEL_SPELL_MISC);
             foreach (var miscrec in misc)

@@ -184,7 +184,7 @@ namespace Forged.Tools.SpellEditor.Utils
 
             ordered.Sort((id1, id2) => id1.Id.CompareTo(id2.Id));
             foreach (var item in ordered.OrderBy(i => i.Id))
-                SpellIconStorage.Add(item.Id, item);
+                SpellIconStorage[item.Id] = item;
 
             foreach (SpellProcsPerMinuteModRecord ppmMod in CliDB.SpellProcsPerMinuteModStorage.Values)
                 SpellProcsPerMinuteMods.Add(ppmMod.SpellProcsPerMinuteID, ppmMod);
