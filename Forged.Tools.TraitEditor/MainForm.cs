@@ -200,10 +200,14 @@ namespace Forged.Tools.TraitEditor
             foreach (var spec in TraitManager.TraitTreeLoadoutsByChrSpecialization)
             {
                 int id = (int)spec.Key;
+
+                if (!TraitManager.ClassSpecs.TryGetValue(id, out var cls) || spec.Value.Count <= 0)
+                    continue;
+
                 var item = new TreeListItem()
                 {
                     SpecID = (SpecID)id,
-                    Class = TraitManager.ClassSpecs[id],
+                    Class = cls,
                     TreeID = CliDB.TraitTreeLoadoutStorage[(uint)spec.Value.First().TraitTreeLoadoutID].TraitTreeID
                 };
                 item.Description = $"{item.SpecID} {item.Class}";

@@ -44,10 +44,7 @@ namespace Forged.Tools.Shared.Utils
 
             File.Delete(versionFile);
 
-            if (newVersion && Directory.Exists(db2Path))
-                Directory.Delete(db2Path, true);
-
-            if (Directory.Exists(db2Path))
+            if (!newVersion)
                 return;
 
             var dbcs = "1Jo-7594VT-X0g0TZLApsq3Eg9bFKZbR_";
@@ -59,7 +56,7 @@ namespace Forged.Tools.Shared.Utils
 
             DownloadGoogleDriveFile.DriveDownloadFile(dbcs, zipFile);
 
-            System.IO.Compression.ZipFile.ExtractToDirectory(zipFile, db2Path);
+            System.IO.Compression.ZipFile.ExtractToDirectory(zipFile, db2Path, true);
             Thread.Sleep(1000);
             File.Delete(zipFile);
         }
