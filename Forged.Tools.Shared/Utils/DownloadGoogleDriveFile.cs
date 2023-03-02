@@ -21,7 +21,6 @@ namespace Forged.Tools.Shared.Utils
             var service = new DriveService(new BaseClientService.Initializer
             {
                 HttpClientInitializer = GoogleCredential.FromFile("readonly_cred.json").CreateScoped(DriveService.Scope.DriveReadonly),
-                //ApiKey = "AIzaSyCBB16gZ6-UwiYoEygYO5cky7LWOTJyW6c",
                 ApplicationName = "Forged.Tools"
                    
             });
