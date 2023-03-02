@@ -399,3 +399,4 @@ FodyWeavers.xsd
 
 # build
 _build/
+/.idea/.idea.Forged.Tools/.idea
