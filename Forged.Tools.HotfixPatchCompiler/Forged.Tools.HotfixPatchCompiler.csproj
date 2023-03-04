@@ -8,6 +8,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <OutputPath>../_build/$(AssemblyName)/$(Configuration)</OutputPath>
     <RootNamespace>Forged.Tools.HotfixPatchCompiler</RootNamespace>
+    <Platforms>AnyCPU;x64;ARM64</Platforms>
   </PropertyGroup>
 
   <ItemGroup>

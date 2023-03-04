@@ -32,12 +32,6 @@ namespace Forged.Tools.Shared.Utils
             return false;
         }
 
-        public static void AddRange<t>(this HashSet<t> list, IEnumerable<t> toadd)
-        {
-            foreach (var item in toadd)
-                list.Add(item);
-        }
-
         public static void AddListItem<t, T>(this Dictionary<T, List<t>> dic, T key, t value)
         {
             if (!dic.ContainsKey(key))

@@ -11,12 +11,17 @@
     <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
     <AppendTargetFrameworkToOutputPath>False</AppendTargetFrameworkToOutputPath>
     <AppendRuntimeIdentifierToOutputPath>False</AppendRuntimeIdentifierToOutputPath>
-    <Platforms>win-x64</Platforms>
+    <Platforms>win-x64;ARM64</Platforms>
     <RuntimeIdentifiers>win10-x64</RuntimeIdentifiers>
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Platform)' == 'win-x64'">
+    <Platform>x64</Platform>
+    <RuntimeIdentifier>win10-x64</RuntimeIdentifier>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Platform)'=='ARM64'">
     <Platform>x64</Platform>
     <RuntimeIdentifier>win10-x64</RuntimeIdentifier>
   </PropertyGroup>
