@@ -1376,7 +1376,8 @@ namespace Forged.Tools.SpellEditor
             listSpells.Items.Clear();
 
             foreach (uint id in spells.Order())
-                listSpells.Items.Add(Helpers.SpellDisplayName(CliDB.SpellNameStorage[id]));
+                if (CliDB.SpellNameStorage.TryGetValue(id, out var nameRec))
+                listSpells.Items.Add(Helpers.SpellDisplayName(nameRec));
         }
 
         private void btnAddEffect_Click(object sender, EventArgs e)
@@ -1913,7 +1914,5 @@ namespace Forged.Tools.SpellEditor
         }
 
         #endregion
-
-
     }
 }
