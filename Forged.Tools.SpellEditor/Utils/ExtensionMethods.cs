@@ -291,130 +291,6 @@ namespace Forged.Tools.SpellEditor.Utils
             }
         }
 
-        public static SpellEffectInfo ToSpellEffectInfo(this TabPage tab, SpellInfo spellInfo, Dictionary<uint, int> radiusMap)
-        {
-            SpellEffectInfo ret = new SpellEffectInfo(spellInfo);
-            ret.EffectIndex = uint.Parse(tab.Text.Replace("Effect ", ""));
-
-            ret.SpellClassMask = new FlagArray128();
-
-            foreach (Control c in tab.Controls)
-            {
-                if (c.GetType() == typeof(Label))
-                    continue;
-
-                switch (c.Tag)
-                {
-                    // combo boxes
-                    case "SpellEffect":
-                        ret.Effect = (SpellEffectName)System.Enum.Parse(typeof(SpellEffectName), (string)((ComboBox)c).SelectedItem);
-                        break;
-                    case "EffMechanic":
-                        ret.Mechanic = (Mechanics)System.Enum.Parse(typeof(Mechanics), (string)((ComboBox)c).SelectedItem);
-                        break;
-                    case "TargetA":
-                        ret.TargetA = new SpellImplicitTargetInfo((Targets)System.Enum.Parse(typeof(Targets), (string)((ComboBox)c).SelectedItem));
-                        break;
-                    case "TargetB":
-                        ret.TargetB = new SpellImplicitTargetInfo((Targets)System.Enum.Parse(typeof(Targets), (string)((ComboBox)c).SelectedItem));
-                        break;
-                    case "RadiusMin":
-                        ret.RadiusEntry = CliDB.SpellRadiusStorage[radiusMap.ReverseLookup(((ComboBox)c).SelectedIndex)];
-                        break;
-                    case "RadiusMax":
-                        ret.MaxRadiusEntry = CliDB.SpellRadiusStorage[radiusMap.ReverseLookup(((ComboBox)c).SelectedIndex)];
-                        break;
-                    case "ApplyAura":
-                        ret.ApplyAuraName = (AuraType)System.Enum.Parse(typeof(AuraType), (string)((ComboBox)c).SelectedItem);
-                        break;
-
-                    // numeric
-                    case "AuraTickRate":
-                        ret.ApplyAuraPeriod = (uint)((NumericUpDown)c).Value;
-                        break;
-                    case "ScalingClass":
-                        ret.Scaling.Class = (int)((NumericUpDown)c).Value;
-                        break;
-                    case "ChainTargets":
-                        ret.ChainTargets = (int)((NumericUpDown)c).Value;
-                        break;
-                    case "TriggerSpell":
-                        ret.TriggerSpell = (uint)((NumericUpDown)c).Value;
-                        break;
-                    case "MiscValueA":
-                        ret.MiscValue = (int)((NumericUpDown)c).Value;
-                        break;
-                    case "MiscValueB":
-                        ret.MiscValueB = (int)((NumericUpDown)c).Value;
-                        break;
-                    case "EffItemType":
-                        ret.ItemType = (uint)((NumericUpDown)c).Value;
-                        break;
-                    case "EffTableID":
-                        NumericUpDown tblId = (NumericUpDown)c;
-                        ret.Id = (uint)tblId.Value;
-
-                        // throw if id = 0 or it is a new effect and exists in the effect cache or spell_effect table
-                        if (ret.Id == 0 || (tblId.Enabled && (CliDB.SpellEffectStorage.ContainsKey(ret.Id) || Program.DataAccess.GetHotfixValues<uint>(DataAccess.SELECT_SPELL_EFFECT_IDS).Contains(ret.Id))))
-                            throw new Exception($"The Effect Table ID for spell effect {ret.EffectIndex} already exists.");
-
-                        break;
-                    case "ClassMask1":
-                        ret.SpellClassMask[0] = (uint)((NumericUpDown)c).Value;
-                        break;
-                    case "ClassMask2":
-                        ret.SpellClassMask[0] = (uint)((NumericUpDown)c).Value;
-                        break;
-                    case "ClassMask3":
-                        ret.SpellClassMask[0] = (uint)((NumericUpDown)c).Value;
-                        break;
-                    case "ClassMask4":
-                        ret.SpellClassMask[0] = (uint)((NumericUpDown)c).Value;
-                        break;
-
-                    // text boxes
-                    case "Variance":
-                        ret.Scaling.Variance = float.Parse(((TextBox)c).Text);
-                        break;
-                    case "ScalingCoefficient":
-                        ret.Scaling.Coefficient = float.Parse(((TextBox)c).Text);
-                        break;
-                    case "ResourceCoefficient":
-                        ret.Scaling.ResourceCoefficient = float.Parse(((TextBox)c).Text);
-                        break;
-                    case "RealPoints":
-                        ret.RealPointsPerLevel = float.Parse(((TextBox)c).Text);
-                        break;
-                    case "PointsPerResource":
-                        ret.PointsPerResource = float.Parse(((TextBox)c).Text);
-                        break;
-                    case "Amplitude":
-                        ret.Amplitude = float.Parse(((TextBox)c).Text);
-                        break;
-                    case "ChainAmplitude":
-                        ret.ChainAmplitude = float.Parse(((TextBox)c).Text);
-                        break;
-                    case "BonusCoefficient":
-                        ret.BonusCoefficient = float.Parse(((TextBox)c).Text);
-                        break;
-                    case "BonusCoefficientFromAP":
-                        ret.BonusCoefficientFromAP = float.Parse(((TextBox)c).Text);
-                        break;
-                    case "PositionFacing":
-                        ret.PositionFacing = float.Parse(((TextBox)c).Text);
-                        break;
-                    case "BasePoints":
-                        ret.BasePoints = float.Parse(((TextBox)c).Text);
-                        break;
-
-                    default:
-                        break;
-                }
-            }
-
-            return ret;
-        }
-
         public static SpellPowerRecord ToSpellPowerRecord(this TabPage tab, uint id)
         {
             SpellPowerRecord ret = new SpellPowerRecord();
@@ -966,6 +842,21 @@ namespace Forged.Tools.SpellEditor.Utils
             ret.SpellID = obj.SpellID;
 
             return ret;
+        }
+
+        public static string GetListName(this SpellEffectInfo effInfo)
+        {
+            return $"Effect {effInfo.EffectIndex} - {effInfo.Effect} - {effInfo.ApplyAuraName}";
+        }
+
+        public static float ToFloat(this TextBox bx)
+        {
+            return float.Parse(bx.Text);
+        }
+
+        public static double ToDouble(this TextBox bx)
+        {
+            return double.Parse(bx.Text);
         }
     }
 }

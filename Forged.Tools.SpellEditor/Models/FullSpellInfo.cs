@@ -19,6 +19,8 @@ namespace Forged.Tools.SpellEditor.Models
         public List<SpellCurve> DirtyCurves;
         public Dictionary<uint, SpellXSpellVisualRecordMod> DirtySpellVisuals;
         public Dictionary<uint, SpellReagentsCurrencyRecordMod> DirtyCurrencyRecords;
+        public List<SpellEffectInfo> DirtySpellEffects;
+
 
         public FullSpellInfo()
         {
@@ -46,6 +48,12 @@ namespace Forged.Tools.SpellEditor.Models
             foreach (var currency in SpellInfo.ReagentsCurrency.OrderBy(a => a.Id))
             {
                 DirtyCurrencyRecords.Add(currency.Id, currency.Copy(true));
+            }
+
+            DirtySpellEffects = new();
+            foreach (var eff in SpellInfo.GetEffects().OrderBy(a => a.EffectIndex))
+            {
+                DirtySpellEffects.Add(eff.Copy());
             }
         }
 
@@ -842,7 +850,7 @@ namespace Forged.Tools.SpellEditor.Models
 
                 // SpellCastingRequirementsEntry
                 ret.SpellInfo.SpellCastingRequirements = SpellInfo.SpellCastingRequirements.Copy();
-                ret.SpellInfo.SpellCastingRequirements.Id = CliDB.SpellCastingRequirementsStorage.OrderByDescending(a => a.Key).First().Key + 1;
+                ret.SpellInfo.SpellCastingRequirements.Id = SharedDataAccess.GetNewId(CliDB.SpellCastingRequirementsStorage, "spell_casting_requirements");
                 ret.SpellInfo.SpellCastingRequirements.SpellID = newSpellId;
                 ret.SpellInfo.RequiresSpellFocus = SpellInfo.RequiresSpellFocus;
                 ret.SpellInfo.FacingCasterFlags = SpellInfo.FacingCasterFlags;
@@ -895,7 +903,7 @@ namespace Forged.Tools.SpellEditor.Models
                 ret.SpellInfo.MaxPassiveAuraLevel = SpellInfo.MaxPassiveAuraLevel;
 
                 // SpellPowerEntry
-                uint powerId = CliDB.SpellPowerStorage.OrderByDescending(a => a.Key).First().Key + 1;
+                uint powerId = SharedDataAccess.GetNewId(CliDB.SpellPowerStorage, "spell_power");
                 for (int i = 0; i < 4; i++)
                 {
                     var powerToCopy = ret.SpellInfo.PowerCosts[i];
@@ -929,7 +937,7 @@ namespace Forged.Tools.SpellEditor.Models
                 ret.SpellInfo.ReagentCount[6] = SpellInfo.ReagentCount[6];
                 ret.SpellInfo.ReagentCount[7] = SpellInfo.ReagentCount[7];
 
-                uint currencyId = CliDB.SpellReagentsCurrencyStorage.OrderByDescending(a => a.Key).First().Key + 1;
+                uint currencyId = SharedDataAccess.GetNewId(CliDB.SpellReagentsCurrencyStorage, "spell_reagents_currency");
                 foreach (var dirtyCur in SpellInfo.ReagentsCurrency)
                 {
                     var cur = dirtyCur.Copy();
@@ -962,7 +970,7 @@ namespace Forged.Tools.SpellEditor.Models
                 ret.SpellInfo.TotemCategory[1] = SpellInfo.TotemCategory[1];
 
                 // Visuals
-                uint visualId = CliDB.SpellReagentsCurrencyStorage.OrderByDescending(a => a.Key).First().Key + 1;
+                uint visualId = SharedDataAccess.GetNewId(CliDB.SpellXSpellVisualStorage, "spell_x_spell_visual");
                 var visuals = ret.SpellInfo.GetSpellVisuals();
                 foreach (var dirtyVis in SpellInfo.GetSpellVisuals())
                 {
@@ -974,14 +982,14 @@ namespace Forged.Tools.SpellEditor.Models
                 }
 
                 // spell effects
-                uint spellEffectId = CliDB.SpellReagentsCurrencyStorage.OrderByDescending(a => a.Key).First().Key + 1;
+                uint spellEffectId = SharedDataAccess.GetNewId(CliDB.SpellEffectStorage, "spell_effect");
                 var effects = ret.SpellInfo.GetEffects();
                 foreach (var spellInfo in SpellInfo.GetEffects())
                 {
                     var newVis = spellInfo.Copy(SpellInfo);
-                    spellInfo.Id = spellEffectId;
+                    newVis.Id = spellEffectId;
                     spellEffectId++;
-                    effects.Add(spellInfo);
+                    effects.Add(newVis);
                 }
 
                 ret.SpellInfo.Curves = new();

@@ -669,6 +669,67 @@ namespace Forged.Tools.Shared.Spells
             _immunityInfo = new ImmunityInfo();
         }
 
+        public SpellEffectInfo Copy()
+        {
+            SpellEffectInfo ret = new SpellEffectInfo(_spellInfo);
+
+            ret.Id = Id;
+            ret.EffectIndex = EffectIndex;
+            ret.Effect = Effect;
+            ret.ApplyAuraName = ApplyAuraName;
+            ret.ApplyAuraPeriod = ApplyAuraPeriod;
+            ret.BasePoints = BasePoints;
+            ret.RealPointsPerLevel = RealPointsPerLevel;
+            ret.PointsPerResource = PointsPerResource;
+            ret.Amplitude = Amplitude;
+            ret.ChainAmplitude = ChainAmplitude;
+            ret.BonusCoefficient = BonusCoefficient;
+            ret.MiscValue = MiscValue;
+            ret.MiscValueB = MiscValueB;
+            ret.Mechanic = Mechanic;
+            ret.PositionFacing = PositionFacing;
+            ret.TargetA = new SpellImplicitTargetInfo(TargetA.GetTarget());
+            ret.TargetB = new SpellImplicitTargetInfo(TargetB.GetTarget());
+
+            if (RadiusEntry != null)
+                ret.RadiusEntry = new SpellRadiusRecord()
+                {
+                    Id = RadiusEntry.Id,
+                    Radius = RadiusEntry.Radius,
+                    RadiusMax = RadiusEntry.RadiusMax,
+                    RadiusMin = RadiusEntry.RadiusMin,
+                    RadiusPerLevel = RadiusEntry.RadiusPerLevel
+                };
+
+            if (MaxRadiusEntry != null)
+                ret.MaxRadiusEntry = new SpellRadiusRecord()
+                {
+                    Id = MaxRadiusEntry.Id,
+                    Radius = MaxRadiusEntry.Radius,
+                    RadiusMax = MaxRadiusEntry.RadiusMax,
+                    RadiusMin = MaxRadiusEntry.RadiusMin,
+                    RadiusPerLevel = MaxRadiusEntry.RadiusPerLevel
+                };
+
+            ret.ChainTargets = ChainTargets;
+            ret.ItemType = ItemType;
+            ret.TriggerSpell = TriggerSpell;
+            ret.SpellClassMask = new FlagArray128(SpellClassMask[0], SpellClassMask[1],
+                SpellClassMask[2], SpellClassMask[3]);
+            ret.BonusCoefficientFromAP = BonusCoefficientFromAP;
+            ret.Scaling = new ScalingInfo()
+            {
+                Class = Scaling.Class,
+                Coefficient = Scaling.Coefficient,
+                ResourceCoefficient = Scaling.ResourceCoefficient,
+                Variance = Scaling.Variance,
+            };
+
+            ret.EffectAttributes = EffectAttributes;
+
+            return ret;
+        }
+
         public bool IsEffect()
         {
             return Effect != 0;

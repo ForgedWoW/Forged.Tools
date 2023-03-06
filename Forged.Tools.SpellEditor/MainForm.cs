@@ -31,6 +31,7 @@ namespace Forged.Tools.SpellEditor
         string _currentNameSearch = "";
         string _currentIconSearch = "";
         uint _maxSpellSearch = 0;
+        uint _curEffIndex = 0;
 
         Dictionary<uint, int> _castTimeMap = new Dictionary<uint, int>();
         Dictionary<uint, int> _radiusMap = new Dictionary<uint, int>();
@@ -193,6 +194,16 @@ namespace Forged.Tools.SpellEditor
             cmbApplyAura.Items.AddEnumNames(typeof(AuraType));
             cmbApplyAura.SelectedIndex = 0;
 
+            txtBP.MakeNumberBox();
+            txtRealPoints.MakeNumberBox();
+            txtPointsPerResource.MakeNumberBox();
+            txtVariance.MakeNumberBox();
+            txtScalingCoefficient.MakeNumberBox();
+            txtResourceCoefficient.MakeNumberBox();
+            txtPositionFacing.MakeNumberBox();
+            txtAmplitude.MakeNumberBox();
+            txtChainAmplitude.MakeNumberBox();
+
             counter = 0;
             foreach (var rec in CliDB.SpellRadiusStorage.OrderBy(r => r.Key))
             {
@@ -207,9 +218,6 @@ namespace Forged.Tools.SpellEditor
 
             cmbVisualDifficulty.Items.AddEnumNames(typeof(Difficulty));
             cmbVisualDifficulty.SelectedIndex = 0;
-
-            _defaultSpellEffectPage = tabsSpellEffects.TabPages[0];
-            tabsSpellEffects.TabPages.Clear();
 
             _defaultCurveEffect = grpCurveEffect;
             pnlCurves.Controls.Clear();
@@ -452,7 +460,12 @@ namespace Forged.Tools.SpellEditor
             listProcTargets.SelectedItems.AddSelectedBitEnum(CurrentSpell.SpellInfo.Targets);
 
             // spell effects
-            CreateCurrentSpellEffectTabs();
+            PopulateSpellEffectList();
+            if (cmbSpellEffectList.Items.Count > 0)
+            {
+                cmbSpellEffectList_SelectedIndexChanged(null, null);
+                cmbSpellEffectList.SelectedIndex = 0;
+            }
 
             // update attribute lists
             listAttr0.SelectedItems.Clear();
@@ -816,133 +829,14 @@ namespace Forged.Tools.SpellEditor
             }
         }
 
-        private void CreateCurrentSpellEffectTabs()
+        private void PopulateSpellEffectList()
         {
-            tabsSpellEffects.TabPages.Clear();
+            _curEffIndex = 0;
+            cmbSpellEffectList.Items.Clear();
 
-            foreach (SpellEffectInfo eff in CurrentSpell.SpellInfo.GetEffects())
+            foreach (SpellEffectInfo eff in CurrentSpell.DirtySpellEffects)
             {
-                var tab = NewSpellEffectTab(eff.EffectIndex);
-                tabsSpellEffects.TabPages.Add(tab);
-
-                foreach (Control c in tab.Controls)
-                {
-                    if (c.GetType() == typeof(Label))
-                        continue;
-
-                    switch (c.Tag)
-                    {
-                        // combo boxes
-                        case "SpellEffect":
-                            ((ComboBox)c).SelectedItem = eff.Effect.ToString();
-                            break;
-                        case "EffMechanic":
-                            ((ComboBox)c).SelectedItem = eff.Mechanic.ToString();
-                            break;
-                        case "TargetA":
-                            ((ComboBox)c).SelectedItem = eff.TargetA.GetTarget().ToString();
-                            break;
-                        case "TargetB":
-                            ((ComboBox)c).SelectedItem = eff.TargetB.GetTarget().ToString();
-                            break;
-                        case "RadiusMin":
-                            if (eff.RadiusEntry != null)
-                                ((ComboBox)c).SelectedIndex = _radiusMap[eff.RadiusEntry.Id];
-                            else
-                                ((ComboBox)c).SelectedIndex = 0;
-                            break;
-                        case "RadiusMax":
-                            if (eff.MaxRadiusEntry != null)
-                                ((ComboBox)c).SelectedIndex = _radiusMap[eff.MaxRadiusEntry.Id];
-                            else
-                                ((ComboBox)c).SelectedIndex = 0;
-                            break;
-                        case "ApplyAura":
-                            ((ComboBox)c).SelectedItem = eff.ApplyAuraName.ToString();
-                            break;
-
-                        // numeric
-                        case "AuraTickRate":
-                            ((NumericUpDown)c).Value = eff.ApplyAuraPeriod;
-                            break;
-                        case "ScalingClass":
-                            ((NumericUpDown)c).Value = eff.Scaling.Class;
-                            break;
-                        case "ChainTargets":
-                            ((NumericUpDown)c).Value = eff.ChainTargets;
-                            break;
-                        case "TriggerSpell":
-                            ((NumericUpDown)c).Value = eff.TriggerSpell;
-                            break;
-                        case "MiscValueA":
-                            ((NumericUpDown)c).Value = eff.MiscValue;
-                            break;
-                        case "MiscValueB":
-                            ((NumericUpDown)c).Value = eff.MiscValueB;
-                            break;
-                        case "EffItemType":
-                            ((NumericUpDown)c).Value = eff.ItemType;
-                            break;
-                        case "EffTableID":
-                            ((NumericUpDown)c).Value = eff.Id;
-                            c.Enabled = false;
-                            break;
-                        case "ClassMask1":
-                            if (eff.SpellClassMask != null)
-                                ((NumericUpDown)c).Value = eff.SpellClassMask[0];
-                            break;
-                        case "ClassMask2":
-                            if (eff.SpellClassMask != null)
-                                ((NumericUpDown)c).Value = eff.SpellClassMask[1];
-                            break;
-                        case "ClassMask3":
-                            if (eff.SpellClassMask != null)
-                                ((NumericUpDown)c).Value = eff.SpellClassMask[2];
-                            break;
-                        case "ClassMask4":
-                            if (eff.SpellClassMask != null)
-                                ((NumericUpDown)c).Value = eff.SpellClassMask[3];
-                            break;
-
-                        // text boxes
-                        case "Variance":
-                            ((TextBox)c).Text = eff.Scaling.Variance.ToString();
-                            break;
-                        case "ScalingCoefficient":
-                            ((TextBox)c).Text = eff.Scaling.Coefficient.ToString();
-                            break;
-                        case "ResourceCoefficient":
-                            ((TextBox)c).Text = eff.Scaling.ResourceCoefficient.ToString();
-                            break;
-                        case "RealPoints":
-                            ((TextBox)c).Text = eff.RealPointsPerLevel.ToString();
-                            break;
-                        case "PointsPerResource":
-                            ((TextBox)c).Text = eff.PointsPerResource.ToString();
-                            break;
-                        case "Amplitude":
-                            ((TextBox)c).Text = eff.Amplitude.ToString();
-                            break;
-                        case "ChainAmplitude":
-                            ((TextBox)c).Text = eff.ChainAmplitude.ToString();
-                            break;
-                        case "BonusCoefficient":
-                            ((TextBox)c).Text = eff.BonusCoefficient.ToString();
-                            break;
-                        case "BonusCoefficientFromAP":
-                            ((TextBox)c).Text = eff.BonusCoefficientFromAP.ToString();
-                            break;
-                        case "PositionFacing":
-                            ((TextBox)c).Text = eff.PositionFacing.ToString();
-                            break;
-                        case "BasePoints":
-                            ((TextBox)c).Text = eff.BasePoints.ToString();
-                            break;
-
-                        default:
-                            break;
-                    }
-                }
+                cmbSpellEffectList.Items.Add(eff.GetListName());
             }
         }
 
@@ -1091,11 +985,6 @@ namespace Forged.Tools.SpellEditor
             }
             else
                 SetVisual0();
-        }
-
-        private TabPage NewSpellEffectTab(uint effIndex, bool newEffect = false)
-        {
-            return Helpers.CopySpellEffectTab(_defaultSpellEffectPage, effIndex, newEffect);
         }
 
         private void lvIcons_SelectedIndexChanged(object sender, EventArgs e)
@@ -1350,8 +1239,8 @@ namespace Forged.Tools.SpellEditor
                 // spell effects
                 var effects = ret.SpellInfo.GetEffects();
                 effects.Clear();
-                foreach (TabPage tab in tabsSpellEffects.TabPages)
-                    effects.Add(tab.ToSpellEffectInfo(ret.SpellInfo, _radiusMap));
+                foreach (var eff in CurrentSpell.DirtySpellEffects)
+                    effects.Add(eff.Copy());
 
                 UpdateDirtyCurveEffectPoints();
                 ret.DirtyCurves = CurrentSpell.DirtyCurves;
@@ -1363,6 +1252,105 @@ namespace Forged.Tools.SpellEditor
             }
             
             return ret;
+        }
+
+
+        private void cmbSpellEffectList_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (CurrentSpell.DirtySpellEffects.Count == 0)
+                return;
+
+            int newIndex = 0;
+            if (e != null)
+            {
+                SaveCurrentDirtyEffect();
+                newIndex = cmbSpellEffectList.SelectedIndex;
+            }
+
+            var eff = CurrentSpell.DirtySpellEffects[newIndex];
+            _curEffIndex = eff.EffectIndex;
+
+            cmbSpellEffect.SelectedItem = eff.Effect.ToString();
+            cmbEffMechanic.SelectedItem = eff.Mechanic.ToString();
+            cmbTargetA.SelectedItem = eff.TargetA.GetTarget().ToString();
+            cmbTargetB.SelectedItem = eff.TargetB.GetTarget().ToString();
+            cmbApplyAura.SelectedItem = eff.ApplyAuraName.ToString();
+            numAuraTickRate.Value = eff.ApplyAuraPeriod;
+            numScalingClass.Value = eff.Scaling.Class;
+            numChainTargets.Value = eff.ChainTargets;
+            numTriggerSpell.Value = eff.TriggerSpell;
+            numMiscA.Value = eff.MiscValue;
+            numMiscB.Value = eff.MiscValueB;
+            numItemType.Value = eff.ItemType;
+            numEffTableID.Value = eff.Id;
+            txtVariance.Text = eff.Scaling.Variance.ToString();
+            txtBonusCoefficient.Text = eff.Scaling.Coefficient.ToString();
+            txtResourceCoefficient.Text = eff.Scaling.ResourceCoefficient.ToString();
+            txtRealPoints.Text = eff.RealPointsPerLevel.ToString();
+            txtPointsPerResource.Text = eff.PointsPerResource.ToString();
+            txtAmplitude.Text = eff.Amplitude.ToString();
+            txtChainAmplitude.Text = eff.ChainAmplitude.ToString();
+            txtBonusCoefficient.Text = eff.BonusCoefficient.ToString();
+            txtBonusCoefficientFromAP.Text = eff.BonusCoefficientFromAP.ToString();
+            txtPositionFacing.Text = eff.PositionFacing.ToString();
+            txtBP.Text = eff.BasePoints.ToString();
+
+            if (eff.RadiusEntry != null)
+                cmbRadiusMin.SelectedIndex = _radiusMap[eff.RadiusEntry.Id];
+            else
+                cmbRadiusMin.SelectedIndex = 0;
+
+            if (eff.MaxRadiusEntry != null)
+                cmbRadiusMax.SelectedIndex = _radiusMap[eff.MaxRadiusEntry.Id];
+            else
+                cmbRadiusMax.SelectedIndex = 0;
+
+            if (eff.SpellClassMask != null)
+            {
+                numClassMask1.Value = eff.SpellClassMask[0];
+                numClassMask2.Value = eff.SpellClassMask[1];
+                numClassMask3.Value = eff.SpellClassMask[2];
+                numClassMask4.Value = eff.SpellClassMask[3];
+            }
+        }
+
+        private void SaveCurrentDirtyEffect()
+        {
+            if (CurrentSpell.DirtySpellEffects.Count == 0)
+                return;
+
+            var eff = CurrentSpell.DirtySpellEffects[(int)_curEffIndex];
+
+            eff.Effect = Enum.Parse<SpellEffectName>((string)cmbSpellEffect.SelectedItem);
+            eff.Mechanic = Enum.Parse<Mechanics>((string)cmbEffMechanic.SelectedItem);
+            eff.TargetA = new SpellImplicitTargetInfo(Enum.Parse<Targets>((string)cmbTargetA.SelectedItem));
+            eff.TargetB = new SpellImplicitTargetInfo(Enum.Parse<Targets>((string)cmbTargetB.SelectedItem));
+            eff.ApplyAuraName = Enum.Parse<AuraType>((string)cmbApplyAura.SelectedItem);
+            eff.ApplyAuraPeriod = (uint)numAuraTickRate.Value;
+            eff.Scaling.Class = (int)numScalingClass.Value;
+            eff.ChainTargets = (int)numChainTargets.Value;
+            eff.TriggerSpell = (uint)numTriggerSpell.Value;
+            eff.MiscValue = (int)numMiscA.Value;
+            eff.MiscValueB = (int)numMiscB.Value;
+            eff.ItemType = (uint)numItemType.Value;
+            eff.Id = (uint)numEffTableID.Value;
+            eff.Scaling.Variance = txtVariance.ToFloat();
+            eff.Scaling.Coefficient = txtBonusCoefficient.ToFloat();
+            eff.Scaling.ResourceCoefficient = txtResourceCoefficient.ToFloat();
+            eff.RealPointsPerLevel = txtRealPoints.ToFloat();
+            eff.PointsPerResource = txtPointsPerResource.ToFloat();
+            eff.Amplitude = txtAmplitude.ToFloat();
+            eff.ChainAmplitude = txtChainAmplitude.ToFloat();
+            eff.BonusCoefficient = txtBonusCoefficient.ToFloat();
+            eff.BonusCoefficientFromAP = txtBonusCoefficientFromAP.ToFloat();
+            eff.PositionFacing = txtPositionFacing.ToFloat();
+            eff.BasePoints = txtBP.ToFloat();
+            eff.RadiusEntry = CliDB.SpellRadiusStorage[_radiusMap.ReverseLookup(cmbRadiusMin.SelectedIndex)];
+            eff.MaxRadiusEntry = CliDB.SpellRadiusStorage[_radiusMap.ReverseLookup(cmbRadiusMax.SelectedIndex)];
+            eff.SpellClassMask[0] = (uint)numClassMask1.Value;
+            eff.SpellClassMask[1] = (uint)numClassMask2.Value;
+            eff.SpellClassMask[2] = (uint)numClassMask3.Value;
+            eff.SpellClassMask[3] = (uint)numClassMask4.Value;
         }
 
         #region Button Clicks
@@ -1384,11 +1372,15 @@ namespace Forged.Tools.SpellEditor
         {
             uint index = 0;
 
-            if (tabsSpellEffects.TabPages.Count > 0)
-                index = uint.Parse(tabsSpellEffects.TabPages[tabsSpellEffects.TabPages.Count - 1].Text.Replace("Effect ", ""));
+            if (cmbSpellEffectList.Items.Count > 0)
+                index = uint.Parse(((string)cmbSpellEffectList.Items[cmbSpellEffectList.Items.Count - 1]).Split('-')[0].Trim().Replace("Effect ", ""));
 
-            tabsSpellEffects.TabPages.Add(NewSpellEffectTab(index + 1, true));
-            tabsSpellEffects.SelectedIndex = tabsSpellEffects.TabPages.Count - 1;
+            var effInfo = new SpellEffectInfo(CurrentSpell.SpellInfo);
+            effInfo.EffectIndex = index;
+            CurrentSpell.DirtySpellEffects.Add(effInfo);
+            cmbSpellEffectList.Items.Add(effInfo.GetListName());
+
+            cmbSpellEffectList.SelectedIndex = cmbSpellEffectList.Items.Count - 1;
         }
 
         private void btnCurIconChange_Click(object sender, EventArgs e)
@@ -1622,6 +1614,7 @@ namespace Forged.Tools.SpellEditor
         {
             if (CurrentSpell != null && CurrentSpell.SpellInfo.Id != 0)
             {
+                SaveCurrentDirtyEffect();
                 FullSpellInfo validatedSpell = Validate();
 
                 if (validatedSpell != null)
