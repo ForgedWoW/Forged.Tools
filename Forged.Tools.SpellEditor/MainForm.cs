@@ -1904,6 +1904,16 @@ namespace Forged.Tools.SpellEditor
                 listSpells.Items.Add(Helpers.SpellDisplayName(CliDB.SpellNameStorage[id]));
         }
 
+        private void btnFromClipboard_Click(object sender, EventArgs e)
+        {
+            if (!uint.TryParse(Clipboard.GetText().Trim(), out uint spellId) ||
+                !CliDB.SpellNameStorage.ContainsKey(spellId))
+                return;
+
+            CurrentSpell = Program.DataAccess.GetSpellInfo(spellId);
+            LoadCurrentSpell();
+        }
+
         #endregion
     }
 }

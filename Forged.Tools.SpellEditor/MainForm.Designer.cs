@@ -534,6 +534,7 @@ namespace Forged.Tools.SpellEditor
             this.label75 = new System.Windows.Forms.Label();
             this.btnCopy = new System.Windows.Forms.Button();
             this.btnDeleteSpell = new System.Windows.Forms.Button();
+            this.btnFromClipboard = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.numCurentMin)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numCurentMax)).BeginInit();
             this.tabsSpellInfo.SuspendLayout();
@@ -6592,7 +6593,7 @@ namespace Forged.Tools.SpellEditor
             0,
             0});
             this.numIdSearch.Name = "numIdSearch";
-            this.numIdSearch.Size = new System.Drawing.Size(200, 23);
+            this.numIdSearch.Size = new System.Drawing.Size(95, 23);
             this.numIdSearch.TabIndex = 44;
             // 
             // label75
@@ -6626,11 +6627,22 @@ namespace Forged.Tools.SpellEditor
             this.btnDeleteSpell.UseVisualStyleBackColor = true;
             this.btnDeleteSpell.Click += new System.EventHandler(this.btnDeleteSpell_Click);
             // 
+            // btnFromClipboard
+            // 
+            this.btnFromClipboard.Location = new System.Drawing.Point(180, 18);
+            this.btnFromClipboard.Name = "btnFromClipboard";
+            this.btnFromClipboard.Size = new System.Drawing.Size(99, 23);
+            this.btnFromClipboard.TabIndex = 50;
+            this.btnFromClipboard.Text = "From Clipboard";
+            this.btnFromClipboard.UseVisualStyleBackColor = true;
+            this.btnFromClipboard.Click += new System.EventHandler(this.btnFromClipboard_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1297, 733);
+            this.Controls.Add(this.btnFromClipboard);
             this.Controls.Add(this.btnDeleteSpell);
             this.Controls.Add(this.btnCopy);
             this.Controls.Add(this.label75);
@@ -7330,5 +7342,6 @@ namespace Forged.Tools.SpellEditor
         private Label lblBP;
         private ComboBox cmbSpellEffect;
         private Label lblSpellEffect;
+        private Button btnFromClipboard;
     }
 }
