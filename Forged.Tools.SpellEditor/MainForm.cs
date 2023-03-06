@@ -1347,10 +1347,8 @@ namespace Forged.Tools.SpellEditor
             eff.BasePoints = txtBP.ToFloat();
             eff.RadiusEntry = CliDB.SpellRadiusStorage[_radiusMap.ReverseLookup(cmbRadiusMin.SelectedIndex)];
             eff.MaxRadiusEntry = CliDB.SpellRadiusStorage[_radiusMap.ReverseLookup(cmbRadiusMax.SelectedIndex)];
-            eff.SpellClassMask[0] = (uint)numClassMask1.Value;
-            eff.SpellClassMask[1] = (uint)numClassMask2.Value;
-            eff.SpellClassMask[2] = (uint)numClassMask3.Value;
-            eff.SpellClassMask[3] = (uint)numClassMask4.Value;
+            eff.SpellClassMask = new FlagArray128((uint)numClassMask1.Value, (uint)numClassMask2.Value,
+                (uint)numClassMask3.Value, (uint)numClassMask4.Value);
         }
 
         #region Button Clicks
@@ -1372,8 +1370,8 @@ namespace Forged.Tools.SpellEditor
         {
             uint index = 0;
 
-            if (cmbSpellEffectList.Items.Count > 0)
-                index = uint.Parse(((string)cmbSpellEffectList.Items[cmbSpellEffectList.Items.Count - 1]).Split('-')[0].Trim().Replace("Effect ", ""));
+            if (CurrentSpell.DirtySpellEffects.Count > 0)
+                index = CurrentSpell.DirtySpellEffects.Last().EffectIndex + 1;
 
             var effInfo = new SpellEffectInfo(CurrentSpell.SpellInfo);
             effInfo.EffectIndex = index;
