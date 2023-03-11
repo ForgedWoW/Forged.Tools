@@ -150,7 +150,7 @@ namespace Forged.Tools.Shared.Entities
         #region Loads
         public void LoadSpellInfoStore(BaseDataAccess dataAccess)
         {
-            uint oldMSTime = Time.GetMSTime();
+            uint oldMSTime = Time.MSTime;
 
             mSpellInfoMap.Clear();
             var loadData = new Dictionary<(uint Id, Difficulty difficulty), SpellInfoLoadHelper>();
