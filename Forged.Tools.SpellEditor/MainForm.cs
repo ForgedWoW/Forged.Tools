@@ -11,11 +11,6 @@ using Forged.Tools.Shared.Entities;
 using Framework.Database;
 using Framework.Dynamic;
 using Forged.Tools.Shared.Forms;
-using Framework.Configuration;
-using System.IO.Compression;
-using System.Text;
-using System.Security.Cryptography;
-using System.Windows.Forms;
 using Forged.Tools.Shared.Utils;
 
 namespace Forged.Tools.SpellEditor
@@ -74,6 +69,7 @@ namespace Forged.Tools.SpellEditor
             txtLaunchDelay.MakeNumberBox();
 
             Program.DataAccess.LoadStores();
+            BuildFlagCheckedListBoxs();
 
             SpellManager.Instance.LoadSpellInfoStore(Program.DataAccess);
 
@@ -354,9 +350,13 @@ namespace Forged.Tools.SpellEditor
             // class options
             cmbSpellFamily.SelectedItem = CurrentSpell.SpellInfo.SpellFamilyName.ToString();
             numFamilyFlags1.Value = CurrentSpell.SpellInfo.SpellFamilyFlags[0];
+            PopulateFlagCheckedListBoxs(clbFamilyFlags1, CurrentSpell.SpellInfo.SpellFamilyFlags[0]);
             numFamilyFlags2.Value = CurrentSpell.SpellInfo.SpellFamilyFlags[1];
+            PopulateFlagCheckedListBoxs(clbFamilyFlags2, CurrentSpell.SpellInfo.SpellFamilyFlags[1]);
             numFamilyFlags3.Value = CurrentSpell.SpellInfo.SpellFamilyFlags[2];
+            PopulateFlagCheckedListBoxs(clbFamilyFlags3, CurrentSpell.SpellInfo.SpellFamilyFlags[2]);
             numFamilyFlags4.Value = CurrentSpell.SpellInfo.SpellFamilyFlags[3];
+            PopulateFlagCheckedListBoxs(clbFamilyFlags4, CurrentSpell.SpellInfo.SpellFamilyFlags[3]);
             numModalNextSpell.Value = CurrentSpell.SpellInfo.ModalNextSpell;
 
             // category info
@@ -461,6 +461,10 @@ namespace Forged.Tools.SpellEditor
 
             // spell effects
             PopulateSpellEffectList();
+            ClearFlagCheckedListBoxs(clbClassMask1);
+            ClearFlagCheckedListBoxs(clbClassMask2);
+            ClearFlagCheckedListBoxs(clbClassMask3);
+            ClearFlagCheckedListBoxs(clbClassMask4);
             if (cmbSpellEffectList.Items.Count > 0)
             {
                 cmbSpellEffectList_SelectedIndexChanged(null, null);
@@ -558,8 +562,10 @@ namespace Forged.Tools.SpellEditor
             cmbEquippedItemClass.SelectedItem = CurrentSpell.SpellInfo.EquippedItemClass.ToString();
             listEquippedItemInvenType.SelectedItems.Clear();
             listEquippedItemInvenType.SelectedItems.AddSelectedIntEnum(CurrentSpell.SpellInfo.EquippedItemInventoryTypeMask, typeof(InventoryType));
-            listEquippedItemSubClass.UpdateItemSubClass((ItemClass)Enum.Parse(typeof(ItemClass), (string)cmbEquippedItemClass.SelectedItem), CurrentSpell.SpellInfo.EquippedItemClass, CurrentSpell.SpellInfo.EquippedItemSubClassMask, true);
+            listEquippedItemSubClass.UpdateItemSubClass((ItemClass)Enum.Parse(typeof(ItemClass), (string)cmbEquippedItemClass.SelectedItem), 
+                CurrentSpell.SpellInfo.EquippedItemClass, CurrentSpell.SpellInfo.EquippedItemSubClassMask, true);
             DrawCurrentCurveInfo();
+            HideListBoxes();
 
             btnCurIconUndo_Click(null, null);
             btnActiveIconUndo_Click(null, null);
@@ -1140,7 +1146,8 @@ namespace Forged.Tools.SpellEditor
                 ret.SpellInfo.ClassOptionsId = CurrentSpell.SpellInfo.ClassOptionsId;
                 ret.SpellInfo.ModalNextSpell = (uint)numModalNextSpell.Value;
                 ret.SpellInfo.SpellFamilyName = (SpellFamilyNames)Enum.Parse(typeof(SpellFamilyNames), (string)cmbSpellFamily.SelectedItem);
-                ret.SpellInfo.SpellFamilyFlags = new FlagArray128((uint)numFamilyFlags1.Value, (uint)numFamilyFlags2.Value, (uint)numFamilyFlags3.Value, (uint)numFamilyFlags4.Value);
+                ret.SpellInfo.SpellFamilyFlags = new FlagArray128((uint)numFamilyFlags1.Value, (uint)numFamilyFlags2.Value,
+                (uint)numFamilyFlags3.Value, (uint)numFamilyFlags4.Value);
 
                 // SpellCooldownsEntry
                 ret.SpellInfo.SpellCooldownsId = CurrentSpell.SpellInfo.SpellCooldownsId;
@@ -1308,9 +1315,24 @@ namespace Forged.Tools.SpellEditor
             if (eff.SpellClassMask != null)
             {
                 numClassMask1.Value = eff.SpellClassMask[0];
+                PopulateFlagCheckedListBoxs(clbClassMask1, eff.SpellClassMask[0]);
                 numClassMask2.Value = eff.SpellClassMask[1];
+                PopulateFlagCheckedListBoxs(clbClassMask2, eff.SpellClassMask[1]);
                 numClassMask3.Value = eff.SpellClassMask[2];
+                PopulateFlagCheckedListBoxs(clbClassMask3, eff.SpellClassMask[2]);
                 numClassMask4.Value = eff.SpellClassMask[3];
+                PopulateFlagCheckedListBoxs(clbClassMask4, eff.SpellClassMask[3]);
+            }
+            else
+            {
+                numClassMask1.Value = 0;
+                PopulateFlagCheckedListBoxs(clbClassMask1, 0);
+                numClassMask2.Value = 0;
+                PopulateFlagCheckedListBoxs(clbClassMask2, 0);
+                numClassMask3.Value = 0;
+                PopulateFlagCheckedListBoxs(clbClassMask3, 0);
+                numClassMask4.Value = 0;
+                PopulateFlagCheckedListBoxs(clbClassMask4, 0);
             }
         }
 
@@ -1912,6 +1934,125 @@ namespace Forged.Tools.SpellEditor
 
             CurrentSpell = Program.DataAccess.GetSpellInfo(spellId);
             LoadCurrentSpell();
+        }
+
+        #endregion
+
+        #region family flag comboboxes
+
+        private void BuildFlagCheckedListBoxs()
+        {
+            numFamilyFlags1.ValueChanged += numFlags_ValueChanged;
+            btnFamilyFlags1.Click += btnFlags_Click;
+            clbFamilyFlags1.ItemCheck += clbFlags_ItemCheck;
+            numFamilyFlags2.ValueChanged += numFlags_ValueChanged;
+            btnFamilyFlags2.Click += btnFlags_Click;
+            clbFamilyFlags2.ItemCheck += clbFlags_ItemCheck;
+            numFamilyFlags3.ValueChanged += numFlags_ValueChanged;
+            btnFamilyFlags3.Click += btnFlags_Click;
+            clbFamilyFlags3.ItemCheck += clbFlags_ItemCheck;
+            numFamilyFlags4.ValueChanged += numFlags_ValueChanged;
+            btnFamilyFlags4.Click += btnFlags_Click;
+            clbFamilyFlags4.ItemCheck += clbFlags_ItemCheck;
+            numClassMask1.ValueChanged += numFlags_ValueChanged;
+            btnClassMask1.Click += btnFlags_Click;
+            clbClassMask1.ItemCheck += clbFlags_ItemCheck;
+            numClassMask2.ValueChanged += numFlags_ValueChanged;
+            btnClassMask2.Click += btnFlags_Click;
+            clbClassMask2.ItemCheck += clbFlags_ItemCheck;
+            numClassMask3.ValueChanged += numFlags_ValueChanged;
+            btnClassMask3.Click += btnFlags_Click;
+            clbClassMask3.ItemCheck += clbFlags_ItemCheck;
+            numClassMask4.ValueChanged += numFlags_ValueChanged;
+            btnClassMask4.Click += btnFlags_Click;
+            clbClassMask4.ItemCheck += clbFlags_ItemCheck;
+
+            for (int i = 0; i < 32; ++i)
+            {
+                uint mask = (uint)Math.Pow(2, i);
+                clbFamilyFlags1.Items.Add(mask.ToString());
+                clbFamilyFlags2.Items.Add(mask.ToString());
+                clbFamilyFlags3.Items.Add(mask.ToString());
+                clbFamilyFlags4.Items.Add(mask.ToString());
+                clbClassMask1.Items.Add(mask.ToString());
+                clbClassMask2.Items.Add(mask.ToString());
+                clbClassMask3.Items.Add(mask.ToString());
+                clbClassMask4.Items.Add(mask.ToString());
+            }
+
+            HideListBoxes();
+        }
+
+        private void numFlags_ValueChanged(object? sender, EventArgs e)
+        {
+            var num = (NumericUpDown)sender;
+            var clb = (CheckedListBox)num.Parent.Controls[num.Name.Replace("num", "clb")];
+
+            PopulateFlagCheckedListBoxs(clb, (uint)num.Value);
+        }
+
+        private void HideListBoxes(CheckedListBox exception = null)
+        {
+            if (clbFamilyFlags1 != exception)
+                clbFamilyFlags1.Visible = false;
+            if (clbFamilyFlags2 != exception)
+                clbFamilyFlags2.Visible = false;
+            if (clbFamilyFlags3 != exception)
+                clbFamilyFlags3.Visible = false;
+            if (clbFamilyFlags4 != exception)
+                clbFamilyFlags4.Visible = false;
+            if (clbClassMask1 != exception)
+                clbClassMask1.Visible = false;
+            if (clbClassMask2 != exception)
+                clbClassMask2.Visible = false;
+            if (clbClassMask3 != exception)
+                clbClassMask3.Visible = false;
+            if (clbClassMask4 != exception)
+                clbClassMask4.Visible = false;
+        }
+
+        private void PopulateFlagCheckedListBoxs(CheckedListBox box, uint flags)
+        {
+            for (var i = 0; i < box.Items.Count; i++)
+            {
+                string item = (string)box.Items[i];
+                if ((flags & uint.Parse(item)) > 0)
+                    box.SetItemChecked(i, true);
+                else
+                    box.SetItemChecked(i, false);
+            }
+        }
+
+        private void ClearFlagCheckedListBoxs(CheckedListBox box)
+        {
+            for (var i = 0; i < box.Items.Count; i++)
+                box.SetItemChecked(i, false);
+        }
+
+        private void clbFlags_ItemCheck(object? sender, ItemCheckEventArgs e)
+        {
+            uint val = 0;
+            var box = (CheckedListBox)sender;
+
+            if (e.NewValue == CheckState.Checked)
+                val |= uint.Parse((string)box.Items[e.Index]);
+
+            foreach (string item in box.CheckedItems)
+                val |= uint.Parse(item);
+
+            if (e.NewValue == CheckState.Unchecked)
+                val ^= uint.Parse((string)box.Items[e.Index]);
+
+            box.Parent.Controls[box.Name.Replace("clb", "num")].Text = val.ToString();
+        }
+
+        private void btnFlags_Click(object? sender, EventArgs e)
+        {
+            var btn = (Button)sender;
+            var clb = (CheckedListBox)btn.Parent.Controls[btn.Name.Replace("btn", "clb")];
+
+            HideListBoxes(clb);
+            clb.Visible = !clb.Visible;
         }
 
         #endregion

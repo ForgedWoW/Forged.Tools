@@ -121,6 +121,7 @@ namespace Forged.Tools.Shared.Entities
             HashSet<uint> ret = new();
             ret.Add(spell.Id);
             ret.AddRange(spell.RelatedSpells);
+            string spellName = spell.SpellName[Locale.enUS];
 
             if (mTriggerSpellMap.TryGetValue(spell.Id, out HashSet<uint> ids))
                 ret.AddRange(ids);
@@ -133,7 +134,9 @@ namespace Forged.Tools.Shared.Entities
 
                 foreach (var spellInfo in mSpellInfoMap.Values)
                 {
-                    if (ret.Contains(spellInfo.Id) || ret.HasOverlap(spellInfo.RelatedSpells))
+                    if (ret.Contains(spellInfo.Id) || ret.HasOverlap(spellInfo.RelatedSpells)
+                        || (spellInfo.SpellName[Locale.enUS] == spellName
+                        && spellInfo.SpellFamilyName == spell.SpellFamilyName))
                     {
                         ret.Add(spellInfo.Id);
                         ret.AddRange(spellInfo.RelatedSpells);

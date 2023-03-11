@@ -714,8 +714,9 @@ namespace Forged.Tools.Shared.Spells
             ret.ChainTargets = ChainTargets;
             ret.ItemType = ItemType;
             ret.TriggerSpell = TriggerSpell;
-            ret.SpellClassMask = new FlagArray128(SpellClassMask[0], SpellClassMask[1],
-                SpellClassMask[2], SpellClassMask[3]);
+            if (SpellClassMask != null)
+                ret.SpellClassMask = new FlagArray128(SpellClassMask[0], SpellClassMask[1],
+                    SpellClassMask[2], SpellClassMask[3]);
             ret.BonusCoefficientFromAP = BonusCoefficientFromAP;
             ret.Scaling = new ScalingInfo()
             {
