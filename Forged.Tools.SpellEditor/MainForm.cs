@@ -1642,6 +1642,7 @@ namespace Forged.Tools.SpellEditor
                 if (validatedSpell != null)
                 {
                     validatedSpell.Save();
+                    SpellManager.Instance.RebuildSpellClassMaskMap();
                     CurrentSpell = validatedSpell;
                     lblCurrentSpellName.Text = Helpers.SpellDisplayName(CurrentSpell.SpellInfo.Id, CurrentSpell.SpellInfo.SpellName[Locale.enUS]);
                     DrawCurrentCurveInfo();

@@ -543,6 +543,41 @@ namespace Forged.Tools.Shared.Entities
             return curves;
         }
 
+        public void RebuildSpellClassMaskMap()
+        {
+            SpellClassMaskMap.Clear();
+
+            for (var i = 0; i < 4; i++)
+            {
+                SpellClassMaskMap[i] = new();
+
+                for (int a = 0; a < 32; ++a)
+                {
+                    SpellClassMaskMap[i][(int)Math.Pow(2, a)] = new();
+                }
+            }
+
+            foreach (var si in _spellInfoMap.Values)
+                if (si.SpellFamilyFlags != null)
+                {
+                    for (var i = 0; i < 4; i++)
+                    {
+                        var spellMask = si.SpellFamilyFlags[i];
+
+                        foreach (var mask in SpellClassMaskMap[i])
+                        {
+                            if ((spellMask & mask.Key) != 0)
+                            {
+                                if (mask.Value.TryGetValue((int)si.SpellFamilyName, out var spells))
+                                    spells.Add(si.Id);
+                                else
+                                    mask.Value[(int)si.SpellFamilyName] = new() { si.Id };
+                            }
+                        }
+                    }
+                }
+        }
+
         #region Fields
         MultiMap<uint, uint> _spellsReqSpell = new();
         MultiMap<uint, uint> _spellReq = new();
