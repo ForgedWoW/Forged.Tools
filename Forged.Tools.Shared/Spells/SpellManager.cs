@@ -120,11 +120,11 @@ namespace Forged.Tools.Shared.Entities
         {
             HashSet<uint> ret = new();
             ret.Add(spell.Id);
-            ret.AddRange(spell.RelatedSpells);
+            ret.UnionWith(spell.RelatedSpells);
             string spellName = spell.SpellName[Locale.enUS];
 
             if (_triggerSpellMap.TryGetValue(spell.Id, out HashSet<uint> ids))
-                ret.AddRange(ids);
+                ret.UnionWith(ids);
 
             HashSet<uint> currentSpells = new();
 
@@ -139,10 +139,10 @@ namespace Forged.Tools.Shared.Entities
                         && spellInfo.SpellFamilyName == spell.SpellFamilyName))
                     {
                         ret.Add(spellInfo.Id);
-                        ret.AddRange(spellInfo.RelatedSpells);
+                        ret.UnionWith(spellInfo.RelatedSpells);
 
                         if (_triggerSpellMap.TryGetValue(spellInfo.Id, out ids))
-                            ret.AddRange(ids);
+                            ret.UnionWith(ids);
                     }
                 }
             }
