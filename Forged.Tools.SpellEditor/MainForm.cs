@@ -12,6 +12,7 @@ using Framework.Database;
 using Framework.Dynamic;
 using Forged.Tools.Shared.Forms;
 using Forged.Tools.Shared.Utils;
+using System.Text;
 
 namespace Forged.Tools.SpellEditor
 {
@@ -2079,17 +2080,22 @@ namespace Forged.Tools.SpellEditor
             if (spells.Count == 0)
                 return;
 
+            spells.Sort();
+            var lastSpell = spells.Last();
+
+            StringBuilder str = new();
             foreach (uint id in spells)
             {
                 var info = SpellManager.Instance.GetSpellInfo(id, Difficulty.None);
                 if (info == null)
                     continue;
 
-                if (!string.IsNullOrEmpty(txtClassMaskList.Text))
-                    txtClassMaskList.Text += Environment.NewLine;
+                str.Append(info.Id).Append(" - ").Append(info.SpellName[Locale.enUS]);
 
-                txtClassMaskList.Text += $"{info.Id} - {info.SpellName[Locale.enUS]}";
+                if (id != lastSpell)
+                    str.Append(Environment.NewLine);
             }
+            txtClassMaskList.Text = str.ToString();
         }
 
         #endregion

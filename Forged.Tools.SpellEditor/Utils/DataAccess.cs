@@ -92,12 +92,12 @@ namespace Forged.Tools.SpellEditor.Utils
         public DataAccess()
         {
             DBExecutableUtil.CheckExecutable();
-            string path = System.Reflection.Assembly.GetEntryAssembly().Location.Replace("Forged.Tools.SpellEditor.dll", "");
-            IconFolder = ConfigMgr.GetDefaultValue("Tools.IconDir", "{FullSpellEditorPath}").Replace("{FullSpellEditorPath}", path);
-            _db2Path = ConfigMgr.GetDefaultValue("DataDir", "{FullSpellEditorPath}").Replace("{FullSpellEditorPath}", Path.Combine(path, "Data", "dbc"));
+            string path = Directory.GetCurrentDirectory();
+            IconFolder = ConfigMgr.GetDefaultValue("Tools.IconParentDir", path);
+            _db2Path = ConfigMgr.GetDefaultValue("DataDir", Path.Combine(path, "Data"));
 
-            if (!_db2Path.EndsWith("\\dbc"))
-                _db2Path += "\\dbc";
+            if (!_db2Path.EndsWith("\\dbc") || !_db2Path.EndsWith("/dbc"))
+                _db2Path += "/dbc";
 
             DB.Hotfix.PrepareStatement(HotfixStatements.SEL_SPELL, "SELECT ID, NameSubtext, Description, AuraDescription FROM spell WHERE (`VerifiedBuild` > 0) = ?");
         }

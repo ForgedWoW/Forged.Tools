@@ -164,7 +164,7 @@ namespace Forged.Tools.Shared.Entities
 
                 for (int a = 0; a < 32; ++a)
                 {
-                    SpellClassMaskMap[i][(int)Math.Pow(2, a)] = new();
+                    SpellClassMaskMap[i][(uint)Math.Pow(2, a)] = new();
                 }
             }
 
@@ -556,7 +556,7 @@ namespace Forged.Tools.Shared.Entities
 
                 for (int a = 0; a < 32; ++a)
                 {
-                    SpellClassMaskMap[i][(int)Math.Pow(2, a)] = new();
+                    SpellClassMaskMap[i][(uint)Math.Pow(2, a)] = new();
                 }
             }
 
@@ -581,9 +581,24 @@ namespace Forged.Tools.Shared.Entities
                 }
         }
 
+        /// <summary>
+        /// These are spells that break the find related function. It includes all class and spec spells.
+        /// </summary>
         public HashSet<uint> IgnoreRelated = new HashSet<uint>()
         {
-            137042, 137043, 137044, 137046, 157902 // warlock
+            137018, 137019, 137020, 137021,         // mage
+            137047, 137048, 137049, 137050,         // warrior
+            137042, 137043, 137044, 137046,         // warlock
+            137030, 137031, 137032, 137033,         // priest
+            137009, 137010, 137011, 137012, 137013, // druid
+            137034, 137035, 137036, 137037,         // rogue
+            137014, 137015, 137016, 137017,         // hunter
+            137026, 137027, 137028, 137029,         // paladin
+            137038, 137039, 137040, 137041,         // shaman
+            137005, 137006, 137007, 137008,         // DK
+            137022, 137023, 137024, 137025,         // monk
+            212611, 212612, 212613,                 // DH
+            353167, 356809, 356810                  // evoker
         };
 
         #region Fields
@@ -613,7 +628,7 @@ namespace Forged.Tools.Shared.Entities
         MultiMapHashSet<SpellFamilyNames, uint> _spellFamilyNamesMap = new();
         MultiMapHashSet<uint, uint> _triggerSpellMap = new();
 
-        public Dictionary<int, Dictionary<int, MultiMapHashSet<int, uint>>> SpellClassMaskMap = new();
+        public Dictionary<int, Dictionary<uint, MultiMapHashSet<int, uint>>> SpellClassMaskMap = new();
         public MultiMap<uint, uint> PetFamilySpellsStorage = new();
         #endregion
     }

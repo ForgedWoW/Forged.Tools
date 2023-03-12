@@ -26,9 +26,19 @@ namespace Forged.Tools.TraitEditor.Utils
 
         public DataAccess()
         {
-            string path = System.Reflection.Assembly.GetEntryAssembly().Location.Replace("Forged.Tools.TraitEditor.dll", "");
-            IconFolder = ConfigMgr.GetDefaultValue("Tools.IconDir", "{FullTraitEditorPath}").Replace("{FullTraitEditorPath}", path);
-            _db2Path = ConfigMgr.GetDefaultValue("DataDir", "{FullTraitEditorPath}").Replace("{FullTraitEditorPath}", Path.Combine(path, "Data", "dbc"));
+            string path = Directory.GetCurrentDirectory();
+            IconFolder = ConfigMgr.GetDefaultValue("Tools.IconParentDir", path);
+            _db2Path = ConfigMgr.GetDefaultValue("DataDir", Path.Combine(path, "Data"));
+
+            if (!_db2Path.EndsWith("\\dbc") || !_db2Path.EndsWith("/dbc"))
+                _db2Path += "/dbc";
+        }
+
+        public void LoadStores()
+        {
+            var localDir = System.Reflection.Assembly.GetEntryAssembly().Location.Replace("Forged.Tools.TraitEditor.dll", "");
+            SharedDataAccess.UpdateDB2s(localDir, _db2Path);
+            SharedDataAccess.UpdateIcons(localDir, IconFolder);
 
             _availableDb2Locales = new((int)Locale.Total);
             foreach (var dir in Directory.GetDirectories(_db2Path).AsSpan())
@@ -37,13 +47,6 @@ namespace Forged.Tools.TraitEditor.Utils
                 if (SharedConst.IsValidLocale(locale))
                     _availableDb2Locales[(int)locale] = true;
             }
-        }
-
-        public void LoadStores()
-        {
-            var localDir = System.Reflection.Assembly.GetEntryAssembly().Location.Replace("Forged.Tools.TraitEditor.dll", "");
-            SharedDataAccess.UpdateDB2s(localDir, _db2Path);
-            SharedDataAccess.UpdateIcons(localDir, IconFolder);
 
             if (!_availableDb2Locales[(int)Locale.enUS])
                 return;

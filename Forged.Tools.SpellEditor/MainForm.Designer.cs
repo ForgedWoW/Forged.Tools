@@ -197,6 +197,7 @@ namespace Forged.Tools.SpellEditor
             this.listAttr0 = new System.Windows.Forms.ListBox();
             this.label2 = new System.Windows.Forms.Label();
             this.tabSpellEffects = new System.Windows.Forms.TabPage();
+            this.txtClassMaskList = new System.Windows.Forms.TextBox();
             this.clbClassMask1 = new System.Windows.Forms.CheckedListBox();
             this.clbClassMask2 = new System.Windows.Forms.CheckedListBox();
             this.numClassMask4 = new System.Windows.Forms.NumericUpDown();
@@ -551,7 +552,6 @@ namespace Forged.Tools.SpellEditor
             this.label22 = new System.Windows.Forms.Label();
             this.label21 = new System.Windows.Forms.Label();
             this.tabsSpellInfo = new System.Windows.Forms.TabControl();
-            this.txtClassMaskList = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.numCurentMin)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numCurentMax)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numNewSpellID)).BeginInit();
@@ -2706,6 +2706,17 @@ namespace Forged.Tools.SpellEditor
             this.tabSpellEffects.Text = "Spell Effects";
             this.tabSpellEffects.UseVisualStyleBackColor = true;
             // 
+            // txtClassMaskList
+            // 
+            this.txtClassMaskList.BackColor = System.Drawing.SystemColors.Window;
+            this.txtClassMaskList.Location = new System.Drawing.Point(755, 80);
+            this.txtClassMaskList.Multiline = true;
+            this.txtClassMaskList.Name = "txtClassMaskList";
+            this.txtClassMaskList.ReadOnly = true;
+            this.txtClassMaskList.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.txtClassMaskList.Size = new System.Drawing.Size(215, 545);
+            this.txtClassMaskList.TabIndex = 143;
+            // 
             // clbClassMask1
             // 
             this.clbClassMask1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
@@ -2714,7 +2725,7 @@ namespace Forged.Tools.SpellEditor
             this.clbClassMask1.FormattingEnabled = true;
             this.clbClassMask1.Location = new System.Drawing.Point(622, 220);
             this.clbClassMask1.Name = "clbClassMask1";
-            this.clbClassMask1.Size = new System.Drawing.Size(175, 184);
+            this.clbClassMask1.Size = new System.Drawing.Size(127, 184);
             this.clbClassMask1.TabIndex = 140;
             this.clbClassMask1.Visible = false;
             // 
@@ -2726,7 +2737,7 @@ namespace Forged.Tools.SpellEditor
             this.clbClassMask2.FormattingEnabled = true;
             this.clbClassMask2.Location = new System.Drawing.Point(622, 249);
             this.clbClassMask2.Name = "clbClassMask2";
-            this.clbClassMask2.Size = new System.Drawing.Size(175, 184);
+            this.clbClassMask2.Size = new System.Drawing.Size(127, 184);
             this.clbClassMask2.TabIndex = 139;
             this.clbClassMask2.Visible = false;
             // 
@@ -2741,7 +2752,7 @@ namespace Forged.Tools.SpellEditor
             0,
             0});
             this.numClassMask4.Name = "numClassMask4";
-            this.numClassMask4.Size = new System.Drawing.Size(153, 23);
+            this.numClassMask4.Size = new System.Drawing.Size(105, 23);
             this.numClassMask4.TabIndex = 142;
             // 
             // clbClassMask3
@@ -2752,7 +2763,7 @@ namespace Forged.Tools.SpellEditor
             this.clbClassMask3.FormattingEnabled = true;
             this.clbClassMask3.Location = new System.Drawing.Point(622, 278);
             this.clbClassMask3.Name = "clbClassMask3";
-            this.clbClassMask3.Size = new System.Drawing.Size(175, 184);
+            this.clbClassMask3.Size = new System.Drawing.Size(127, 184);
             this.clbClassMask3.TabIndex = 138;
             this.clbClassMask3.Visible = false;
             // 
@@ -2767,7 +2778,7 @@ namespace Forged.Tools.SpellEditor
             0,
             0});
             this.numClassMask3.Name = "numClassMask3";
-            this.numClassMask3.Size = new System.Drawing.Size(153, 23);
+            this.numClassMask3.Size = new System.Drawing.Size(105, 23);
             this.numClassMask3.TabIndex = 141;
             // 
             // clbClassMask4
@@ -2778,7 +2789,7 @@ namespace Forged.Tools.SpellEditor
             this.clbClassMask4.FormattingEnabled = true;
             this.clbClassMask4.Location = new System.Drawing.Point(622, 307);
             this.clbClassMask4.Name = "clbClassMask4";
-            this.clbClassMask4.Size = new System.Drawing.Size(175, 184);
+            this.clbClassMask4.Size = new System.Drawing.Size(127, 184);
             this.clbClassMask4.TabIndex = 137;
             this.clbClassMask4.Visible = false;
             // 
@@ -2793,7 +2804,7 @@ namespace Forged.Tools.SpellEditor
             0,
             0});
             this.numClassMask2.Name = "numClassMask2";
-            this.numClassMask2.Size = new System.Drawing.Size(153, 23);
+            this.numClassMask2.Size = new System.Drawing.Size(105, 23);
             this.numClassMask2.TabIndex = 140;
             // 
             // numClassMask1
@@ -2807,12 +2818,12 @@ namespace Forged.Tools.SpellEditor
             0,
             0});
             this.numClassMask1.Name = "numClassMask1";
-            this.numClassMask1.Size = new System.Drawing.Size(153, 23);
+            this.numClassMask1.Size = new System.Drawing.Size(105, 23);
             this.numClassMask1.TabIndex = 139;
             // 
             // btnClassMask1
             // 
-            this.btnClassMask1.Location = new System.Drawing.Point(774, 196);
+            this.btnClassMask1.Location = new System.Drawing.Point(726, 196);
             this.btnClassMask1.Name = "btnClassMask1";
             this.btnClassMask1.Size = new System.Drawing.Size(23, 23);
             this.btnClassMask1.TabIndex = 138;
@@ -2821,7 +2832,7 @@ namespace Forged.Tools.SpellEditor
             // 
             // btnClassMask2
             // 
-            this.btnClassMask2.Location = new System.Drawing.Point(774, 225);
+            this.btnClassMask2.Location = new System.Drawing.Point(726, 225);
             this.btnClassMask2.Name = "btnClassMask2";
             this.btnClassMask2.Size = new System.Drawing.Size(23, 23);
             this.btnClassMask2.TabIndex = 135;
@@ -2830,7 +2841,7 @@ namespace Forged.Tools.SpellEditor
             // 
             // btnClassMask3
             // 
-            this.btnClassMask3.Location = new System.Drawing.Point(774, 254);
+            this.btnClassMask3.Location = new System.Drawing.Point(726, 254);
             this.btnClassMask3.Name = "btnClassMask3";
             this.btnClassMask3.Size = new System.Drawing.Size(23, 23);
             this.btnClassMask3.TabIndex = 132;
@@ -2839,7 +2850,7 @@ namespace Forged.Tools.SpellEditor
             // 
             // btnClassMask4
             // 
-            this.btnClassMask4.Location = new System.Drawing.Point(774, 283);
+            this.btnClassMask4.Location = new System.Drawing.Point(726, 283);
             this.btnClassMask4.Name = "btnClassMask4";
             this.btnClassMask4.Size = new System.Drawing.Size(23, 23);
             this.btnClassMask4.TabIndex = 129;
@@ -2985,7 +2996,7 @@ namespace Forged.Tools.SpellEditor
             0});
             this.numEffTableID.Name = "numEffTableID";
             this.numEffTableID.ReadOnly = true;
-            this.numEffTableID.Size = new System.Drawing.Size(175, 23);
+            this.numEffTableID.Size = new System.Drawing.Size(127, 23);
             this.numEffTableID.TabIndex = 122;
             this.numEffTableID.Tag = "EffTableID";
             // 
@@ -3000,7 +3011,7 @@ namespace Forged.Tools.SpellEditor
             0,
             0});
             this.numItemType.Name = "numItemType";
-            this.numItemType.Size = new System.Drawing.Size(175, 23);
+            this.numItemType.Size = new System.Drawing.Size(127, 23);
             this.numItemType.TabIndex = 121;
             this.numItemType.Tag = "EffItemType";
             // 
@@ -3079,7 +3090,7 @@ namespace Forged.Tools.SpellEditor
             0,
             -2147483648});
             this.numMiscB.Name = "numMiscB";
-            this.numMiscB.Size = new System.Drawing.Size(175, 23);
+            this.numMiscB.Size = new System.Drawing.Size(127, 23);
             this.numMiscB.TabIndex = 110;
             this.numMiscB.Tag = "MiscValueB";
             // 
@@ -3108,7 +3119,7 @@ namespace Forged.Tools.SpellEditor
             0,
             -2147483648});
             this.numMiscA.Name = "numMiscA";
-            this.numMiscA.Size = new System.Drawing.Size(175, 23);
+            this.numMiscA.Size = new System.Drawing.Size(127, 23);
             this.numMiscA.TabIndex = 108;
             this.numMiscA.Tag = "MiscValueA";
             // 
@@ -3132,7 +3143,7 @@ namespace Forged.Tools.SpellEditor
             0,
             0});
             this.numTriggerSpell.Name = "numTriggerSpell";
-            this.numTriggerSpell.Size = new System.Drawing.Size(175, 23);
+            this.numTriggerSpell.Size = new System.Drawing.Size(127, 23);
             this.numTriggerSpell.TabIndex = 106;
             this.numTriggerSpell.Tag = "TriggerSpell";
             // 
@@ -6838,16 +6849,6 @@ namespace Forged.Tools.SpellEditor
             this.tabsSpellInfo.SelectedIndex = 0;
             this.tabsSpellInfo.Size = new System.Drawing.Size(999, 680);
             this.tabsSpellInfo.TabIndex = 10;
-            // 
-            // txtClassMaskList
-            // 
-            this.txtClassMaskList.BackColor = System.Drawing.SystemColors.Window;
-            this.txtClassMaskList.Location = new System.Drawing.Point(803, 80);
-            this.txtClassMaskList.Multiline = true;
-            this.txtClassMaskList.Name = "txtClassMaskList";
-            this.txtClassMaskList.ReadOnly = true;
-            this.txtClassMaskList.Size = new System.Drawing.Size(167, 545);
-            this.txtClassMaskList.TabIndex = 143;
             // 
             // MainForm
             // 

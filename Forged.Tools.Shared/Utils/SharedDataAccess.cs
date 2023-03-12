@@ -26,6 +26,9 @@ namespace Forged.Tools.Shared.Utils
 
             DownloadGoogleDriveFile.DriveDownloadFile("1jx6kFQnPR2GDSrLmwinwHGrheeD3SGUM", versionFile);
 
+            if (!Directory.Exists(db2Path) || Directory.GetDirectories(db2Path).Count() == 0)
+                File.Delete(oldVersionFile);
+
             if (!File.Exists(oldVersionFile))
             {
                 newVersion = true;
