@@ -397,7 +397,7 @@ namespace Forged.Tools.Shared.Spells
             string pattern = @"\$(|\?|\@)(|spellname|spelldesc|a)(\d+)";
             var result = Regex.Matches(SpellDescriptions.Description_lang, pattern);
             foreach (Match num in result)
-                if (uint.TryParse(num.Value.TrimSpellDescriptionTokens(), out uint val) && CliDB.SpellStorage.ContainsKey(val))
+                if (uint.TryParse(num.Value.TrimSpellDescriptionTokens(), out uint val) && !SpellManager.Instance.IgnoreRelated.Contains(val) && CliDB.SpellStorage.ContainsKey(val))
                     RelatedSpells.Add(val);
 
             result = Regex.Matches(SpellDescriptions.AuraDescription_lang, pattern);

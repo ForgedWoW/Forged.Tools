@@ -134,6 +134,9 @@ namespace Forged.Tools.Shared.Entities
 
                 foreach (var spellInfo in _spellInfoMap.Values)
                 {
+                    if (IgnoreRelated.Contains(spellInfo.Id))
+                        continue;
+
                     if (ret.Contains(spellInfo.Id) || ret.HasOverlap(spellInfo.RelatedSpells)
                         || (spellInfo.SpellName[Locale.enUS] == spellName
                         && spellInfo.SpellFamilyName == spell.SpellFamilyName))
@@ -577,6 +580,11 @@ namespace Forged.Tools.Shared.Entities
                     }
                 }
         }
+
+        public HashSet<uint> IgnoreRelated = new HashSet<uint>()
+        {
+            137042, 137043, 137044, 137046, 157902 // warlock
+        };
 
         #region Fields
         MultiMap<uint, uint> _spellsReqSpell = new();
