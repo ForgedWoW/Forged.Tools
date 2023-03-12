@@ -19,7 +19,7 @@ namespace Forged.Tools.Shared.Entities
 
         public List<uint> GetSpellsRequiringSpellBounds(uint spell_id)
         {
-            return mSpellsReqSpell.LookupByKey(spell_id);
+            return _spellsReqSpell.LookupByKey(spell_id);
         }
 
         public bool IsSpellRequiringSpell(uint spellid, uint req_spellid)
@@ -36,7 +36,7 @@ namespace Forged.Tools.Shared.Entities
 
         List<int> GetSpellGroupSpellMapBounds(SpellGroup group_id)
         {
-            return mSpellGroupSpell.LookupByKey(group_id);
+            return _spellGroupSpell.LookupByKey(group_id);
         }
 
         public void GetSetOfSpellsInSpellGroup(SpellGroup group_id, out List<int> foundSpells)
@@ -70,18 +70,18 @@ namespace Forged.Tools.Shared.Entities
 
         public void UpsertSpellInfo(SpellInfo spellInfo)
         {
-            mSpellInfoMap.Remove(spellInfo.Id);
-            mSpellInfoMap.Add(spellInfo.Id, spellInfo);
-            mSpellFamilyNamesMap.Add(spellInfo.SpellFamilyName, spellInfo.Id);
+            _spellInfoMap.Remove(spellInfo.Id);
+            _spellInfoMap.Add(spellInfo.Id, spellInfo);
+            _spellFamilyNamesMap.Add(spellInfo.SpellFamilyName, spellInfo.Id);
 
             foreach (var eff in spellInfo.GetEffects())
                 if (eff.TriggerSpell != 0)
-                    mTriggerSpellMap.Add(eff.TriggerSpell, spellInfo.Id);
+                    _triggerSpellMap.Add(eff.TriggerSpell, spellInfo.Id);
         }
 
         public SpellInfo GetSpellInfo(uint spellId, Difficulty difficulty)
         {
-            var list = mSpellInfoMap.LookupByKey(spellId);
+            var list = _spellInfoMap.LookupByKey(spellId);
 
             var index = list.FindIndex(spellInfo => spellInfo.Difficulty == difficulty);
             if (index != -1)
@@ -105,7 +105,7 @@ namespace Forged.Tools.Shared.Entities
 
         public HashSet<uint> GetInfoBySpellFamily(SpellFamilyNames spellFamily)
         {
-            if (mSpellFamilyNamesMap.TryGetValue(spellFamily, out HashSet<uint> ids) && ids != null)
+            if (_spellFamilyNamesMap.TryGetValue(spellFamily, out HashSet<uint> ids) && ids != null)
                 return ids;
 
             return new HashSet<uint>();
@@ -113,7 +113,7 @@ namespace Forged.Tools.Shared.Entities
 
         List<SpellInfo> _GetSpellInfo(uint spellId)
         {
-            return mSpellInfoMap.LookupByKey(spellId);
+            return _spellInfoMap.LookupByKey(spellId);
         }
 
         public HashSet<uint> GetRelatedSpells(SpellInfo spell)
@@ -123,7 +123,7 @@ namespace Forged.Tools.Shared.Entities
             ret.AddRange(spell.RelatedSpells);
             string spellName = spell.SpellName[Locale.enUS];
 
-            if (mTriggerSpellMap.TryGetValue(spell.Id, out HashSet<uint> ids))
+            if (_triggerSpellMap.TryGetValue(spell.Id, out HashSet<uint> ids))
                 ret.AddRange(ids);
 
             HashSet<uint> currentSpells = new();
@@ -132,7 +132,7 @@ namespace Forged.Tools.Shared.Entities
             {
                 currentSpells = new(ret);
 
-                foreach (var spellInfo in mSpellInfoMap.Values)
+                foreach (var spellInfo in _spellInfoMap.Values)
                 {
                     if (ret.Contains(spellInfo.Id) || ret.HasOverlap(spellInfo.RelatedSpells)
                         || (spellInfo.SpellName[Locale.enUS] == spellName
@@ -141,7 +141,7 @@ namespace Forged.Tools.Shared.Entities
                         ret.Add(spellInfo.Id);
                         ret.AddRange(spellInfo.RelatedSpells);
 
-                        if (mTriggerSpellMap.TryGetValue(spellInfo.Id, out ids))
+                        if (_triggerSpellMap.TryGetValue(spellInfo.Id, out ids))
                             ret.AddRange(ids);
                     }
                 }
@@ -155,7 +155,17 @@ namespace Forged.Tools.Shared.Entities
         {
             uint oldMSTime = Time.MSTime;
 
-            mSpellInfoMap.Clear();
+            for (var i = 0; i < 4; i++)
+            {
+                SpellClassMaskMap[i] = new();
+
+                for (int a = 0; a < 32; ++a)
+                {
+                    SpellClassMaskMap[i][(int)Math.Pow(2, a)] = new();
+                }
+            }
+
+            _spellInfoMap.Clear();
             var loadData = new Dictionary<(uint Id, Difficulty difficulty), SpellInfoLoadHelper>();
 
             Dictionary<uint, BattlePetSpeciesRecord> battlePetSpeciesByCreature = new();
@@ -342,12 +352,31 @@ namespace Forged.Tools.Shared.Entities
                 //second key = id
 
                 var si = new SpellInfo(spellNameEntry, data.Key.difficulty, data.Value, dataAccess, GetCurves(spellNameEntry.Id));
-                mSpellInfoMap.Add(spellNameEntry.Id, si);
-                mSpellFamilyNamesMap.Add(si.SpellFamilyName, spellNameEntry.Id);
+                _spellInfoMap.Add(spellNameEntry.Id, si);
+                _spellFamilyNamesMap.Add(si.SpellFamilyName, spellNameEntry.Id);
 
                 foreach (var eff in si.GetEffects())
                     if (eff.TriggerSpell != 0)
-                        mTriggerSpellMap.Add(eff.TriggerSpell, si.Id);
+                        _triggerSpellMap.Add(eff.TriggerSpell, si.Id);
+
+                if (si.SpellFamilyFlags != null)
+                {
+                    for (var i = 0; i < 4; i++)
+                    {
+                        var spellMask = si.SpellFamilyFlags[i];
+
+                        foreach (var mask in SpellClassMaskMap[i])
+                        {
+                            if ((spellMask & mask.Key) != 0)
+                            {
+                                if (mask.Value.TryGetValue((int)si.SpellFamilyName, out var spells))
+                                    spells.Add(si.Id);
+                                else
+                                    mask.Value[(int)si.SpellFamilyName] = new() { si.Id };
+                            }
+                        }
+                    }
+                }
             }
 
             Log.outInfo(LogFilter.ServerLoading, "Loaded SpellInfo store in {0} ms", Time.GetMSTimeDiffToNow(oldMSTime));
@@ -478,7 +507,7 @@ namespace Forged.Tools.Shared.Entities
         // SpellInfo object management
         public bool HasSpellInfo(uint spellId, Difficulty difficulty)
         {
-            var list = mSpellInfoMap.LookupByKey(spellId);
+            var list = _spellInfoMap.LookupByKey(spellId);
             if (list.Count == 0)
                 return false;
 
@@ -515,31 +544,33 @@ namespace Forged.Tools.Shared.Entities
         }
 
         #region Fields
-        MultiMap<uint, uint> mSpellsReqSpell = new();
-        MultiMap<uint, uint> mSpellReq = new();
-        Dictionary<KeyValuePair<uint, uint>, SpellTargetPosition> mSpellTargetPositions = new();
-        MultiMap<uint, SpellGroup> mSpellSpellGroup = new();
-        MultiMap<SpellGroup, int> mSpellGroupSpell = new();
-        Dictionary<SpellGroup, SpellGroupStackRule> mSpellGroupStack = new();
-        MultiMap<SpellGroup, AuraType> mSpellSameEffectStack = new();
-        List<ServersideSpellName> mServersideSpellNames = new();
-        Dictionary<(uint id, Difficulty difficulty), SpellProcEntry> mSpellProcMap = new();
-        Dictionary<uint, SpellThreatEntry> mSpellThreatMap = new();
-        Dictionary<uint, PetAura> mSpellPetAuraMap = new();
-        MultiMap<int, int> mSpellLinkedMap = new();
-        Dictionary<uint, SpellEnchantProcEntry> mSpellEnchantProcEventMap = new();
-        MultiMap<uint, SpellArea> mSpellAreaMap = new();
-        MultiMap<uint, SpellArea> mSpellAreaForQuestMap = new();
-        MultiMap<uint, SpellArea> mSpellAreaForQuestEndMap = new();
-        MultiMap<uint, SpellArea> mSpellAreaForAuraMap = new();
-        MultiMap<uint, SpellArea> mSpellAreaForAreaMap = new();
-        MultiMap<uint, SkillLineAbilityRecord> mSkillLineAbilityMap = new();
-        Dictionary<uint, MultiMap<uint, uint>> mPetLevelupSpellMap = new();
-        Dictionary<uint, PetDefaultSpellsEntry> mPetDefaultSpellsMap = new();           // only spells not listed in related mPetLevelupSpellMap entry
-        MultiMap<uint, SpellInfo> mSpellInfoMap = new();
-        Dictionary<Tuple<uint, byte>, uint> mSpellTotemModel = new();
-        MultiMapHashSet<SpellFamilyNames, uint> mSpellFamilyNamesMap = new();
-        MultiMapHashSet<uint, uint> mTriggerSpellMap = new();
+        MultiMap<uint, uint> _spellsReqSpell = new();
+        MultiMap<uint, uint> _spellReq = new();
+        Dictionary<KeyValuePair<uint, uint>, SpellTargetPosition> _spellTargetPositions = new();
+        MultiMap<uint, SpellGroup> _spellSpellGroup = new();
+        MultiMap<SpellGroup, int> _spellGroupSpell = new();
+        Dictionary<SpellGroup, SpellGroupStackRule> _spellGroupStack = new();
+        MultiMap<SpellGroup, AuraType> _spellSameEffectStack = new();
+        List<ServersideSpellName> _serversideSpellNames = new();
+        Dictionary<(uint id, Difficulty difficulty), SpellProcEntry> _spellProcMap = new();
+        Dictionary<uint, SpellThreatEntry> _spellThreatMap = new();
+        Dictionary<uint, PetAura> _spellPetAuraMap = new();
+        MultiMap<int, int> _spellLinkedMap = new();
+        Dictionary<uint, SpellEnchantProcEntry> _spellEnchantProcEventMap = new();
+        MultiMap<uint, SpellArea> _spellAreaMap = new();
+        MultiMap<uint, SpellArea> _spellAreaForQuestMap = new();
+        MultiMap<uint, SpellArea> _spellAreaForQuestEndMap = new();
+        MultiMap<uint, SpellArea> _spellAreaForAuraMap = new();
+        MultiMap<uint, SpellArea> _spellAreaForAreaMap = new();
+        MultiMap<uint, SkillLineAbilityRecord> _skillLineAbilityMap = new();
+        Dictionary<uint, MultiMap<uint, uint>> _petLevelupSpellMap = new();
+        Dictionary<uint, PetDefaultSpellsEntry> _petDefaultSpellsMap = new();           // only spells not listed in related mPetLevelupSpellMap entry
+        MultiMap<uint, SpellInfo> _spellInfoMap = new();
+        Dictionary<Tuple<uint, byte>, uint> _spellTotemModel = new();
+        MultiMapHashSet<SpellFamilyNames, uint> _spellFamilyNamesMap = new();
+        MultiMapHashSet<uint, uint> _triggerSpellMap = new();
+
+        public Dictionary<int, Dictionary<int, MultiMapHashSet<int, uint>>> SpellClassMaskMap = new();
         public MultiMap<uint, uint> PetFamilySpellsStorage = new();
         #endregion
     }

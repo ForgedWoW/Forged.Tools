@@ -21,7 +21,6 @@ namespace Forged.Tools.SpellEditor
 
         public FullSpellInfo CurrentSpell = null;
 
-        TabPage _defaultSpellEffectPage = null;
         GroupBox _defaultCurveEffect = null;
         string _currentNameSearch = "";
         string _currentIconSearch = "";
@@ -465,11 +464,14 @@ namespace Forged.Tools.SpellEditor
             ClearFlagCheckedListBoxs(clbClassMask2);
             ClearFlagCheckedListBoxs(clbClassMask3);
             ClearFlagCheckedListBoxs(clbClassMask4);
+
             if (cmbSpellEffectList.Items.Count > 0)
             {
                 cmbSpellEffectList_SelectedIndexChanged(null, null);
                 cmbSpellEffectList.SelectedIndex = 0;
             }
+
+            BuildClassMaskSpellList();
 
             // update attribute lists
             listAttr0.SelectedItems.Clear();
@@ -1969,15 +1971,15 @@ namespace Forged.Tools.SpellEditor
 
             for (int i = 0; i < 32; ++i)
             {
-                uint mask = (uint)Math.Pow(2, i);
-                clbFamilyFlags1.Items.Add(mask.ToString());
-                clbFamilyFlags2.Items.Add(mask.ToString());
-                clbFamilyFlags3.Items.Add(mask.ToString());
-                clbFamilyFlags4.Items.Add(mask.ToString());
-                clbClassMask1.Items.Add(mask.ToString());
-                clbClassMask2.Items.Add(mask.ToString());
-                clbClassMask3.Items.Add(mask.ToString());
-                clbClassMask4.Items.Add(mask.ToString());
+                var mask = ((uint)Math.Pow(2, i)).ToString();
+                clbFamilyFlags1.Items.Add(mask);
+                clbFamilyFlags2.Items.Add(mask);
+                clbFamilyFlags3.Items.Add(mask);
+                clbFamilyFlags4.Items.Add(mask);
+                clbClassMask1.Items.Add(mask);
+                clbClassMask2.Items.Add(mask);
+                clbClassMask3.Items.Add(mask);
+                clbClassMask4.Items.Add(mask);
             }
 
             HideListBoxes();
@@ -1989,6 +1991,7 @@ namespace Forged.Tools.SpellEditor
             var clb = (CheckedListBox)num.Parent.Controls[num.Name.Replace("num", "clb")];
 
             PopulateFlagCheckedListBoxs(clb, (uint)num.Value);
+            BuildClassMaskSpellList();
         }
 
         private void HideListBoxes(CheckedListBox exception = null)
@@ -2016,7 +2019,7 @@ namespace Forged.Tools.SpellEditor
             for (var i = 0; i < box.Items.Count; i++)
             {
                 string item = (string)box.Items[i];
-                if ((flags & uint.Parse(item)) > 0)
+                if ((flags & uint.Parse(item)) != 0)
                     box.SetItemChecked(i, true);
                 else
                     box.SetItemChecked(i, false);
@@ -2043,7 +2046,8 @@ namespace Forged.Tools.SpellEditor
             if (e.NewValue == CheckState.Unchecked)
                 val ^= uint.Parse((string)box.Items[e.Index]);
 
-            box.Parent.Controls[box.Name.Replace("clb", "num")].Text = val.ToString();
+            ((NumericUpDown)box.Parent.Controls[box.Name.Replace("clb", "num")]).Value = val;
+            BuildClassMaskSpellList();
         }
 
         private void btnFlags_Click(object? sender, EventArgs e)
@@ -2053,6 +2057,38 @@ namespace Forged.Tools.SpellEditor
 
             HideListBoxes(clb);
             clb.Visible = !clb.Visible;
+        }
+
+        private void BuildClassMaskSpellList()
+        {
+            uint[] masks = new[] { (uint)numClassMask1.Value, (uint)numClassMask2.Value, (uint)numClassMask3.Value, (uint)numClassMask4.Value };
+            txtClassMaskList.Text = string.Empty;
+
+            List<uint> spells = new();
+            for (int i = 0; i < 4; i++)
+            {
+                if (masks[i] == 0)
+                    continue;
+
+                foreach (var mask in SpellManager.Instance.SpellClassMaskMap[i])
+                    if ((masks[i] & mask.Key) != 0 && mask.Value.TryGetValue((int)CurrentSpell.SpellInfo.SpellFamilyName, out var spellList))
+                        spells.AddRange(spellList);
+            }
+
+            if (spells.Count == 0)
+                return;
+
+            foreach (uint id in spells)
+            {
+                var info = SpellManager.Instance.GetSpellInfo(id, Difficulty.None);
+                if (info == null)
+                    continue;
+
+                if (!string.IsNullOrEmpty(txtClassMaskList.Text))
+                    txtClassMaskList.Text += Environment.NewLine;
+
+                txtClassMaskList.Text += $"{info.Id} - {info.SpellName[Locale.enUS]}";
+            }
         }
 
         #endregion
