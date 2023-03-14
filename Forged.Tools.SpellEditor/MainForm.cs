@@ -33,6 +33,9 @@ namespace Forged.Tools.SpellEditor
         Dictionary<uint, int> _totemCatMap = new Dictionary<uint, int>();
         Dictionary<uint, int> _currencyTypeMap = new Dictionary<uint, int>();
 
+        int _currentNav = -1;
+        List<uint> _navigationHistory = new();
+
         #endregion
 
         #region Initialize
@@ -311,12 +314,30 @@ namespace Forged.Tools.SpellEditor
             if (!string.IsNullOrEmpty((string)listSpells.SelectedItem))
             {
                 uint spellId = uint.Parse(((string)listSpells.SelectedItem).Split("-").First().Trim());
-                if (!CliDB.SpellNameStorage.ContainsKey(spellId))
+                if ((CurrentSpell != null && CurrentSpell.SpellInfo.Id == spellId) || !CliDB.SpellNameStorage.ContainsKey(spellId))
                     return;
 
                 CurrentSpell = Program.DataAccess.GetSpellInfo(spellId);
+                UpdateNavHistory();
                 LoadCurrentSpell();
             }
+        }
+
+        private void UpdateNavHistory()
+        {
+            if (_currentNav != -1 && _currentNav != _navigationHistory.Count - 1)
+            {
+                while (_navigationHistory.Count > _currentNav + 1)
+                {
+                    _navigationHistory.RemoveAt(_currentNav + 1);
+                }
+            }
+
+            _currentNav++;
+            _navigationHistory.Add(CurrentSpell.SpellInfo.Id);
+
+            btnNavForward.Enabled = false;
+            btnNavBack.Enabled = _currentNav != 0;
         }
 
         private void LoadCurrentSpell()
@@ -876,6 +897,7 @@ namespace Forged.Tools.SpellEditor
                     return;
 
                 CurrentSpell = Program.DataAccess.GetSpellInfo(spellId);
+                UpdateNavHistory();
                 LoadCurrentSpell();
                 e.Handled = e.SuppressKeyPress = true;
             }
@@ -1731,6 +1753,8 @@ namespace Forged.Tools.SpellEditor
                 if (confirmResult == DialogResult.No)
                     return;
 
+                _navigationHistory.Remove(CurrentSpell.SpellInfo.Id);
+                _currentNav = _navigationHistory.Count - 1;
                 CurrentSpell.Delete();
                 CurrentSpell = new FullSpellInfo();
                 LoadCurrentSpell();
@@ -1937,7 +1961,29 @@ namespace Forged.Tools.SpellEditor
                 return;
 
             CurrentSpell = Program.DataAccess.GetSpellInfo(spellId);
+            UpdateNavHistory();
             LoadCurrentSpell();
+        }
+
+        private void btnNavBack_Click(object sender, EventArgs e)
+        {
+            _currentNav--;
+            NavBtnClick();
+        }
+
+        private void btnNavForward_Click(object sender, EventArgs e)
+        {
+            _currentNav++;
+            NavBtnClick();
+        }
+
+        private void NavBtnClick()
+        {
+            CurrentSpell = Program.DataAccess.GetSpellInfo(_navigationHistory[_currentNav]);
+            LoadCurrentSpell();
+
+            btnNavForward.Enabled = _currentNav != _navigationHistory.Count - 1;
+            btnNavBack.Enabled = _currentNav != 0;
         }
 
         #endregion

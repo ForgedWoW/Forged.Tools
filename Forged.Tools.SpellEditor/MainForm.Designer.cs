@@ -552,6 +552,8 @@ namespace Forged.Tools.SpellEditor
             this.label22 = new System.Windows.Forms.Label();
             this.label21 = new System.Windows.Forms.Label();
             this.tabsSpellInfo = new System.Windows.Forms.TabControl();
+            this.btnNavBack = new System.Windows.Forms.Button();
+            this.btnNavForward = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.numCurentMin)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numCurentMax)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numNewSpellID)).BeginInit();
@@ -843,7 +845,7 @@ namespace Forged.Tools.SpellEditor
             // lblCurrentSpellName
             // 
             this.lblCurrentSpellName.AutoSize = true;
-            this.lblCurrentSpellName.Location = new System.Drawing.Point(289, 15);
+            this.lblCurrentSpellName.Location = new System.Drawing.Point(336, 15);
             this.lblCurrentSpellName.Name = "lblCurrentSpellName";
             this.lblCurrentSpellName.Size = new System.Drawing.Size(0, 15);
             this.lblCurrentSpellName.TabIndex = 15;
@@ -6850,11 +6852,35 @@ namespace Forged.Tools.SpellEditor
             this.tabsSpellInfo.Size = new System.Drawing.Size(999, 680);
             this.tabsSpellInfo.TabIndex = 10;
             // 
+            // btnNavBack
+            // 
+            this.btnNavBack.Enabled = false;
+            this.btnNavBack.Location = new System.Drawing.Point(285, 11);
+            this.btnNavBack.Name = "btnNavBack";
+            this.btnNavBack.Size = new System.Drawing.Size(23, 23);
+            this.btnNavBack.TabIndex = 51;
+            this.btnNavBack.Text = "<";
+            this.btnNavBack.UseVisualStyleBackColor = true;
+            this.btnNavBack.Click += new System.EventHandler(this.btnNavBack_Click);
+            // 
+            // btnNavForward
+            // 
+            this.btnNavForward.Enabled = false;
+            this.btnNavForward.Location = new System.Drawing.Point(307, 11);
+            this.btnNavForward.Name = "btnNavForward";
+            this.btnNavForward.Size = new System.Drawing.Size(23, 23);
+            this.btnNavForward.TabIndex = 52;
+            this.btnNavForward.Text = ">";
+            this.btnNavForward.UseVisualStyleBackColor = true;
+            this.btnNavForward.Click += new System.EventHandler(this.btnNavForward_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1297, 733);
+            this.Controls.Add(this.btnNavForward);
+            this.Controls.Add(this.btnNavBack);
             this.Controls.Add(this.btnFromClipboard);
             this.Controls.Add(this.btnDeleteSpell);
             this.Controls.Add(this.btnCopy);
@@ -7573,5 +7599,7 @@ namespace Forged.Tools.SpellEditor
         private Label label21;
         private TabControl tabsSpellInfo;
         private TextBox txtClassMaskList;
+        private Button btnNavBack;
+        private Button btnNavForward;
     }
 }
