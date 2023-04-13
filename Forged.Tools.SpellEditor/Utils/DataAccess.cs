@@ -214,7 +214,7 @@ namespace Forged.Tools.SpellEditor.Utils
 
             stmt.AddValue(stmt.Parameters.Count, Settings.Default.BuildNumber);
             var results = DB.Hotfix.Query(stmt);
-            while (results.NextRow())
+            while (!results.IsEmpty() && results.NextRow())
                 ret.Add(results.Read<T>(0));
 
             return ret;
@@ -225,7 +225,7 @@ namespace Forged.Tools.SpellEditor.Utils
             var ret = new List<T>();
 
             var results = DB.Hotfix.Query(stmt);
-            while (results.NextRow())
+            while (!results.IsEmpty() && results.NextRow())
                 ret.Add(results.Read<T>(0));
 
             return ret;
