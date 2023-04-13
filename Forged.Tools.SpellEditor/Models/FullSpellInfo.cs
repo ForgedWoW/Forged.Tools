@@ -28,6 +28,7 @@ namespace Forged.Tools.SpellEditor.Models
             DirtyCurves = new();
             DirtySpellVisuals = new();
             DirtyCurrencyRecords = new();
+            DirtySpellEffects = new();
         }
 
         public FullSpellInfo(SpellInfo spellInfo)

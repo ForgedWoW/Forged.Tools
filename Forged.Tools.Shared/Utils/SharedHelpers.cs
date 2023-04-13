@@ -17,6 +17,7 @@ namespace Forged.Tools.Shared.Utils
     {
         public static DB6Storage<T> ReadDB2<T>(BitSet availableDb2Locales, string db2Path, Locale defaultLocale, string fileName, HotfixStatements preparedStatement, HotfixStatements preparedStatementLocale = 0) where T : new()
         {
+            Log.outInfo(LogFilter.Server, "Loading {0}", fileName);
             DB6Storage<T> storage = new();
             storage.LoadData($"{db2Path}/{defaultLocale}/{fileName}", fileName);
             storage.LoadHotfixData(availableDb2Locales, preparedStatement, preparedStatementLocale);

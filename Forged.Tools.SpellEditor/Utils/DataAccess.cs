@@ -119,7 +119,7 @@ namespace Forged.Tools.SpellEditor.Utils
 
             if (!_availableDb2Locales[(int)Locale.enUS])
                 return;
-
+            
             CliDB.BattlePetSpeciesStorage = SharedHelpers.ReadDB2<BattlePetSpeciesRecord>(_availableDb2Locales, _db2Path, Locale.enUS, "BattlePetSpecies.db2", HotfixStatements.SEL_BATTLE_PET_SPECIES, HotfixStatements.SEL_BATTLE_PET_SPECIES_LOCALE);
             CliDB.CurveStorage = SharedHelpers.ReadDB2<CurveRecord>(_availableDb2Locales, _db2Path, Locale.enUS, "Curve.db2", HotfixStatements.SEL_CURVE);
             CliDB.CurvePointStorage = SharedHelpers.ReadDB2<CurvePointRecord>(_availableDb2Locales, _db2Path, Locale.enUS, "CurvePoint.db2", HotfixStatements.SEL_CURVE_POINT);

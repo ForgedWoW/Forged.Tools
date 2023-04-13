@@ -42,6 +42,8 @@ namespace Forged.Tools.SpellEditor
 
         public MainForm()
         {
+            Log.outInfo(LogFilter.Server, "Loading Spell Editor");
+            Log.outInfo(LogFilter.Server, "Initializing UI Elements");
             InitializeComponent();
             cmbIndexing.SelectedIndex = 0;
 
@@ -70,17 +72,30 @@ namespace Forged.Tools.SpellEditor
             txtConeAngle.MakeNumberBox();
             txtWidth.MakeNumberBox();
             txtLaunchDelay.MakeNumberBox();
+            Log.outInfo(LogFilter.Server, "Finished Initializing UI Elements");
 
+            Log.outInfo(LogFilter.Server, "Loading DB Info");
             Program.DataAccess.LoadStores();
+            Log.outInfo(LogFilter.Server, "Finished Loading DB Info");
             BuildFlagCheckedListBoxs();
 
+            Log.outInfo(LogFilter.Server, "Building Spell Info");
             SpellManager.Instance.LoadSpellInfoStore(Program.DataAccess);
+            Log.outInfo(LogFilter.Server, "Finished Building Spell Info");
 
+            Log.outInfo(LogFilter.Server, "Populating initial spell list...");
             listSpells.PopulateSpellList(numCurentMin, numCurentMax, cmbIndexing.SelectedIndex, _currentNameSearch, ref _maxSpellSearch);
-            GenerateDefaultSpellInfo();
+            Log.outInfo(LogFilter.Server, "{0} spells added.", listSpells.Items.Count);
 
+            Log.outInfo(LogFilter.Server, "Initializing empty spell info");
+            GenerateDefaultSpellInfo();
+            Log.outInfo(LogFilter.Server, "Finished Initializing empty spell info");
+
+            Log.outInfo(LogFilter.Server, "Adding final form Load and Close actions");
             Load += MainForm_Load;
             FormClosed += MainForm_FormClosed;
+
+            Log.outInfo(LogFilter.Server, "Spell Editor loading finished");
         }
 
         private void GenerateDefaultSpellInfo()
@@ -1363,7 +1378,7 @@ namespace Forged.Tools.SpellEditor
 
         private void SaveCurrentDirtyEffect()
         {
-            if (CurrentSpell.DirtySpellEffects.Count == 0)
+            if (CurrentSpell == null || CurrentSpell.DirtySpellEffects.Count == 0)
                 return;
 
             var eff = CurrentSpell.DirtySpellEffects[(int)_curEffIndex];
@@ -1702,9 +1717,16 @@ namespace Forged.Tools.SpellEditor
                 if (confirmResult == DialogResult.No)
                     return;
 
-                numNewSpellID.Value = CurrentSpell.SpellInfo.Id + 1;
+                if (CurrentSpell != null)
+                    numNewSpellID.Value = CurrentSpell.SpellInfo.Id + 1;
+                else
+                {
+                    MessageBox.Show("No spell selected.", "Error");
+                    return;
+                }
+
             }
-            else if(CliDB.SpellNameStorage.ContainsKey((uint)numNewSpellID.Value))
+            else if (CliDB.SpellNameStorage.ContainsKey((uint)numNewSpellID.Value))
             {
                 MessageBox.Show("New Spell Id already in use.", "Error");
                 return;
