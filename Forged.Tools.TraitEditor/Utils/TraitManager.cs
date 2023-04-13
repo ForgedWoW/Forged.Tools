@@ -10,7 +10,7 @@ namespace Forged.Tools.TraitEditor.Utils
 {
     public static class TraitManager
     {
-        public static readonly Dictionary<int, Class> ClassSpecs = new();
+        public static readonly Dictionary<int, PlayerClass> ClassSpecs = new();
         public static readonly Dictionary<uint, TraitTree> TraitTrees = new();
         public static readonly Dictionary<int, List<TraitTreeLoadoutEntryRecord>> TraitTreeLoadoutsByChrSpecialization = new();
         public static readonly Dictionary<uint, TraitNode> TraitNodes = new();
@@ -20,7 +20,7 @@ namespace Forged.Tools.TraitEditor.Utils
         public static uint MAX_COMBAT_TRAIT_CONFIGS = 10u;
 
         private static readonly Dictionary<int, TraitNodeGroup> _traitGroups = new();
-        private static readonly int[] _skillLinesByClass = new int[(int)Class.Max];
+        private static readonly int[] _skillLinesByClass = new int[(int)PlayerClass.Max];
         private static readonly MultiMap<int, TraitTree> _traitTreesBySkillLine = new();
         private static readonly MultiMap<int, TraitTree> _traitTreesByTraitSystem = new();
         private static int _configIdGenerator;
@@ -252,7 +252,7 @@ namespace Forged.Tools.TraitEditor.Utils
                 if (skillLineEntry.CategoryID == SkillCategory.Class)
                 {
                     foreach (SkillRaceClassInfoRecord skillRaceClassInfo in Program.DataAccess.SkillRaceClassInfoSorted[skillLineEntry.Id])
-                        for (int i = 1; i < (int)Class.Max; ++i)
+                        for (int i = 1; i < (int)PlayerClass.Max; ++i)
                             if ((skillRaceClassInfo.ClassMask & (1 << (i - 1))) != 0)
                                 _skillLinesByClass[i] = skillLineXTraitTreeEntry.SkillLineID;
 
@@ -315,56 +315,56 @@ namespace Forged.Tools.TraitEditor.Utils
 
         private static void BuildClassSpecs()
         {
-            ClassSpecs[(int)SpecID.Arms] = Class.Warrior;
-            ClassSpecs[(int)SpecID.Fury] = Class.Warrior;
-            ClassSpecs[(int)SpecID.ProtectionWarrior] = Class.Warrior;
+            ClassSpecs[(int)SpecID.Arms] = PlayerClass.Warrior;
+            ClassSpecs[(int)SpecID.Fury] = PlayerClass.Warrior;
+            ClassSpecs[(int)SpecID.ProtectionWarrior] = PlayerClass.Warrior;
 
-            ClassSpecs[(int)SpecID.HolyPaladin] = Class.Paladin;
-            ClassSpecs[(int)SpecID.Retribution] = Class.Paladin;
-            ClassSpecs[(int)SpecID.ProtectionPaladin] = Class.Paladin;
+            ClassSpecs[(int)SpecID.HolyPaladin] = PlayerClass.Paladin;
+            ClassSpecs[(int)SpecID.Retribution] = PlayerClass.Paladin;
+            ClassSpecs[(int)SpecID.ProtectionPaladin] = PlayerClass.Paladin;
 
-            ClassSpecs[(int)SpecID.Marksmanship] = Class.Hunter;
-            ClassSpecs[(int)SpecID.Survival] = Class.Hunter;
-            ClassSpecs[(int)SpecID.BeastMastery] = Class.Hunter;
+            ClassSpecs[(int)SpecID.Marksmanship] = PlayerClass.Hunter;
+            ClassSpecs[(int)SpecID.Survival] = PlayerClass.Hunter;
+            ClassSpecs[(int)SpecID.BeastMastery] = PlayerClass.Hunter;
 
-            ClassSpecs[(int)SpecID.Assassination] = Class.Rogue;
-            ClassSpecs[(int)SpecID.Outlaw] = Class.Rogue;
-            ClassSpecs[(int)SpecID.Subtlety] = Class.Rogue;
+            ClassSpecs[(int)SpecID.Assassination] = PlayerClass.Rogue;
+            ClassSpecs[(int)SpecID.Outlaw] = PlayerClass.Rogue;
+            ClassSpecs[(int)SpecID.Subtlety] = PlayerClass.Rogue;
 
-            ClassSpecs[(int)SpecID.HolyPriest] = Class.Priest;
-            ClassSpecs[(int)SpecID.Discipline] = Class.Priest;
-            ClassSpecs[(int)SpecID.Shadow] = Class.Priest;
+            ClassSpecs[(int)SpecID.HolyPriest] = PlayerClass.Priest;
+            ClassSpecs[(int)SpecID.Discipline] = PlayerClass.Priest;
+            ClassSpecs[(int)SpecID.Shadow] = PlayerClass.Priest;
 
-            ClassSpecs[(int)SpecID.Blood] = Class.Deathknight;
-            ClassSpecs[(int)SpecID.FrostDK] = Class.Deathknight;
-            ClassSpecs[(int)SpecID.Unholy] = Class.Deathknight;
+            ClassSpecs[(int)SpecID.Blood] = PlayerClass.Deathknight;
+            ClassSpecs[(int)SpecID.FrostDK] = PlayerClass.Deathknight;
+            ClassSpecs[(int)SpecID.Unholy] = PlayerClass.Deathknight;
 
-            ClassSpecs[(int)SpecID.Elemental] = Class.Shaman;
-            ClassSpecs[(int)SpecID.Enhancement] = Class.Shaman;
-            ClassSpecs[(int)SpecID.RestorationShaman] = Class.Shaman;
+            ClassSpecs[(int)SpecID.Elemental] = PlayerClass.Shaman;
+            ClassSpecs[(int)SpecID.Enhancement] = PlayerClass.Shaman;
+            ClassSpecs[(int)SpecID.RestorationShaman] = PlayerClass.Shaman;
 
-            ClassSpecs[(int)SpecID.FrostMage] = Class.Mage;
-            ClassSpecs[(int)SpecID.Fire] = Class.Mage;
-            ClassSpecs[(int)SpecID.Arcane] = Class.Mage;
+            ClassSpecs[(int)SpecID.FrostMage] = PlayerClass.Mage;
+            ClassSpecs[(int)SpecID.Fire] = PlayerClass.Mage;
+            ClassSpecs[(int)SpecID.Arcane] = PlayerClass.Mage;
 
-            ClassSpecs[(int)SpecID.Demonology] = Class.Warlock;
-            ClassSpecs[(int)SpecID.Destruction] = Class.Warlock;
-            ClassSpecs[(int)SpecID.Affliction] = Class.Warlock;
+            ClassSpecs[(int)SpecID.Demonology] = PlayerClass.Warlock;
+            ClassSpecs[(int)SpecID.Destruction] = PlayerClass.Warlock;
+            ClassSpecs[(int)SpecID.Affliction] = PlayerClass.Warlock;
 
-            ClassSpecs[(int)SpecID.Windwalker] = Class.Monk;
-            ClassSpecs[(int)SpecID.Brewmaster] = Class.Monk;
-            ClassSpecs[(int)SpecID.Mistweaver] = Class.Monk;
+            ClassSpecs[(int)SpecID.Windwalker] = PlayerClass.Monk;
+            ClassSpecs[(int)SpecID.Brewmaster] = PlayerClass.Monk;
+            ClassSpecs[(int)SpecID.Mistweaver] = PlayerClass.Monk;
 
-            ClassSpecs[(int)SpecID.Feral] = Class.Druid;
-            ClassSpecs[(int)SpecID.Guardian] = Class.Druid;
-            ClassSpecs[(int)SpecID.RestorationDruid] = Class.Druid;
-            ClassSpecs[(int)SpecID.Balance] = Class.Druid;
+            ClassSpecs[(int)SpecID.Feral] = PlayerClass.Druid;
+            ClassSpecs[(int)SpecID.Guardian] = PlayerClass.Druid;
+            ClassSpecs[(int)SpecID.RestorationDruid] = PlayerClass.Druid;
+            ClassSpecs[(int)SpecID.Balance] = PlayerClass.Druid;
 
-            ClassSpecs[(int)SpecID.Havoc] = Class.DemonHunter;
-            ClassSpecs[(int)SpecID.Vengeance] = Class.DemonHunter;
+            ClassSpecs[(int)SpecID.Havoc] = PlayerClass.DemonHunter;
+            ClassSpecs[(int)SpecID.Vengeance] = PlayerClass.DemonHunter;
 
-            ClassSpecs[(int)SpecID.Devastation] = Class.Evoker;
-            ClassSpecs[(int)SpecID.Preservation] = Class.Evoker;
+            ClassSpecs[(int)SpecID.Devastation] = PlayerClass.Evoker;
+            ClassSpecs[(int)SpecID.Preservation] = PlayerClass.Evoker;
         }
 
         public static List<TraitTree> GetTraitTreesBySpecID(int specID)
