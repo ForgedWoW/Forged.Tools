@@ -1,27 +1,28 @@
 ﻿// Copyright (c) Forged WoW LLC <https://github.com/ForgedWoW/ForgedCore>
 // Licensed under GPL-3.0 license. See <https://github.com/ForgedWoW/ForgedCore/blob/master/LICENSE> for full information.
 
-using Forged.Tools.SpellEditor.Utils;
-using Game.DataStorage;
-using Framework.Database;
-using Framework.Constants;
-using Forged.Tools.Shared.Spells;
 using Forged.Tools.Shared.Entities;
-using Framework.Dynamic;
-using static Game.AI.SmartAction;
+using Forged.Tools.Shared.Spells;
 using Forged.Tools.Shared.Utils;
+using Forged.Tools.SpellEditor.Utils;
+using Framework.Constants;
+using Framework.Database;
+using Framework.Dynamic;
+using Game.DataStorage;
+using Google.Protobuf.WellKnownTypes;
 
 namespace Forged.Tools.SpellEditor.Models
 {
     public sealed class FullSpellInfo
     {
+        private const string OUTPUT_PATH = ".\\SQLOutput";
+
         public SpellInfo SpellInfo;
         public List<SpellCurve> DirtyCurves;
         public Dictionary<uint, SpellXSpellVisualRecordMod> DirtySpellVisuals;
         public Dictionary<uint, SpellReagentsCurrencyRecordMod> DirtyCurrencyRecords;
         public List<SpellEffectInfo> DirtySpellEffects;
-
-
+        
         public FullSpellInfo()
         {
             this.SpellInfo = new();
@@ -60,6 +61,8 @@ namespace Forged.Tools.SpellEditor.Models
 
         public void Save()
         {
+            List<string> sqlOutput = new List<string>();
+
             // Spell_Name
             SpellNameRecord spellNameRecord = new SpellNameRecord();
             spellNameRecord.Name = SpellInfo.SpellName;
@@ -70,6 +73,7 @@ namespace Forged.Tools.SpellEditor.Models
             nameStmt.AddValue(1, spellNameRecord.Name[Locale.enUS]);
 
             Program.DataAccess.UpdateHotfixDB(nameStmt);
+            sqlOutput.Add(nameStmt.ToSql());
             CliDB.SpellNameStorage[spellNameRecord.Id] = spellNameRecord;
 
             // spell
@@ -86,6 +90,7 @@ namespace Forged.Tools.SpellEditor.Models
             spellStmt.AddValue(3, spellRecord.AuraDescription_lang);
 
             Program.DataAccess.UpdateHotfixDB(spellStmt);
+            sqlOutput.Add(spellStmt.ToSql());
             CliDB.SpellStorage[spellRecord.Id] = spellRecord;
 
             // spell_effect
@@ -99,6 +104,7 @@ namespace Forged.Tools.SpellEditor.Models
             var cleanSeStmt = new PreparedStatement(DataAccess.DELETE_BUILD_SPELL_EFFECTS);
             cleanSeStmt.AddValue(0, SpellInfo.Id);
             Program.DataAccess.UpdateHotfixDB(cleanSeStmt);
+            sqlOutput.Add(cleanSeStmt.ToSql());
 
             foreach (var spellEffect in SpellInfo.GetEffects())
             {
@@ -141,6 +147,7 @@ namespace Forged.Tools.SpellEditor.Models
                 seStmt.AddValue(34, spellEffectRec.ImplicitTarget[1]);
                 seStmt.AddValue(35, spellEffectRec.SpellID);
                 Program.DataAccess.UpdateHotfixDB(seStmt);
+                sqlOutput.Add(seStmt.ToSql());
 
                 CliDB.SpellEffectStorage[spellEffectRec.Id] = spellEffectRec;
             }
@@ -181,6 +188,7 @@ namespace Forged.Tools.SpellEditor.Models
             miscStmt.AddValue(29, misc.ActiveSpellVisualScript);
             miscStmt.AddValue(30, misc.SpellID);
             Program.DataAccess.UpdateHotfixDB(miscStmt);
+            sqlOutput.Add(miscStmt.ToSql());
 
             CliDB.SpellMiscStorage[misc.Id] = misc;
 
@@ -193,6 +201,7 @@ namespace Forged.Tools.SpellEditor.Models
             scalingStmt.AddValue(3, scale.MaxScalingLevel);
             scalingStmt.AddValue(4, scale.ScalesFromItemLevel);
             Program.DataAccess.UpdateHotfixDB(scalingStmt);
+            sqlOutput.Add(scalingStmt.ToSql());
 
             CliDB.SpellScalingStorage[scale.Id] = scale;
 
@@ -210,6 +219,7 @@ namespace Forged.Tools.SpellEditor.Models
             auraOptionsStmt.AddValue(8, aurOptions.ProcTypeMask[1]);
             auraOptionsStmt.AddValue(9, aurOptions.SpellID);
             Program.DataAccess.UpdateHotfixDB(auraOptionsStmt);
+            sqlOutput.Add(auraOptionsStmt.ToSql());
 
             CliDB.SpellAuraOptionsStorage[aurOptions.Id] = aurOptions;
 
@@ -228,6 +238,7 @@ namespace Forged.Tools.SpellEditor.Models
             aurRestrictionsStmt.AddValue(9, aurRestrictions.ExcludeTargetAuraSpell);
             aurRestrictionsStmt.AddValue(10, aurRestrictions.SpellID);
             Program.DataAccess.UpdateHotfixDB(aurRestrictionsStmt);
+            sqlOutput.Add(aurRestrictionsStmt.ToSql());
 
             CliDB.SpellAuraRestrictionsStorage[aurRestrictions.Id] = aurRestrictions;
 
@@ -243,6 +254,7 @@ namespace Forged.Tools.SpellEditor.Models
             castReqStmt.AddValue(6, castreq.RequiredAuraVision);
             castReqStmt.AddValue(7, castreq.RequiresSpellFocus);
             Program.DataAccess.UpdateHotfixDB(castReqStmt);
+            sqlOutput.Add(castReqStmt.ToSql());
 
             CliDB.SpellCastingRequirementsStorage[castreq.Id] = castreq;
 
@@ -260,6 +272,7 @@ namespace Forged.Tools.SpellEditor.Models
             catStmt.AddValue(8, categorie.ChargeCategory);
             catStmt.AddValue(9, categorie.SpellID);
             Program.DataAccess.UpdateHotfixDB(catStmt);
+            sqlOutput.Add(catStmt.ToSql());
 
             CliDB.SpellCategoriesStorage[categorie.Id] = categorie;
 
@@ -276,6 +289,7 @@ namespace Forged.Tools.SpellEditor.Models
             coStmt.AddValue(7, coRecord.SpellClassMask[3]);
 
             Program.DataAccess.UpdateHotfixDB(coStmt);
+            sqlOutput.Add(coStmt.ToSql());
             CliDB.SpellClassOptionsStorage[coRecord.Id] = coRecord;
 
             // SpellCooldownsEntry
@@ -289,6 +303,7 @@ namespace Forged.Tools.SpellEditor.Models
             cdStmt.AddValue(5, cdr.SpellID);
 
             Program.DataAccess.UpdateHotfixDB(cdStmt);
+            sqlOutput.Add(cdStmt.ToSql());
             CliDB.SpellCooldownsStorage[cdr.Id] = cdr;
 
             // SpellEquippedItemsEntry
@@ -301,6 +316,7 @@ namespace Forged.Tools.SpellEditor.Models
             equipStmt.AddValue(4, equipped.EquippedItemSubclass);
 
             Program.DataAccess.UpdateHotfixDB(equipStmt);
+            sqlOutput.Add(equipStmt.ToSql());
             CliDB.SpellEquippedItemsStorage[equipped.Id] = equipped;
 
             // SpellInterruptsEntry
@@ -316,6 +332,7 @@ namespace Forged.Tools.SpellEditor.Models
             interruptStmt.AddValue(7, interrupt.SpellID);
 
             Program.DataAccess.UpdateHotfixDB(interruptStmt);
+            sqlOutput.Add(interruptStmt.ToSql());
             CliDB.SpellInterruptsStorage[interrupt.Id] = interrupt;
 
             // Spell_Label
@@ -331,6 +348,7 @@ namespace Forged.Tools.SpellEditor.Models
             var cleanLblStmt = new PreparedStatement(DataAccess.DELETE_BUILD_SPELL_LABEL);
             cleanLblStmt.AddValue(0, SpellInfo.Id);
             Program.DataAccess.UpdateHotfixDB(cleanLblStmt);
+            sqlOutput.Add(cleanLblStmt.ToSql());
 
             foreach (var label in labels)
             {
@@ -340,6 +358,7 @@ namespace Forged.Tools.SpellEditor.Models
                 lblStmt.AddValue(2, label.SpellID);
 
                 Program.DataAccess.UpdateHotfixDB(lblStmt);
+                sqlOutput.Add(lblStmt.ToSql());
                 CliDB.SpellLabelStorage[label.Id] = label;
             }
 
@@ -355,6 +374,7 @@ namespace Forged.Tools.SpellEditor.Models
             levelsStmt.AddValue(6, levels.SpellID);
 
             Program.DataAccess.UpdateHotfixDB(levelsStmt);
+            sqlOutput.Add(levelsStmt.ToSql());
             CliDB.SpellLevelsStorage[levels.Id] = levels;
 
             uint curMaxPwr = 0;
@@ -386,6 +406,7 @@ namespace Forged.Tools.SpellEditor.Models
                 pwrStmt.AddValue(13, power.SpellID);
 
                 Program.DataAccess.UpdateHotfixDB(pwrStmt);
+                sqlOutput.Add(pwrStmt.ToSql());
                 CliDB.SpellPowerStorage[power.Id] = power;
             }
 
@@ -412,6 +433,7 @@ namespace Forged.Tools.SpellEditor.Models
             reagentsStmt.AddValue(17, reagents.ReagentCount[7]);
 
             Program.DataAccess.UpdateHotfixDB(reagentsStmt);
+            sqlOutput.Add(reagentsStmt.ToSql());
             CliDB.SpellReagentsStorage[reagents.Id] = reagents;
 
             // SpellReagentsCurrency
@@ -425,6 +447,7 @@ namespace Forged.Tools.SpellEditor.Models
             var cleanCurrencyStmt = new PreparedStatement(DataAccess.DELETE_BUILD_SPELL_REAGENTS_CURRENCY);
             cleanCurrencyStmt.AddValue(0, SpellInfo.Id);
             Program.DataAccess.UpdateHotfixDB(cleanCurrencyStmt);
+            sqlOutput.Add(cleanCurrencyStmt.ToSql());
 
             foreach (SpellReagentsCurrencyRecord currency in SpellInfo.ReagentsCurrency)
             {
@@ -437,6 +460,7 @@ namespace Forged.Tools.SpellEditor.Models
                 currencyStmt.AddValue(3, currency.CurrencyCount);
 
                 Program.DataAccess.UpdateHotfixDB(currencyStmt);
+                sqlOutput.Add(currencyStmt.ToSql());
                 CliDB.SpellReagentsCurrencyStorage[currency.Id] = currency;
             }
 
@@ -452,6 +476,7 @@ namespace Forged.Tools.SpellEditor.Models
             shapeshiftStmt.AddValue(6, shapeshift.ShapeshiftMask[1]);
 
             Program.DataAccess.UpdateHotfixDB(shapeshiftStmt);
+            sqlOutput.Add(shapeshiftStmt.ToSql());
             CliDB.SpellShapeshiftStorage[shapeshift.Id] = shapeshift;
 
             // SpellTargetRestrictionsEntry
@@ -468,6 +493,7 @@ namespace Forged.Tools.SpellEditor.Models
             targetStmt.AddValue(8, target.SpellID);
 
             Program.DataAccess.UpdateHotfixDB(targetStmt);
+            sqlOutput.Add(targetStmt.ToSql());
             CliDB.SpellTargetRestrictionsStorage[target.Id] = target;
 
             // SpellTotemsEntry
@@ -481,6 +507,7 @@ namespace Forged.Tools.SpellEditor.Models
             totemStmt.AddValue(5, totem.Totem[1]);
 
             Program.DataAccess.UpdateHotfixDB(totemStmt);
+            sqlOutput.Add(totemStmt.ToSql());
             CliDB.SpellTotemsStorage[totem.Id] = totem;
 
             // Visuals
@@ -501,6 +528,7 @@ namespace Forged.Tools.SpellEditor.Models
                 visualStmt.AddValue(11, visual.SpellID);
 
                 Program.DataAccess.UpdateHotfixDB(visualStmt);
+                sqlOutput.Add(visualStmt.ToSql());
                 CliDB.SpellXSpellVisualStorage[visual.Id] = visual;
             }
 
@@ -534,6 +562,7 @@ namespace Forged.Tools.SpellEditor.Models
                 traitDefStmt.AddValue(6, curve.TraitDefinition.OverridesSpellID);
                 traitDefStmt.AddValue(7, curve.TraitDefinition.VisibleSpellID);
                 Program.DataAccess.UpdateHotfixDB(traitDefStmt);
+                sqlOutput.Add(traitDefStmt.ToSql());
 
                 if (curve.TraitDefinitionEffectPoints.Id == 0)
                 {
@@ -552,6 +581,7 @@ namespace Forged.Tools.SpellEditor.Models
                 traitDefEffPtsStmt.AddValue(3, curve.TraitDefinitionEffectPoints.OperationType);
                 traitDefEffPtsStmt.AddValue(4, curve.TraitDefinitionEffectPoints.CurveID);
                 Program.DataAccess.UpdateHotfixDB(traitDefEffPtsStmt);
+                sqlOutput.Add(traitDefEffPtsStmt.ToSql());
 
                 var curveId = curve.CurveRecord.Id;
                 if (curveId == 0)
@@ -570,6 +600,7 @@ namespace Forged.Tools.SpellEditor.Models
                 curveStmt.AddValue(1, curve.CurveRecord.Type);
                 curveStmt.AddValue(2, curve.CurveRecord.Flags);
                 Program.DataAccess.UpdateHotfixDB(curveStmt);
+                sqlOutput.Add(curveStmt.ToSql());
 
                 foreach (var cpr in curve.CurvePoints)
                 {
@@ -594,10 +625,14 @@ namespace Forged.Tools.SpellEditor.Models
                     cprStmt.AddValue(5, cpr.CurveID);
                     cprStmt.AddValue(6, cpr.OrderIndex);
                     Program.DataAccess.UpdateHotfixDB(cprStmt);
+                    sqlOutput.Add(cprStmt.ToSql());
                 }
             }
 
             SpellManager.Instance.UpsertSpellInfo(SpellInfo);
+            
+            Directory.CreateDirectory(OUTPUT_PATH);
+            File.WriteAllLines(Path.Combine(OUTPUT_PATH, $"{SpellInfo.Id.ToString()}-{DateTime.Now.ToString("yyyyMMddThhmmss.ffff")}.sql"), sqlOutput);
         }
 
         public void Delete()

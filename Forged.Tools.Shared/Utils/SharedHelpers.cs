@@ -4,12 +4,7 @@
 using Framework.Constants;
 using Framework.Database;
 using Game.DataStorage;
-using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Forged.Tools.Shared.Utils
 {
@@ -24,6 +19,24 @@ namespace Forged.Tools.Shared.Utils
 
             Global.DB2Mgr.AddDB2(storage.GetTableHash(), storage);
             return storage;
+        }
+
+        public static string ToSql(this PreparedStatement stmnt)
+        {
+            var ret = stmnt.CommandText;
+
+            foreach (var parameter in stmnt.Parameters)
+            {
+                if (parameter.Value.GetType() == typeof(string))
+                    ret = ret.Replace(@"@" + parameter.Key.ToString(), $"`{parameter.Value.ToString()}`");
+                else
+                    ret = ret.Replace(@"@" + parameter.Key.ToString(), parameter.Value.ToString());
+            }
+
+            if (!ret.EndsWith(";"))
+                ret += ";";
+
+            return ret;
         }
     }
 }

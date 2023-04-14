@@ -39,7 +39,7 @@ namespace Forged.Tools.HotfixPatchCompiler.Utils
 
             ret.Add(result.Read<T>(0));
 
-            while (result.NextRow())
+            while (!result.IsEmpty() && result.NextRow())
                 ret.Add(result.Read<T>(0));
 
             return ret;
