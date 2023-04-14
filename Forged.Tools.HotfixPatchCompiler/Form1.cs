@@ -48,65 +48,55 @@ namespace Forged.Tools.HotfixPatchCompiler
 
                 List<HotfixDataRecord> hotfixData = new List<HotfixDataRecord>();
                 var tables = DataAccess.GetHotfixTables();
-                var tableHashNames = Enum.GetNames(typeof(DB2Hash));
 
                 foreach (var table in tables)
                 {
                     // parse name for enum to get hash
                     string tblremUnderscores = table.Replace("_", "").ToLower();
-                    string tblLower = table.ToLower();
-
-                    var selected = tableHashNames.Where(a => a.ToLower() == tblLower);
-
-                    if (selected.Count() == 0)
-                        selected = tableHashNames.Where(a => a.ToLower() == tblremUnderscores);
-
-                    if (selected.Count() == 0)
+                    
+                    if (DataAccess.TableHashes.TryGetValue(tblremUnderscores, out uint tableHash))
                     {
-                        continue;
-                    }
+                        string selectQuery = $"SELECT ID FROM `{table}` WHERE";
+                        string updateQuery = $"UPDATE `{table}` SET `VerifiedBuild` = {newVersion} WHERE";
 
-                    uint tableHash = Convert.ToUInt32(Enum.Parse<DB2Hash>(selected.First()));
+                        StringBuilder whereValues = new();
+                        foreach (var range in ranges)
+                            whereValues.Append(" `VerifiedBuild` >= ").Append(range[0].ToString())
+                                .Append(" AND `VerifiedBuild` <= ").Append(range[1].ToString());
+                        whereValues.Append(";");
 
-                    string selectQuery = $"SELECT ID FROM `{table}` WHERE";
-                    string updateQuery = $"UPDATE `{table}` SET `VerifiedBuild` = {newVersion} WHERE";
+                        selectQuery += whereValues.ToString();
+                        updateQuery += whereValues.ToString();
 
-                    StringBuilder whereValues = new();
-                    foreach (var range in ranges)
-                        whereValues.Append(" `VerifiedBuild` >= ").Append(range[0].ToString()).Append(" AND `VerifiedBuild` <= ").Append(range[1].ToString());
-                    whereValues.Append(";");
+                        var tblIds = DataAccess.GetHotfixValues<int>(selectQuery);
 
-                    selectQuery += whereValues.ToString();
-                    updateQuery += whereValues.ToString();
+                        foreach (int id in tblIds)
+                        {
+                            HotfixDataRecord record = new HotfixDataRecord();
+                            record.TableHash = tableHash;
+                            record.Id = newVersion;
+                            record.VerifiedBuild = newVersion;
+                            record.UniqueId = (uint)newVersion;
+                            record.Status = Status.Valid;
+                            record.RecordId = id;
 
-                    var tblIds = DataAccess.GetHotfixValues<int>(selectQuery);
+                            hotfixData.Add(record);
+                        }
 
-                    foreach (int id in tblIds)
-                    {
-                        HotfixDataRecord record = new HotfixDataRecord();
-                        record.TableHash = tableHash;
-                        record.Id = newVersion;
-                        record.VerifiedBuild = newVersion;
-                        record.UniqueId = (uint)newVersion;
-                        record.Status = Status.Valid;
-                        record.RecordId = id;
+                        DB.Hotfix.Execute(updateQuery);
 
-                        hotfixData.Add(record);
-                    }
+                        foreach (var hotfix in hotfixData)
+                        {
+                            PreparedStatement stmt = new PreparedStatement(DataAccess.INSERT_HOTFIX_DATA);
+                            stmt.AddValue(0, hotfix.Id);
+                            stmt.AddValue(1, hotfix.UniqueId);
+                            stmt.AddValue(2, hotfix.TableHash);
+                            stmt.AddValue(3, hotfix.RecordId);
+                            stmt.AddValue(4, (ushort)hotfix.Status);
+                            stmt.AddValue(5, hotfix.VerifiedBuild);
 
-                    DB.Hotfix.Execute(updateQuery);
-
-                    foreach(var hotfix in hotfixData)
-                    {
-                        PreparedStatement stmt = new PreparedStatement(DataAccess.INSERT_HOTFIX_DATA);
-                        stmt.AddValue(0, hotfix.Id);
-                        stmt.AddValue(1, hotfix.UniqueId);
-                        stmt.AddValue(2, hotfix.TableHash);
-                        stmt.AddValue(3, hotfix.RecordId);
-                        stmt.AddValue(4, (ushort)hotfix.Status);
-                        stmt.AddValue(5, hotfix.VerifiedBuild);
-
-                        DB.Hotfix.Execute(stmt);
+                            DB.Hotfix.Execute(stmt);
+                        }
                     }
                 }
 
